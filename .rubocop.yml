@@ -12,7 +12,9 @@ AllCops:
 inherit_mode:
   merge:
   - Exclude
-plugins: []
+plugins:
+  - rubocop-rspec
+  - rubocop-rake
 require: []
 inherit_from:
   - .rubocop_todo.yml
@@ -23,5 +25,12 @@ inherit_from:
   - .rubocop/metrics.yml
   - .rubocop/migration.yml
   - .rubocop/naming.yml
+  - .rubocop/rake.yml
+  - .rubocop/rspec.yml
   - .rubocop/security.yml
   - .rubocop/style.yml
+
+Naming/VariableNumber:
+  AllowedPatterns:
+    - '^(january|february|march|april|may|june|july|august|september|october|november|december)_\d{4}$'  # month_YYYY
+    - '^(leap|non_leap)_\d{4}$'  # leap_YYYY, non_leap_YYYY
