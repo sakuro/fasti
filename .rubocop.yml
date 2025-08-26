@@ -17,7 +17,6 @@ plugins:
   - rubocop-rake
 require: []
 inherit_from:
-  - .rubocop_todo.yml
   - .rubocop/bundler.yml
   - .rubocop/gemspec.yml
   - .rubocop/layout.yml
@@ -29,6 +28,7 @@ inherit_from:
   - .rubocop/rspec.yml
   - .rubocop/security.yml
   - .rubocop/style.yml
+  - .rubocop_todo.yml
 
 Naming/VariableNumber:
   AllowedPatterns:
