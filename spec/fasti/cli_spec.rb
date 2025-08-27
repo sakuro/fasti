@@ -10,6 +10,19 @@ RSpec.describe Fasti::CLI do
   let(:exe_path) { File.expand_path("../../exe/fasti", __dir__) }
 
   describe "#run" do
+    # Isolate each test from the user's actual config file (~/.config/fastirc)
+    # by redirecting XDG_CONFIG_HOME to a temporary directory.
+    # This ensures tests are deterministic and don't depend on external configuration.
+    around do |example|
+      old_xdg_config_home = ENV["XDG_CONFIG_HOME"]
+      temp_config_dir = Dir.mktmpdir
+      ENV["XDG_CONFIG_HOME"] = temp_config_dir
+      example.run
+    ensure
+      ENV["XDG_CONFIG_HOME"] = old_xdg_config_home
+      FileUtils.rm_rf(temp_config_dir) if temp_config_dir
+    end
+
     context "with --help option" do
       it "displays help message" do
         result = cmd.run("ruby", exe_path, "--help")
@@ -214,18 +227,11 @@ RSpec.describe Fasti::CLI do
       around do |example|
         old_lc_all = ENV["LC_ALL"]
         old_lang = ENV["LANG"]
-        old_xdg_config_home = ENV["XDG_CONFIG_HOME"]
-
-        # Use temporary directory to avoid reading actual config file
-        temp_config_dir = Dir.mktmpdir
-        ENV["XDG_CONFIG_HOME"] = temp_config_dir
 
         example.run
       ensure
         ENV["LC_ALL"] = old_lc_all
         ENV["LANG"] = old_lang
-        ENV["XDG_CONFIG_HOME"] = old_xdg_config_home
-        FileUtils.rm_rf(temp_config_dir) if temp_config_dir
       end
 
       it "detects country from LC_ALL" do
