@@ -179,10 +179,23 @@ module Fasti
 
       day_str = day.to_s.rjust(2)
       date = calendar.to_date(day)
+
+      # 1. Color based on day of week
+      color = nil
+      color = :blue if date.wday == 6 # Saturday
+      color = :red if date.wday == 0  # Sunday
+
+      # 2. Override color for holidays
+      color = :red if calendar.holiday?(day)
+
+      # 3. Determine inverse display
+      inverse = date == Date.today
+
+      # 4. Apply styles
       styles = []
-      styles << :inverse if date == Date.today
-      styles << :red if calendar.holiday?(day) || date.wday == 0 # Holiday or Sunday
-      styles << :blue if date.wday == 6 # Saturday
+      styles << color if color
+      styles << :inverse if inverse
+
       styles.empty? ? day_str : Paint[day_str, *styles]
     end
   end
