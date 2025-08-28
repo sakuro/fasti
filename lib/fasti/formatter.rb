@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "paint"
+require_relative "style"
 
 module Fasti
   # Handles calendar formatting and display with color-coded output.
@@ -32,6 +32,19 @@ module Fasti
   #   formatter = Formatter.new
   #   puts formatter.format_year(2024, start_of_week: :sunday, country: :jp)
   class Formatter
+    # Style constants for different day types
+    SATURDAY_STYLE = Style.new(foreground: :blue)
+    private_constant :SATURDAY_STYLE
+
+    SUNDAY_STYLE = Style.new(foreground: :red)
+    private_constant :SUNDAY_STYLE
+
+    HOLIDAY_STYLE = Style.new(foreground: :red)
+    private_constant :HOLIDAY_STYLE
+
+    TODAY_STYLE = Style.new(inverse: true)
+    private_constant :TODAY_STYLE
+
     # Creates a new formatter instance.
     #
     # @example
@@ -172,7 +185,7 @@ module Fasti
     #
     # @example
     #   format_day(15, calendar)    #=> "15" (regular day)
-    #   format_day(1, calendar)     #=> Paint[" 1", :red] (if Sunday/holiday)
+    #   format_day(1, calendar)     #=> styled " 1" with red foreground (if Sunday/holiday)
     #   format_day(nil, calendar)   #=> "  " (empty cell)
     private def format_day(day, calendar)
       return "  " unless day
@@ -180,23 +193,27 @@ module Fasti
       day_str = day.to_s.rjust(2)
       date = calendar.to_date(day)
 
-      # 1. Color based on day of week
-      color = nil
-      color = :blue if date.wday == 6 # Saturday
-      color = :red if date.wday == 0  # Sunday
+      # Build style through composition based on day characteristics
+      style = Style.new # Start with default style
 
-      # 2. Override color for holidays
-      color = :red if calendar.holiday?(day)
+      # 1. Apply day-of-week style
+      case date.wday
+      when 6 # Saturday
+        style >>= SATURDAY_STYLE
+      when 0 # Sunday
+        style >>= SUNDAY_STYLE
+      else
+        # Weekdays (Monday-Friday) - no special day-of-week styling
+      end
 
-      # 3. Determine inverse display
-      inverse = date == Date.today
+      # 2. Apply holiday style (overrides day-of-week color)
+      style >>= HOLIDAY_STYLE if calendar.holiday?(day)
 
-      # 4. Apply styles
-      styles = []
-      styles << color if color
-      styles << :inverse if inverse
+      # 3. Apply today style (adds inverse to existing colors)
+      style >>= TODAY_STYLE if date == Date.today
 
-      styles.empty? ? day_str : Paint[day_str, *styles]
+      # 4. Apply the composed style
+      style.call(day_str)
     end
   end
 end

@@ -34,3 +34,6 @@ Naming/VariableNumber:
   AllowedPatterns:
     - '^(january|february|march|april|may|june|july|august|september|october|november|december)_\d{4}$'  # month_YYYY
     - '^(leap|non_leap)_\d{4}$'  # leap_YYYY, non_leap_YYYY
+
+Style/EmptyElse:
+  Enabled: false
