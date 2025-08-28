@@ -5,14 +5,12 @@ require "paint"
 require "spec_helper"
 
 RSpec.describe Fasti::Formatter do
-  # ANSI color code constants for readable test expectations
+  # ANSI styling code constants for readable test expectations
   ANSI_ESCAPE = '\e\['
   ANSI_RESET = '\e\[0m'
-  ANSI_RED = '\e\[31m'
-  ANSI_BLUE = '\e\[34m'
+  ANSI_BOLD = '\e\[1m'
   ANSI_INVERSE = '\e\[7m'
-  ANSI_RED_INVERSE = '\e\[31;7m'
-  ANSI_BLUE_INVERSE = '\e\[34;7m'
+  ANSI_BOLD_INVERSE = '\e\[1;7m'
 
   let(:formatter) { Fasti::Formatter.new }
   let(:calendar) { Fasti::Calendar.new(2024, 6, country: :us) }
@@ -172,9 +170,9 @@ RSpec.describe Fasti::Formatter do
         # This is hard to test directly due to ANSI codes, but we can verify
         # the output contains Paint formatting
         output = formatter.format_month(january_calendar)
-        # The output should contain ANSI escape sequences for colors
-        # Should contain some ANSI formatting (holidays/weekends have colors)
-        expect(output).to match(/#{ANSI_RED}/) # Should have red for holidays/Sundays
+        # The output should contain ANSI escape sequences for bold styling
+        # Should contain some ANSI formatting (holidays/Sundays have bold)
+        expect(output).to match(/#{ANSI_BOLD}/) # Should have bold for holidays/Sundays
       end
     end
 
@@ -187,8 +185,8 @@ RSpec.describe Fasti::Formatter do
       it "highlights today's date" do
         output = formatter.format_month(calendar)
         # Should contain ANSI codes for inverse formatting
-        # June 15, 2024 is a Saturday, so should have blue + inverse
-        expect(output).to match(/#{ANSI_BLUE_INVERSE}\s*15#{ANSI_RESET}/)
+        # June 15, 2024 is a Saturday (no special styling) + inverse
+        expect(output).to match(/#{ANSI_INVERSE}\s*15#{ANSI_RESET}/)
       end
     end
   end
@@ -196,42 +194,16 @@ RSpec.describe Fasti::Formatter do
   describe "day styling behavior" do
     let(:july_2024) { Fasti::Calendar.new(2024, 7, country: :us) }
 
-    describe "Saturday styling" do
-      before do
-        # July 6, 2024 is a Saturday (not a holiday)
-        allow(Date).to receive(:today).and_return(Date.new(2024, 7, 1)) # Not today
-      end
-
-      it "applies blue color to Saturday when not today" do
-        output = formatter.format_month(july_2024)
-        # Extract the formatting for day 6 (Saturday)
-        # Should contain blue color code (34) but not inverse (7)
-        expect(output).to match(/#{ANSI_BLUE}\s*6#{ANSI_RESET}/)
-      end
-
-      context "when Saturday is today" do
-        before do
-          allow(Date).to receive(:today).and_return(Date.new(2024, 7, 6)) # Saturday
-        end
-
-        it "applies blue color with inverse formatting" do
-          output = formatter.format_month(july_2024)
-          # Should contain both blue (34) and inverse (7) codes
-          expect(output).to match(/#{ANSI_BLUE_INVERSE}\s*6#{ANSI_RESET}/)
-        end
-      end
-    end
-
     describe "Sunday styling" do
       before do
         # July 7, 2024 is a Sunday (not a holiday)
         allow(Date).to receive(:today).and_return(Date.new(2024, 7, 1)) # Not today
       end
 
-      it "applies red color to Sunday when not today" do
+      it "applies bold styling to Sunday when not today" do
         output = formatter.format_month(july_2024)
-        # Should contain red color code (31) but not inverse (7)
-        expect(output).to match(/#{ANSI_RED}\s*7#{ANSI_RESET}/)
+        # Should contain bold code (1) but not inverse (7)
+        expect(output).to match(/#{ANSI_BOLD}\s*7#{ANSI_RESET}/)
       end
 
       context "when Sunday is today" do
@@ -239,10 +211,10 @@ RSpec.describe Fasti::Formatter do
           allow(Date).to receive(:today).and_return(Date.new(2024, 7, 7)) # Sunday
         end
 
-        it "applies red color with inverse formatting" do
+        it "applies bold with inverse formatting" do
           output = formatter.format_month(july_2024)
-          # Should contain both red (31) and inverse (7) codes
-          expect(output).to match(/#{ANSI_RED_INVERSE}\s*7#{ANSI_RESET}/)
+          # Should contain both bold (1) and inverse (7) codes
+          expect(output).to match(/#{ANSI_BOLD_INVERSE}\s*7#{ANSI_RESET}/)
         end
       end
     end
@@ -253,10 +225,10 @@ RSpec.describe Fasti::Formatter do
         allow(Date).to receive(:today).and_return(Date.new(2024, 7, 1)) # Not today
       end
 
-      it "applies red color to holiday when not today" do
+      it "applies bold styling to holiday when not today" do
         output = formatter.format_month(july_2024)
-        # Should contain red color code (31) but not inverse (7)
-        expect(output).to match(/#{ANSI_RED}\s*4#{ANSI_RESET}/)
+        # Should contain bold code (1) but not inverse (7)
+        expect(output).to match(/#{ANSI_BOLD}\s*4#{ANSI_RESET}/)
       end
 
       context "when holiday is today" do
@@ -264,40 +236,38 @@ RSpec.describe Fasti::Formatter do
           allow(Date).to receive(:today).and_return(Date.new(2024, 7, 4)) # Holiday
         end
 
-        it "applies red color with inverse formatting" do
+        it "applies bold with inverse formatting" do
           output = formatter.format_month(july_2024)
-          # Should contain both red (31) and inverse (7) codes
-          expect(output).to match(/#{ANSI_RED_INVERSE}\s*4#{ANSI_RESET}/)
+          # Should contain both bold (1) and inverse (7) codes
+          expect(output).to match(/#{ANSI_BOLD_INVERSE}\s*4#{ANSI_RESET}/)
         end
       end
     end
 
-    describe "holiday on Saturday" do
-      # Need to find a Saturday holiday - using a different month/year
+    describe "holiday styling (various days)" do
+      # Using Veterans Day which falls on different weekdays in different years
       let(:november_2023) { Fasti::Calendar.new(2023, 11, country: :us) }
 
       before do
-        # November 11, 2023 is Veterans Day (Saturday, holiday)
+        # November 11, 2023 is Veterans Day (happens to be Saturday)
         allow(Date).to receive(:today).and_return(Date.new(2023, 11, 1)) # Not today
       end
 
-      it "applies red color (holiday overrides Saturday blue)" do
+      it "applies bold styling to holidays regardless of weekday" do
         output = formatter.format_month(november_2023)
-        # Should contain red color code (31), not blue (34)
-        expect(output).to match(/#{ANSI_RED}\s*11#{ANSI_RESET}/)
-        # Should not contain blue color for day 11
-        expect(output).not_to match(/#{ANSI_BLUE}\s*11#{ANSI_RESET}/)
+        # Should contain bold code (1) for holiday
+        expect(output).to match(/#{ANSI_BOLD}\s*11#{ANSI_RESET}/)
       end
 
-      context "when holiday Saturday is today" do
+      context "when holiday is today" do
         before do
-          allow(Date).to receive(:today).and_return(Date.new(2023, 11, 11)) # Holiday Saturday
+          allow(Date).to receive(:today).and_return(Date.new(2023, 11, 11)) # Holiday
         end
 
-        it "applies red color with inverse formatting" do
+        it "applies bold with inverse formatting" do
           output = formatter.format_month(november_2023)
-          # Should contain both red (31) and inverse (7) codes
-          expect(output).to match(/#{ANSI_RED_INVERSE}\s*11#{ANSI_RESET}/)
+          # Should contain both bold (1) and inverse (7) codes
+          expect(output).to match(/#{ANSI_BOLD_INVERSE}\s*11#{ANSI_RESET}/)
         end
       end
     end
@@ -328,9 +298,8 @@ RSpec.describe Fasti::Formatter do
           output = formatter.format_month(july_2024)
           # Should contain only inverse (7) code, no color codes
           expect(output).to match(/#{ANSI_INVERSE}\s*2#{ANSI_RESET}/)
-          # Should not have any color codes combined with inverse for regular day
-          expect(output).not_to match(/#{ANSI_RED_INVERSE}\s*2#{ANSI_RESET}/)
-          expect(output).not_to match(/#{ANSI_BLUE_INVERSE}\s*2#{ANSI_RESET}/)
+          # Should not have bold combined with inverse for regular day
+          expect(output).not_to match(/#{ANSI_BOLD_INVERSE}\s*2#{ANSI_RESET}/)
         end
       end
     end

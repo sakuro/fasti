@@ -9,19 +9,10 @@ module Fasti
   # with ANSI color coding for holidays, weekends, and the current date.
   # Holiday detection is handled by the Calendar class using the holidays gem.
   #
-  # ## Color Coding
-  # - **Holidays**: Red text
-  # - **Saturdays**: Blue text
-  # - **Sundays**: Red text
-  # - **Today**: Inverted background/text colors (combined with above colors)
-  #
-  # **Note**: The current color scheme is heavily influenced by Japanese calendar culture
-  # (red for Sundays/holidays representing rest days, blue for Saturdays representing
-  # half-day work). Future versions may make color schemes configurable or
-  # culture-specific to better support international users. Additionally, different
-  # cultures have varying weekend patterns (e.g., Friday-Saturday in some Middle Eastern
-  # countries, Saturday-Sunday in most Western countries), which should be considered
-  # in future internationalization efforts.
+  # ## Styling
+  # - **Holidays**: Bold text
+  # - **Sundays**: Bold text
+  # - **Today**: Inverted background/text colors (combined with above styles)
   #
   # @example Basic month formatting
   #   formatter = Formatter.new
@@ -33,13 +24,10 @@ module Fasti
   #   puts formatter.format_year(2024, start_of_week: :sunday, country: :jp)
   class Formatter
     # Style constants for different day types
-    SATURDAY_STYLE = Style.new(foreground: :blue)
-    private_constant :SATURDAY_STYLE
-
-    SUNDAY_STYLE = Style.new(foreground: :red)
+    SUNDAY_STYLE = Style.new(bold: true)
     private_constant :SUNDAY_STYLE
 
-    HOLIDAY_STYLE = Style.new(foreground: :red)
+    HOLIDAY_STYLE = Style.new(bold: true)
     private_constant :HOLIDAY_STYLE
 
     TODAY_STYLE = Style.new(inverse: true)
@@ -172,11 +160,10 @@ module Fasti
 
     # Formats a single day with appropriate color coding.
     #
-    # Applies ANSI color codes based on the day's characteristics:
+    # Applies ANSI styling based on the day's characteristics:
     # - Today: Inverted colors (combined with other formatting)
-    # - Holidays: Red text
-    # - Saturdays: Blue text
-    # - Sundays: Red text
+    # - Holidays: Bold text
+    # - Sundays: Bold text
     # - Regular days: No special formatting
     #
     # @param day [Integer, nil] Day of the month (1-31) or nil for empty cells
@@ -185,7 +172,7 @@ module Fasti
     #
     # @example
     #   format_day(15, calendar)    #=> "15" (regular day)
-    #   format_day(1, calendar)     #=> styled " 1" with red foreground (if Sunday/holiday)
+    #   format_day(1, calendar)     #=> styled " 1" with bold text (if Sunday/holiday)
     #   format_day(nil, calendar)   #=> "  " (empty cell)
     private def format_day(day, calendar)
       return "  " unless day
@@ -198,15 +185,13 @@ module Fasti
 
       # 1. Apply day-of-week style
       case date.wday
-      when 6 # Saturday
-        style >>= SATURDAY_STYLE
       when 0 # Sunday
         style >>= SUNDAY_STYLE
       else
-        # Weekdays (Monday-Friday) - no special day-of-week styling
+        # Weekdays (Monday-Saturday) - no special day-of-week styling
       end
 
-      # 2. Apply holiday style (overrides day-of-week color)
+      # 2. Apply holiday style (combines with existing styles)
       style >>= HOLIDAY_STYLE if calendar.holiday?(day)
 
       # 3. Apply today style (adds inverse to existing colors)

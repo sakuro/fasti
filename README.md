@@ -117,16 +117,13 @@ Create a configuration file at `~/.config/fastirc` (or `$XDG_CONFIG_HOME/fastirc
 
 Command line options override configuration file settings.
 
-### Color Coding
+### Styling
 
-Fasti uses ANSI colors to highlight different types of days:
+Fasti uses ANSI text styling to highlight different types of days:
 
-- **Red**: Sundays and holidays (rest days)
-- **Blue**: Saturdays  
-- **Inverted**: Today's date (combined with above colors when applicable)
-- **Normal**: Regular weekdays
-
-*Note: The current color scheme reflects Japanese calendar culture but works well internationally. Future versions may include configurable color themes.*
+- **Bold**: Sundays and holidays
+- **Inverted**: Today's date (combined with bold when applicable)
+- **Normal**: Regular weekdays (including Saturdays)
 
 ### Examples
 
