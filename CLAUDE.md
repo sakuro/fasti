@@ -57,14 +57,21 @@ bundle exec rake install # Install locally
 bin/console               # Interactive console
 ```
 
-## Development Standards and Guidelines
+## :warning: AI Development: Mandatory Pre-Work Checklist
 
-This project follows established development standards and conventions. For detailed guidelines, refer to:
+**CRITICAL: These linked files MUST be read before starting any development work**:
 
-- **[Code Quality Management](.claude/code-quality.md)**: RuboCop management, violation handling, and quality standards
-- **[Git Workflow Guide](.claude/git-workflow.md)**: Commit strategies, branch management, and PR guidelines
-- **[Development Standards](.claude/development-standards.md)**: Language conventions, file formats, and documentation standards
-- **[Project Conventions](.claude/project-conventions.md)**: Project-specific guidelines and naming conventions
+- **[Git Workflow Guide](.claude/git-workflow.md)**: Commit message format, git operation constraints (**MANDATORY**)
+- **[Project Conventions](.claude/project-conventions.md)**: Project-specific rules (**MANDATORY**)
+- **[Code Quality Management](.claude/code-quality.md)**: RuboCop standards and quality gates (**MANDATORY**)
+- **[Development Standards](.claude/development-standards.md)**: Language conventions and documentation requirements
+
+**Non-negotiable Rules (frequently violated)**:
+- :art: **Emoji Format**: Use `:emoji:` notation only (`:sparkles:` NOT `✨`)
+- :file_folder: **Git Add**: Use explicit file paths only (`git add file1.rb file2.rb` NOT `git add .`)
+- :wrench: **Before Commits**: Check relevant guidelines above - NO EXCEPTIONS
+
+**:no_entry: DO NOT PROCEED without confirming compliance with these rules**
 
 ## AI Development Guidelines
 
