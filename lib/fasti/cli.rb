@@ -7,7 +7,7 @@ require "shellwords"
 
 module Fasti
   # Immutable data structure for CLI options
-  Options = Data.define(:month, :year, :format, :start_of_week, :country)
+  Options = Data.define(:month, :year, :format, :start_of_week, :country, :style)
 
   # Command-line interface for the fasti calendar application.
   #
@@ -21,6 +21,7 @@ module Fasti
   # - `--format, -f`: Display format (month/quarter/year, default: month)
   # - `--start-of-week, -w`: Week start (sunday/monday, default: sunday)
   # - `--country, -c`: Country code for holidays (auto-detected from LANG/LC_ALL, supports many countries)
+  # - `--style, -s`: Custom styling for different day types (e.g., "sunday:bold holiday:foreground=red")
   # - `--version, -v`: Show version information
   # - `--help, -h`: Show help message
   #
@@ -91,7 +92,8 @@ module Fasti
         year: current_time.year,
         format: :month,
         start_of_week: :sunday,
-        country: detect_country_from_environment
+        country: detect_country_from_environment,
+        style: nil
       }
 
       # Merge with config file options if available
@@ -184,6 +186,15 @@ module Fasti
           options[:country] = country
         end
 
+        opts.on(
+          "-s",
+          "--style STYLE",
+          String,
+          "Custom styling (e.g., \"sunday:bold holiday:foreground=red today:inverse\")"
+        ) do |style|
+          options[:style] = style
+        end
+
         if include_help
           opts.separator ""
           opts.separator "Other options:"
@@ -220,7 +231,14 @@ module Fasti
     #
     # @param options [Options] Parsed options
     private def generate_calendar(options)
-      formatter = Formatter.new
+      # Parse custom styles if provided
+      custom_styles = {}
+      if options.style
+        style_parser = StyleParser.new
+        custom_styles = style_parser.parse(options.style)
+      end
+
+      formatter = Formatter.new(custom_styles:)
       start_of_week = options.start_of_week
 
       output = case options.format

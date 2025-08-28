@@ -10,6 +10,7 @@
 # AllowedMethods: enums
 Lint/ConstantDefinitionInBlock:
   Exclude:
+    - 'spec/fasti/formatter_custom_styles_spec.rb'
     - 'spec/fasti/formatter_spec.rb'
 
 # Configuration parameters: AllowedMethods, AllowedPatterns, CountRepeatedAttributes, Max.
@@ -29,6 +30,7 @@ Metrics/BlockLength:
 Metrics/ClassLength:
   Exclude:
     - 'lib/fasti/cli.rb'
+    - 'lib/fasti/style_parser.rb'
 
 # Configuration parameters: AllowedMethods, AllowedPatterns, Max.
 Metrics/CyclomaticComplexity:
@@ -43,6 +45,7 @@ Metrics/MethodLength:
     - 'lib/fasti/cli.rb'
     - 'lib/fasti/formatter.rb'
     - 'lib/fasti/style.rb'
+    - 'lib/fasti/style_parser.rb'
 
 # Configuration parameters: Max, CountKeywordArgs, MaxOptionalParameters.
 Metrics/ParameterLists:
@@ -55,16 +58,19 @@ Metrics/PerceivedComplexity:
     - 'lib/fasti/formatter.rb'
     - 'lib/fasti/style.rb'
 
+
 # Configuration parameters: Max, CountAsOne.
 RSpec/ExampleLength:
   Exclude:
     - 'spec/fasti/calendar_spec.rb'
     - 'spec/fasti/cli_spec.rb'
+    - 'spec/fasti/formatter_custom_styles_spec.rb'
     - 'spec/fasti/formatter_spec.rb'
     - 'spec/fasti/style_spec.rb'
 
 RSpec/LeakyConstantDeclaration:
   Exclude:
+    - 'spec/fasti/formatter_custom_styles_spec.rb'
     - 'spec/fasti/formatter_spec.rb'
 
 # Configuration parameters: Max.
@@ -72,7 +78,9 @@ RSpec/MultipleExpectations:
   Exclude:
     - 'spec/fasti/calendar_spec.rb'
     - 'spec/fasti/cli_spec.rb'
+    - 'spec/fasti/formatter_custom_styles_spec.rb'
     - 'spec/fasti/formatter_spec.rb'
+    - 'spec/fasti/style_parser_spec.rb'
     - 'spec/fasti/style_spec.rb'
 
 # Configuration parameters: Max, AllowedGroups.
@@ -100,3 +108,4 @@ Style/SymbolProc:
 Layout/LineLength:
   Exclude:
     - 'lib/fasti/cli.rb'
+    - 'spec/fasti/style_parser_spec.rb'
