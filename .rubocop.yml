@@ -50,3 +50,8 @@ Style/SymbolProc:
   # Allow OptionParser#accept method which requires specific block format incompatible with symbol-to-proc
   AllowedMethods:
     - accept
+
+Layout/LineLength:
+  # Exclude test files with long test data strings
+  Exclude:
+    - 'spec/fasti/style_parser_spec.rb'
