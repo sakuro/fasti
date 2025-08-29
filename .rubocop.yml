@@ -6,6 +6,7 @@ AllCops:
   Exclude:
   - bin/**/*
   - vendor/**/*
+  - benchmark/**/*
   ExtraDetails: true
   TargetRubyVersion: 3.4
   UseCache: true

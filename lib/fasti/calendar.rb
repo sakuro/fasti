@@ -55,6 +55,7 @@ module Fasti
       @month = month
       @start_of_week = start_of_week.to_sym
       @country = country
+      @holidays_for_month = nil
 
       validate_inputs
     end
@@ -227,7 +228,28 @@ module Fasti
       date = to_date(day)
       return false unless date
 
-      Holidays.on(date, country).any?
+      holidays_for_month.key?(date)
+    end
+
+    # Returns a hash of holidays for the current month, keyed by date
+    #
+    # @return [Hash<Date, Hash>] Hash mapping holiday dates to holiday information
+    private def holidays_for_month
+      @holidays_for_month ||= begin
+        start_date = first_day_of_month
+        end_date = last_day_of_month
+
+        begin
+          holidays = Holidays.between(start_date, end_date, country)
+          holidays.each_with_object({}) {|holiday, hash| hash[holiday[:date]] = holiday }
+        rescue Holidays::InvalidRegion
+          warn "Warning: Unknown country code '#{country}' for holiday detection"
+          {}
+        rescue => e
+          warn "Warning: Holiday detection failed: #{e.message}"
+          {}
+        end
+      end
     end
 
     private def validate_inputs
