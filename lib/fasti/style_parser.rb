@@ -196,11 +196,7 @@ module Fasti
     # @param attributes [Hash<String, Object>] Hash of attribute names to values
     # @return [Style] New Style object
     private def create_style(attributes)
-      style_params = {}
-
-      attributes.each do |key, value|
-        style_params[key.to_sym] = value
-      end
+      style_params = attributes.transform_keys(&:to_sym)
 
       Style.new(**style_params)
     end
