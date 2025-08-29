@@ -86,9 +86,7 @@ module Fasti
     # @param attributes_str [String] Comma-separated attribute string
     # @return [Hash<String, Object>] Hash of attribute names to values
     private def parse_attributes(attributes_str)
-      attributes = {}
-
-      attributes_str.split(",").each do |attr|
+      attributes_str.split(",").each_with_object({}) do |attr, attributes|
         attr = attr.strip
         next if attr.empty?
 
@@ -115,8 +113,6 @@ module Fasti
           attributes[attr] = true
         end
       end
-
-      attributes
     end
 
     # Parses an attribute value based on the attribute key
