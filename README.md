@@ -187,6 +187,16 @@ Generate API documentation:
 bundle exec rake doc
 ```
 
+Clean temporary files:
+```bash
+bundle exec rake clean
+```
+
+Remove all generated files:
+```bash
+bundle exec rake clobber
+```
+
 Run all checks:
 ```bash
 bundle exec rake
