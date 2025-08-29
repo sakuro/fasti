@@ -38,3 +38,10 @@ Naming/VariableNumber:
 
 Style/EmptyElse:
   Enabled: false
+
+Style/FetchEnvVar:
+  # Allow ENV["key"] for these variables as nil return values are intentionally handled
+  AllowedVars:
+    - LC_ALL        # Used for locale detection, nil is acceptable
+    - LANG          # Used for locale detection, nil is acceptable
+    - XDG_CONFIG_HOME  # Used in tests for environment backup/restore, nil is acceptable
