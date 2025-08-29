@@ -232,10 +232,12 @@ RSpec.describe Fasti::Calendar do
     let(:jp_calendar) { Fasti::Calendar.new(2024, 1, country: :jp) }
 
     it "returns true for US Independence Day" do
+      # July 4th - Independence Day (US holiday)
       expect(us_calendar.holiday?(4)).to be true
     end
 
     it "returns true for Japanese New Year" do
+      # January 1st - New Year's Day (Japanese national holiday)
       expect(jp_calendar.holiday?(1)).to be true
     end
 

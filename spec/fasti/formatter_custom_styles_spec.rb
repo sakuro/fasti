@@ -54,7 +54,7 @@ RSpec.describe Fasti::Formatter do
       let(:formatter) { Fasti::Formatter.new(styles:) }
 
       before do
-        allow(Date).to receive(:today).and_return(Date.new(2024, 7, 4)) # Holiday and today
+        allow(Date).to receive(:today).and_return(Date.new(2024, 7, 4)) # Independence Day (US holiday) and today
       end
 
       it "only applies specified custom styles, no defaults" do
