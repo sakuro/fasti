@@ -64,11 +64,16 @@ module Fasti
     # @return [Array<Symbol, Hash>] Target symbol and attributes hash
     # @raise [ArgumentError] If entry format is invalid
     private def parse_entry(entry)
+      # Entry should not contain whitespace since it comes from split(/\s+/)
+      if entry.match?(/\s/)
+        raise ArgumentError, "Style entry should not contain whitespace: '#{entry}'"
+      end
+
       parts = entry.split(":", 2)
       raise ArgumentError, "Invalid style entry format: '#{entry}'" if parts.length != 2
 
-      target = parts[0].strip
-      attributes_str = parts[1].strip
+      target = parts[0]
+      attributes_str = parts[1]
 
       raise ArgumentError, "Invalid target: '#{target}'" unless VALID_TARGETS.include?(target)
 
@@ -95,8 +100,14 @@ module Fasti
           attributes[attribute_name] = false
         when /\A(.+)=(.+)\z/
           # Handle key=value format
-          key = $1.strip
-          value = $2.strip
+          key = $1
+          value = $2
+
+          # Reject keys or values with whitespace
+          if key != key.strip || value != value.strip
+            raise ArgumentError, "Attribute keys and values cannot contain leading or trailing spaces: '#{attr}'"
+          end
+
           attributes[key] = parse_attribute_value(key, value)
         else
           # Handle simple boolean attributes (bold, italic, etc.)

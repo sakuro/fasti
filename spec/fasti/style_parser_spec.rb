@@ -137,7 +137,7 @@ RSpec.describe Fasti::StyleParser do
         )
       end
 
-      it "handles whitespace in attribute values" do
+      it "parses attributes without internal spaces" do
         result = parser.parse("sunday:bold,italic")
         expect(result[:sunday]).to have_attributes(bold: true, italic: true)
       end
@@ -177,6 +177,21 @@ RSpec.describe Fasti::StyleParser do
       it "raises error for boolean attribute with equals syntax" do
         expect { parser.parse("sunday:bold=maybe") }
           .to raise_error(ArgumentError, /Boolean attributes should not use '=' syntax/)
+      end
+
+      it "raises error for spaces around colon in entries" do
+        expect { parser.parse("sunday :bold") }
+          .to raise_error(ArgumentError, /Invalid style entry format/)
+        expect { parser.parse("sunday: bold") }
+          .to raise_error(ArgumentError, /Invalid style entry format/)
+      end
+
+      it "raises error for whitespace inside entries" do
+        # This directly tests parse_entry with whitespace inside
+        expect { parser.__send__(:parse_entry, "sunday:foreground =red") }
+          .to raise_error(ArgumentError, /Style entry should not contain whitespace/)
+        expect { parser.__send__(:parse_entry, "sunday:background= blue") }
+          .to raise_error(ArgumentError, /Style entry should not contain whitespace/)
       end
     end
   end
