@@ -232,11 +232,7 @@ module Fasti
     # @param options [Options] Parsed options
     private def generate_calendar(options)
       # Parse custom styles if provided
-      styles = {}
-      if options.style
-        style_parser = StyleParser.new
-        styles = style_parser.parse(options.style)
-      end
+      styles = options.style ? StyleParser.new.parse(options.style) : {}
 
       formatter = Formatter.new(styles:)
       start_of_week = options.start_of_week
