@@ -93,12 +93,7 @@ module Fasti
         next if attr.empty?
 
         case attr
-        when /\Ano-(.+)\z/
-          # Handle no- prefix (negation)
-          attribute_name = $1
-          validate_boolean_attribute(attribute_name)
-          attributes[attribute_name] = false
-        when /\A(.+)=(.+)\z/
+        when /\A(?!no-)(.+)=(.+)\z/
           # Handle key=value format
           key = $1
           value = $2
@@ -109,6 +104,11 @@ module Fasti
           end
 
           attributes[key] = parse_attribute_value(key, value)
+        when /\Ano-(.+)\z/
+          # Handle no- prefix (negation)
+          attribute_name = $1
+          validate_boolean_attribute(attribute_name)
+          attributes[attribute_name] = false
         else
           # Handle simple boolean attributes (bold, italic, etc.)
           validate_boolean_attribute(attr)
