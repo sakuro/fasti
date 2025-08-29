@@ -14,6 +14,7 @@ RSpec.describe Fasti::Formatter do
   ANSI_BLACK_FG = '\e\[30m'
   ANSI_RED_BOLD = '\e\[31;1m'
   ANSI_BOLD_INVERSE = '\e\[1;7m'
+  ANSI_BLACK_YELLOW_BG = '\e\[30;43m'
 
   let(:july_2024) { Fasti::Calendar.new(2024, 7, country: :us) }
 
@@ -115,7 +116,7 @@ RSpec.describe Fasti::Formatter do
       it "applies custom holiday style" do
         output = formatter.format_month(july_2024)
         # July 4 (Independence Day) should use custom holiday style
-        expect(output).to match(/\e\[30;43m\s*4#{ANSI_RESET}/)
+        expect(output).to match(/#{ANSI_BLACK_YELLOW_BG}\s*4#{ANSI_RESET}/)
       end
     end
 
