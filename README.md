@@ -209,6 +209,19 @@ bin/console
 - **rubocop** (~> 1.21): Code linting
 - **tty-command** (~> 0.10): CLI testing support
 
+## Releasing
+
+This project uses automated GitHub Actions workflows for releases. Maintainers can create new releases with a simple workflow execution.
+
+### Quick Release Process
+
+1. Go to **Actions** → **Release Preparation** → **Run workflow**
+2. Enter version number (e.g., `1.0.0`)
+3. Review and merge the generated PR
+4. Release is automatically published to RubyGems and GitHub
+
+**For detailed instructions, troubleshooting, and setup requirements, see [`.github/RELEASING.md`](.github/RELEASING.md).**
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/sakuro/fasti.
