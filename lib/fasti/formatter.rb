@@ -23,21 +23,27 @@ module Fasti
   #   formatter = Formatter.new
   #   puts formatter.format_year(2024, start_of_week: :sunday, country: :jp)
   class Formatter
-    # Style constants for different day types
-    SUNDAY_STYLE = Style.new(bold: true)
-    private_constant :SUNDAY_STYLE
-
-    HOLIDAY_STYLE = Style.new(bold: true)
-    private_constant :HOLIDAY_STYLE
-
-    TODAY_STYLE = Style.new(inverse: true)
-    private_constant :TODAY_STYLE
+    # Default styles for different day types
+    # This defines the standard styling behavior when no custom styles are provided
+    DEFAULT_STYLES = {
+      sunday: Style.new(bold: true),
+      holiday: Style.new(bold: true),
+      today: Style.new(inverse: true)
+    }.freeze
+    private_constant :DEFAULT_STYLES
 
     # Creates a new formatter instance.
     #
+    # @param styles [Hash<Symbol, Style>] Custom styles for different day types
+    #   Keys can be :sunday, :monday, ..., :saturday, :holiday, :today
+    #   If styles is empty, DEFAULT_STYLES will be used
+    #   If styles is provided, it completely replaces the defaults
     # @example
-    #   Formatter.new
-    def initialize; end
+    #   Formatter.new  # Uses DEFAULT_STYLES
+    #   Formatter.new(styles: { sunday: Style.new(foreground: :red) })  # Only sunday styled
+    def initialize(styles: {})
+      @styles = styles.empty? ? DEFAULT_STYLES : styles
+    end
 
     # Formats a single month calendar with headers and color coding.
     #
@@ -180,25 +186,22 @@ module Fasti
       day_str = day.to_s.rjust(2)
       date = calendar.to_date(day)
 
-      # Build style through composition based on day characteristics
-      style = Style.new # Start with default style
+      # Collect applicable styles based on day characteristics
+      applicable_styles = []
 
       # 1. Apply day-of-week style
-      case date.wday
-      when 0 # Sunday
-        style >>= SUNDAY_STYLE
-      else
-        # Weekdays (Monday-Saturday) - no special day-of-week styling
-      end
+      weekday_key = %i[sunday monday tuesday wednesday thursday friday saturday][date.wday]
+      applicable_styles << @styles[weekday_key] if @styles.key?(weekday_key)
 
-      # 2. Apply holiday style (combines with existing styles)
-      style >>= HOLIDAY_STYLE if calendar.holiday?(day)
+      # 2. Apply holiday style
+      applicable_styles << @styles[:holiday] if calendar.holiday?(day) && @styles.key?(:holiday)
 
-      # 3. Apply today style (adds inverse to existing colors)
-      style >>= TODAY_STYLE if date == Date.today
+      # 3. Apply today style
+      applicable_styles << @styles[:today] if date == Date.today && @styles.key?(:today)
 
-      # 4. Apply the composed style
-      style.call(day_str)
+      # 4. Compose all styles and apply
+      final_style = applicable_styles.reduce(Style.new) {|acc, elem| acc >> elem }
+      final_style.call(day_str)
     end
   end
 end

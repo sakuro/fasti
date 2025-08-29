@@ -221,7 +221,7 @@ RSpec.describe Fasti::Formatter do
 
     describe "holiday styling" do
       before do
-        # July 4, 2024 is Independence Day (Thursday, holiday)
+        # July 4, 2024 is Independence Day (US holiday, Thursday)
         allow(Date).to receive(:today).and_return(Date.new(2024, 7, 1)) # Not today
       end
 
@@ -249,7 +249,7 @@ RSpec.describe Fasti::Formatter do
       let(:november_2023) { Fasti::Calendar.new(2023, 11, country: :us) }
 
       before do
-        # November 11, 2023 is Veterans Day (happens to be Saturday)
+        # November 11, 2023 is Veterans Day (US holiday, Saturday)
         allow(Date).to receive(:today).and_return(Date.new(2023, 11, 1)) # Not today
       end
 
@@ -310,7 +310,7 @@ RSpec.describe Fasti::Formatter do
     let(:output) { formatter.format_month(january_us) }
 
     it "applies color formatting to the output" do
-      # January 1, 2024 is New Year's Day (holiday) and a Monday
+      # January 1, 2024 is New Year's Day (US holiday) and a Monday
       # The output should contain ANSI color codes
       expect(output).to include("\e[") # ANSI escape sequence
     end
