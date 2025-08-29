@@ -9,6 +9,7 @@ group :development do
   gem "rubocop", "~> 1.21" # Ruby static code analyzer and formatter
   gem "rubocop-rake" # RuboCop plugin for Rake tasks
   gem "rubocop-rspec" # RuboCop plugin for RSpec
+  gem "yard", github: "lsegal/yard", ref: "5b93b3a" # Documentation generation tool (Data class support)
 end
 
 group :test do
