@@ -45,3 +45,8 @@ Style/FetchEnvVar:
     - LC_ALL        # Used for locale detection, nil is acceptable
     - LANG          # Used for locale detection, nil is acceptable
     - XDG_CONFIG_HOME  # Used in tests for environment backup/restore, nil is acceptable
+
+Style/SymbolProc:
+  # Allow OptionParser#accept method which requires specific block format incompatible with symbol-to-proc
+  AllowedMethods:
+    - accept
