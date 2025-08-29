@@ -186,27 +186,22 @@ module Fasti
       day_str = day.to_s.rjust(2)
       date = calendar.to_date(day)
 
-      # Build style through composition based on day characteristics
-      style = Style.new # Start with default style
+      # Collect applicable styles based on day characteristics
+      applicable_styles = []
 
       # 1. Apply day-of-week style
       weekday_key = %i[sunday monday tuesday wednesday thursday friday saturday][date.wday]
-      if @styles.key?(weekday_key)
-        style >>= @styles[weekday_key]
-      end
+      applicable_styles << @styles[weekday_key] if @styles.key?(weekday_key)
 
       # 2. Apply holiday style
-      if calendar.holiday?(day) && @styles.key?(:holiday)
-        style >>= @styles[:holiday]
-      end
+      applicable_styles << @styles[:holiday] if calendar.holiday?(day) && @styles.key?(:holiday)
 
       # 3. Apply today style
-      if date == Date.today && @styles.key?(:today)
-        style >>= @styles[:today]
-      end
+      applicable_styles << @styles[:today] if date == Date.today && @styles.key?(:today)
 
-      # 4. Apply the composed style
-      style.call(day_str)
+      # 4. Compose all styles and apply
+      final_style = applicable_styles.reduce(Style.new) {|acc, elem| acc >> elem }
+      final_style.call(day_str)
     end
   end
 end
