@@ -182,6 +182,11 @@ Run linting:
 bundle exec rake rubocop
 ```
 
+Generate API documentation:
+```bash
+bundle exec rake doc
+```
+
 Run all checks:
 ```bash
 bundle exec rake
@@ -209,6 +214,7 @@ bin/console
 - **rubocop** (~> 1.21): Code linting
 - **simplecov** (~> 0.22): Code coverage measurement
 - **tty-command** (~> 0.10): CLI testing support
+- **yard** (from GitHub): API documentation generation with Data class support
 
 ## Releasing
 
