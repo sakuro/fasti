@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# Start SimpleCov before loading any application code
+require "simplecov"
+
 require "fasti"
 
 RSpec.configure do |config|
