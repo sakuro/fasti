@@ -28,19 +28,12 @@ RSpec.describe Fasti::StyleParser do
 
       it "parses multiple boolean attributes" do
         result = parser.parse("sunday:bold,italic,underline")
-        expect(result[:sunday]).to have_attributes(
-          bold: true,
-          italic: true,
-          underline: true
-        )
+        expect(result[:sunday]).to have_attributes(bold: true, italic: true, underline: true)
       end
 
       it "parses negated attributes" do
         result = parser.parse("sunday:no-bold,no-italic")
-        expect(result[:sunday]).to have_attributes(
-          bold: false,
-          italic: false
-        )
+        expect(result[:sunday]).to have_attributes(bold: false, italic: false)
       end
     end
 
@@ -77,10 +70,7 @@ RSpec.describe Fasti::StyleParser do
 
       it "parses both foreground and background" do
         result = parser.parse("sunday:foreground=red,background=blue")
-        expect(result[:sunday]).to have_attributes(
-          foreground: :red,
-          background: :blue
-        )
+        expect(result[:sunday]).to have_attributes(foreground: :red, background: :blue)
       end
     end
 
@@ -130,20 +120,9 @@ RSpec.describe Fasti::StyleParser do
         result = parser.parse(style_string)
 
         expect(result).to include(
-          sunday: have_attributes(
-            foreground: :red,
-            bold: true,
-            underline: false
-          ),
-          holiday: have_attributes(
-            background: :yellow,
-            foreground: :black,
-            italic: true
-          ),
-          today: have_attributes(
-            inverse: true,
-            bold: true
-          )
+          sunday: have_attributes(foreground: :red, bold: true, underline: false),
+          holiday: have_attributes(background: :yellow, foreground: :black, italic: true),
+          today: have_attributes(inverse: true, bold: true)
         )
       end
     end
