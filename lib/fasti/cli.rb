@@ -76,7 +76,7 @@ module Fasti
       # Validate required options
       unless parsed_options.country
         raise ArgumentError,
-          "Country could not be determined. Use --country with a country code (e.g., JP, US, GB, DE) or set LANG/LC_ALL environment variables"
+          "Country could not be determined. Use --country with a country code or set LANG/LC_ALL environment variables"
       end
 
       parsed_options
