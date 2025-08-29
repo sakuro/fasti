@@ -55,3 +55,7 @@ Layout/LineLength:
   # Exclude test files with long test data strings
   Exclude:
     - 'spec/fasti/style_parser_spec.rb'
+
+Metrics/ParameterLists:
+  # Don't count keyword arguments as they are named and improve readability
+  CountKeywordArgs: false
