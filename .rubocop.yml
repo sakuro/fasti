@@ -38,3 +38,29 @@ Naming/VariableNumber:
 
 Style/EmptyElse:
   Enabled: false
+
+Style/FetchEnvVar:
+  # Allow ENV["key"] for these variables as nil return values are intentionally handled
+  AllowedVars:
+    - LC_ALL        # Used for locale detection, nil is acceptable
+    - LANG          # Used for locale detection, nil is acceptable
+    - XDG_CONFIG_HOME  # Used in tests for environment backup/restore, nil is acceptable
+
+Style/SymbolProc:
+  # Allow OptionParser#accept method which requires specific block format incompatible with symbol-to-proc
+  AllowedMethods:
+    - accept
+
+Layout/LineLength:
+  # Exclude test files with long test data strings
+  Exclude:
+    - 'spec/fasti/style_parser_spec.rb'
+
+Metrics/ParameterLists:
+  # Don't count keyword arguments as they are named and improve readability
+  CountKeywordArgs: false
+
+Metrics/BlockLength:
+  # Exclude CLI file which contains long OptionParser DSL block
+  Exclude:
+    - 'lib/fasti/cli.rb'
