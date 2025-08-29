@@ -19,6 +19,7 @@ Metrics/AbcSize:
     - 'lib/fasti/cli.rb'
     - 'lib/fasti/formatter.rb'
     - 'lib/fasti/style.rb'
+    - 'lib/fasti/style_parser.rb'
 
 # Configuration parameters: CountComments, Max, CountAsOne, AllowedMethods, AllowedPatterns, inherit_mode.
 # AllowedMethods: refine
@@ -57,7 +58,6 @@ Metrics/PerceivedComplexity:
   Exclude:
     - 'lib/fasti/formatter.rb'
     - 'lib/fasti/style.rb'
-
 
 # Configuration parameters: Max, CountAsOne.
 RSpec/ExampleLength:
