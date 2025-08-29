@@ -59,3 +59,8 @@ Layout/LineLength:
 Metrics/ParameterLists:
   # Don't count keyword arguments as they are named and improve readability
   CountKeywordArgs: false
+
+Metrics/BlockLength:
+  # Exclude CLI file which contains long OptionParser DSL block
+  Exclude:
+    - 'lib/fasti/cli.rb'
