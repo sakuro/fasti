@@ -172,7 +172,7 @@ cd fasti
 bin/setup
 ```
 
-Run the tests:
+Run the tests (includes coverage measurement):
 ```bash
 bundle exec rake spec
 ```
@@ -207,6 +207,7 @@ bin/console
 
 - **rspec** (~> 3.0): Testing framework
 - **rubocop** (~> 1.21): Code linting
+- **simplecov** (~> 0.22): Code coverage measurement
 - **tty-command** (~> 0.10): CLI testing support
 
 ## Releasing

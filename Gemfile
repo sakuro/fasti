@@ -13,6 +13,7 @@ end
 
 group :test do
   gem "rspec", "~> 3.0" # Testing framework
+  gem "simplecov", "~> 0.22", require: false # Code coverage measurement
   gem "tty-command", "~> 0.10" # Command execution for CLI testing
 end
 
