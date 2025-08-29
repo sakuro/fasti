@@ -46,12 +46,12 @@ RSpec.describe Fasti::Formatter do
     end
 
     context "with custom styles completely replacing defaults" do
-      let(:custom_styles) do
+      let(:styles) do
         {
           sunday: Fasti::Style.new(foreground: :red)
         }
       end
-      let(:formatter) { Fasti::Formatter.new(custom_styles:) }
+      let(:formatter) { Fasti::Formatter.new(styles:) }
 
       before do
         allow(Date).to receive(:today).and_return(Date.new(2024, 7, 4)) # Holiday and today
@@ -75,13 +75,13 @@ RSpec.describe Fasti::Formatter do
     end
 
     context "with custom weekday styles" do
-      let(:custom_styles) do
+      let(:styles) do
         {
           sunday: Fasti::Style.new(foreground: :red),
           saturday: Fasti::Style.new(foreground: :blue)
         }
       end
-      let(:formatter) { Fasti::Formatter.new(custom_styles:) }
+      let(:formatter) { Fasti::Formatter.new(styles:) }
 
       before do
         allow(Date).to receive(:today).and_return(Date.new(2024, 7, 1))
@@ -101,12 +101,12 @@ RSpec.describe Fasti::Formatter do
     end
 
     context "with custom holiday styles" do
-      let(:custom_styles) do
+      let(:styles) do
         {
           holiday: Fasti::Style.new(background: :yellow, foreground: :black)
         }
       end
-      let(:formatter) { Fasti::Formatter.new(custom_styles:) }
+      let(:formatter) { Fasti::Formatter.new(styles:) }
 
       before do
         allow(Date).to receive(:today).and_return(Date.new(2024, 7, 1))
@@ -120,12 +120,12 @@ RSpec.describe Fasti::Formatter do
     end
 
     context "with custom today styles" do
-      let(:custom_styles) do
+      let(:styles) do
         {
           today: Fasti::Style.new(bold: true, inverse: true)
         }
       end
-      let(:formatter) { Fasti::Formatter.new(custom_styles:) }
+      let(:formatter) { Fasti::Formatter.new(styles:) }
 
       before do
         allow(Date).to receive(:today).and_return(Date.new(2024, 7, 15))
@@ -139,13 +139,13 @@ RSpec.describe Fasti::Formatter do
     end
 
     context "with style composition" do
-      let(:custom_styles) do
+      let(:styles) do
         {
           sunday: Fasti::Style.new(foreground: :red, bold: true),
           today: Fasti::Style.new(inverse: true)
         }
       end
-      let(:formatter) { Fasti::Formatter.new(custom_styles:) }
+      let(:formatter) { Fasti::Formatter.new(styles:) }
 
       before do
         allow(Date).to receive(:today).and_return(Date.new(2024, 7, 7)) # Sunday
@@ -161,13 +161,13 @@ RSpec.describe Fasti::Formatter do
     end
 
     context "with negated styles" do
-      let(:custom_styles) do
+      let(:styles) do
         {
           sunday: Fasti::Style.new(foreground: :red, bold: false),
           holiday: Fasti::Style.new(foreground: :green, bold: false)
         }
       end
-      let(:formatter) { Fasti::Formatter.new(custom_styles:) }
+      let(:formatter) { Fasti::Formatter.new(styles:) }
 
       before do
         allow(Date).to receive(:today).and_return(Date.new(2024, 7, 1))
@@ -191,7 +191,7 @@ RSpec.describe Fasti::Formatter do
     it "works with parsed styles from StyleParser" do
       parser = Fasti::StyleParser.new
       parsed_styles = parser.parse("sunday:foreground=red,bold holiday:background=yellow today:inverse")
-      formatter = Fasti::Formatter.new(custom_styles: parsed_styles)
+      formatter = Fasti::Formatter.new(styles: parsed_styles)
 
       allow(Date).to receive(:today).and_return(Date.new(2024, 7, 15))
 

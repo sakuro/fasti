@@ -34,15 +34,15 @@ module Fasti
 
     # Creates a new formatter instance.
     #
-    # @param custom_styles [Hash<Symbol, Style>] Custom styles for different day types
+    # @param styles [Hash<Symbol, Style>] Custom styles for different day types
     #   Keys can be :sunday, :monday, ..., :saturday, :holiday, :today
-    #   If custom_styles is empty, DEFAULT_STYLES will be used
-    #   If custom_styles is provided, it completely replaces the defaults
+    #   If styles is empty, DEFAULT_STYLES will be used
+    #   If styles is provided, it completely replaces the defaults
     # @example
     #   Formatter.new  # Uses DEFAULT_STYLES
-    #   Formatter.new(custom_styles: { sunday: Style.new(foreground: :red) })  # Only sunday styled
-    def initialize(custom_styles: {})
-      @styles = custom_styles.empty? ? DEFAULT_STYLES : custom_styles
+    #   Formatter.new(styles: { sunday: Style.new(foreground: :red) })  # Only sunday styled
+    def initialize(styles: {})
+      @styles = styles.empty? ? DEFAULT_STYLES : styles
     end
 
     # Formats a single month calendar with headers and color coding.
