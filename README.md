@@ -115,6 +115,8 @@ Create a configuration file at `~/.config/fastirc` (or `$XDG_CONFIG_HOME/fastirc
 --format quarter --start-of-week monday --country US
 ```
 
+See `examples/fastirc` for a complete configuration example.
+
 Command line options override configuration file settings.
 
 ### Styling
