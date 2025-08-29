@@ -3,19 +3,6 @@
 require "spec_helper"
 
 RSpec.describe Fasti::Formatter do
-  # ANSI styling code constants for readable test expectations
-  ANSI_ESCAPE = '\e\['
-  ANSI_RESET = '\e\[0m'
-  ANSI_BOLD = '\e\[1m'
-  ANSI_INVERSE = '\e\[7m'
-  ANSI_RED = '\e\[31m'
-  ANSI_BLUE = '\e\[34m'
-  ANSI_YELLOW_BG = '\e\[43m'
-  ANSI_BLACK_FG = '\e\[30m'
-  ANSI_RED_BOLD = '\e\[31;1m'
-  ANSI_BOLD_INVERSE = '\e\[1;7m'
-  ANSI_BLACK_YELLOW_BG = '\e\[30;43m'
-
   let(:july_2024) { Fasti::Calendar.new(2024, 7, country: :us) }
 
   describe "custom styles functionality" do
@@ -29,20 +16,20 @@ RSpec.describe Fasti::Formatter do
       it "uses default styling" do
         output = formatter.format_month(july_2024)
         # Sunday (July 7) should be bold by default
-        expect(output).to match(/#{ANSI_BOLD}\s*7#{ANSI_RESET}/)
+        expect(output).to contain_styled(:bold, /\s*7/)
       end
 
       it "applies default holiday styling" do
         output = formatter.format_month(july_2024)
         # July 4 (Independence Day) should be bold by default
-        expect(output).to match(/#{ANSI_BOLD}\s*4#{ANSI_RESET}/)
+        expect(output).to contain_styled(:bold, /\s*4/)
       end
 
       it "applies default today styling when today" do
         allow(Date).to receive(:today).and_return(Date.new(2024, 7, 15))
         output = formatter.format_month(july_2024)
         # July 15 (today) should be inverse by default
-        expect(output).to match(/#{ANSI_INVERSE}\s*15#{ANSI_RESET}/)
+        expect(output).to contain_styled(:inverse, /\s*15/)
       end
     end
 
@@ -62,13 +49,13 @@ RSpec.describe Fasti::Formatter do
         output = formatter.format_month(july_2024)
 
         # Sunday should use custom red style
-        expect(output).to match(/#{ANSI_RED}\s*7#{ANSI_RESET}/)
+        expect(output).to contain_styled(:red, /\s*7/)
 
         # Holiday (July 4) should NOT be bold (no default holiday style)
-        expect(output).not_to match(/#{ANSI_BOLD}\s*4/)
+        expect(output).not_to contain_styled(:bold, /\s*4/, reset: false)
 
         # Today (July 4) should NOT be inverse (no default today style)
-        expect(output).not_to match(/#{ANSI_INVERSE}\s*4/)
+        expect(output).not_to contain_styled(:inverse, /\s*4/, reset: false)
 
         # July 4 should appear as plain text
         expect(output).to match(/\s+4\s/)
@@ -91,13 +78,13 @@ RSpec.describe Fasti::Formatter do
       it "applies custom Sunday style" do
         output = formatter.format_month(july_2024)
         # Sunday (July 7) should use custom red foreground
-        expect(output).to match(/#{ANSI_RED}\s*7#{ANSI_RESET}/)
+        expect(output).to contain_styled(:red, /\s*7/)
       end
 
       it "applies custom Saturday style" do
         output = formatter.format_month(july_2024)
         # Saturday (July 6) should use custom blue foreground
-        expect(output).to match(/#{ANSI_BLUE}\s*6#{ANSI_RESET}/)
+        expect(output).to contain_styled(:blue, /\s*6/)
       end
     end
 
@@ -116,7 +103,7 @@ RSpec.describe Fasti::Formatter do
       it "applies custom holiday style" do
         output = formatter.format_month(july_2024)
         # July 4 (Independence Day) should use custom holiday style
-        expect(output).to match(/#{ANSI_BLACK_YELLOW_BG}\s*4#{ANSI_RESET}/)
+        expect(output).to contain_styled(:black, :yellow_bg, /\s*4/)
       end
     end
 
@@ -135,7 +122,7 @@ RSpec.describe Fasti::Formatter do
       it "applies custom today style" do
         output = formatter.format_month(july_2024)
         # July 15 (today) should use custom bold + inverse style
-        expect(output).to match(/#{ANSI_BOLD_INVERSE}\s*15#{ANSI_RESET}/)
+        expect(output).to contain_styled(:bold, :inverse, /\s*15/)
       end
     end
 
@@ -178,12 +165,12 @@ RSpec.describe Fasti::Formatter do
         output = formatter.format_month(july_2024)
 
         # Sunday should be red but not bold
-        expect(output).to match(/#{ANSI_RED}\s*7#{ANSI_RESET}/)
-        expect(output).not_to match(/#{ANSI_BOLD}.*7/)
+        expect(output).to contain_styled(:red, /\s*7/)
+        expect(output).not_to contain_styled(:bold, /.*7/, reset: false)
 
         # Holiday should be green but not bold
-        expect(output).to match(/\e\[32m\s*4#{ANSI_RESET}/) # Green foreground
-        expect(output).not_to match(/#{ANSI_BOLD}.*4/)
+        expect(output).to match(/\e\[32m\s*4\e\[0m/) # Green foreground
+        expect(output).not_to contain_styled(:bold, /.*4/, reset: false)
       end
     end
   end
@@ -199,9 +186,9 @@ RSpec.describe Fasti::Formatter do
       output = formatter.format_month(july_2024)
 
       # Should contain styled elements
-      expect(output).to match(/#{ANSI_RED_BOLD}\s*7#{ANSI_RESET}/) # Sunday
-      expect(output).to match(/#{ANSI_YELLOW_BG}\s*4#{ANSI_RESET}/) # Holiday
-      expect(output).to match(/#{ANSI_INVERSE}\s*15#{ANSI_RESET}/) # Today
+      expect(output).to contain_styled(:red, :bold, /\s*7/) # Sunday
+      expect(output).to contain_styled(:yellow_bg, /\s*4/) # Holiday
+      expect(output).to contain_styled(:inverse, /\s*15/) # Today
     end
   end
 end

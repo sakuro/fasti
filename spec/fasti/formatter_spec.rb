@@ -5,13 +5,6 @@ require "paint"
 require "spec_helper"
 
 RSpec.describe Fasti::Formatter do
-  # ANSI styling code constants for readable test expectations
-  ANSI_ESCAPE = '\e\['
-  ANSI_RESET = '\e\[0m'
-  ANSI_BOLD = '\e\[1m'
-  ANSI_INVERSE = '\e\[7m'
-  ANSI_BOLD_INVERSE = '\e\[1;7m'
-
   let(:formatter) { Fasti::Formatter.new }
   let(:calendar) { Fasti::Calendar.new(2024, 6, country: :us) }
   let(:june_2024) { Fasti::Calendar.new(2024, 6, country: :us) }
@@ -172,7 +165,7 @@ RSpec.describe Fasti::Formatter do
         output = formatter.format_month(january_calendar)
         # The output should contain ANSI escape sequences for bold styling
         # Should contain some ANSI formatting (holidays/Sundays have bold)
-        expect(output).to match(/#{ANSI_BOLD}/) # Should have bold for holidays/Sundays
+        expect(output).to contain_styled(:bold, /.+/, reset: false) # Should have bold for holidays/Sundays
       end
     end
 
@@ -186,7 +179,7 @@ RSpec.describe Fasti::Formatter do
         output = formatter.format_month(calendar)
         # Should contain ANSI codes for inverse formatting
         # June 15, 2024 is a Saturday (no special styling) + inverse
-        expect(output).to match(/#{ANSI_INVERSE}\s*15#{ANSI_RESET}/)
+        expect(output).to contain_styled(:inverse, /\s*15/)
       end
     end
   end
@@ -203,7 +196,7 @@ RSpec.describe Fasti::Formatter do
       it "applies bold styling to Sunday when not today" do
         output = formatter.format_month(july_2024)
         # Should contain bold code (1) but not inverse (7)
-        expect(output).to match(/#{ANSI_BOLD}\s*7#{ANSI_RESET}/)
+        expect(output).to contain_styled(:bold, /\s*7/)
       end
 
       context "when Sunday is today" do
@@ -214,7 +207,7 @@ RSpec.describe Fasti::Formatter do
         it "applies bold with inverse formatting" do
           output = formatter.format_month(july_2024)
           # Should contain both bold (1) and inverse (7) codes
-          expect(output).to match(/#{ANSI_BOLD_INVERSE}\s*7#{ANSI_RESET}/)
+          expect(output).to contain_styled(:bold, :inverse, /\s*7/)
         end
       end
     end
@@ -228,7 +221,7 @@ RSpec.describe Fasti::Formatter do
       it "applies bold styling to holiday when not today" do
         output = formatter.format_month(july_2024)
         # Should contain bold code (1) but not inverse (7)
-        expect(output).to match(/#{ANSI_BOLD}\s*4#{ANSI_RESET}/)
+        expect(output).to contain_styled(:bold, /\s*4/)
       end
 
       context "when holiday is today" do
@@ -239,7 +232,7 @@ RSpec.describe Fasti::Formatter do
         it "applies bold with inverse formatting" do
           output = formatter.format_month(july_2024)
           # Should contain both bold (1) and inverse (7) codes
-          expect(output).to match(/#{ANSI_BOLD_INVERSE}\s*4#{ANSI_RESET}/)
+          expect(output).to contain_styled(:bold, :inverse, /\s*4/)
         end
       end
     end
@@ -256,7 +249,7 @@ RSpec.describe Fasti::Formatter do
       it "applies bold styling to holidays regardless of weekday" do
         output = formatter.format_month(november_2023)
         # Should contain bold code (1) for holiday
-        expect(output).to match(/#{ANSI_BOLD}\s*11#{ANSI_RESET}/)
+        expect(output).to contain_styled(:bold, /\s*11/)
       end
 
       context "when holiday is today" do
@@ -267,7 +260,7 @@ RSpec.describe Fasti::Formatter do
         it "applies bold with inverse formatting" do
           output = formatter.format_month(november_2023)
           # Should contain both bold (1) and inverse (7) codes
-          expect(output).to match(/#{ANSI_BOLD_INVERSE}\s*11#{ANSI_RESET}/)
+          expect(output).to contain_styled(:bold, :inverse, /\s*11/)
         end
       end
     end
@@ -281,7 +274,7 @@ RSpec.describe Fasti::Formatter do
         output = formatter.format_month(july_2024)
         # Day 2 is a Tuesday (regular day) - should appear as plain text
         # Remove all ANSI codes to get clean output for verification
-        clean_output = output.gsub(/#{ANSI_ESCAPE}[0-9;]*m/, "")
+        clean_output = output.gsub(/#{Regexp.escape("\e[")}[0-9;]*m/, "")
         expect(clean_output).to match(/\s+2\s/)
 
         # Verify that day 2 specifically has no ANSI codes around it
@@ -297,9 +290,9 @@ RSpec.describe Fasti::Formatter do
         it "applies only inverse formatting" do
           output = formatter.format_month(july_2024)
           # Should contain only inverse (7) code, no color codes
-          expect(output).to match(/#{ANSI_INVERSE}\s*2#{ANSI_RESET}/)
+          expect(output).to contain_styled(:inverse, /\s*2/)
           # Should not have bold combined with inverse for regular day
-          expect(output).not_to match(/#{ANSI_BOLD_INVERSE}\s*2#{ANSI_RESET}/)
+          expect(output).not_to contain_styled(:bold, :inverse, /\s*2/)
         end
       end
     end
@@ -346,7 +339,7 @@ RSpec.describe Fasti::Formatter do
       april = Fasti::Calendar.new(2024, 4, country: :us)
       april_output = formatter.format_month(april)
       # Remove ANSI codes and check for standalone "31"
-      clean_output = april_output.gsub(/#{ANSI_ESCAPE}[0-9;]*m/, "")
+      clean_output = april_output.gsub(/#{Regexp.escape("\e[")}[0-9;]*m/, "")
       expect(clean_output).not_to match(/\b31\b/)
       expect(clean_output).to match(/\b30\b/)
     end

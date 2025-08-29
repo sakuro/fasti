@@ -6,13 +6,6 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# Configuration parameters: AllowedMethods.
-# AllowedMethods: enums
-Lint/ConstantDefinitionInBlock:
-  Exclude:
-    - 'spec/fasti/formatter_custom_styles_spec.rb'
-    - 'spec/fasti/formatter_spec.rb'
-
 # Configuration parameters: AllowedMethods, AllowedPatterns, CountRepeatedAttributes, Max.
 Metrics/AbcSize:
   Exclude:
@@ -47,6 +40,7 @@ Metrics/MethodLength:
     - 'lib/fasti/formatter.rb'
     - 'lib/fasti/style.rb'
     - 'lib/fasti/style_parser.rb'
+    - 'spec/support/ansi_matchers.rb'
 
 # Configuration parameters: Max, CountKeywordArgs, MaxOptionalParameters.
 Metrics/ParameterLists:
@@ -67,11 +61,6 @@ RSpec/ExampleLength:
     - 'spec/fasti/formatter_custom_styles_spec.rb'
     - 'spec/fasti/formatter_spec.rb'
     - 'spec/fasti/style_spec.rb'
-
-RSpec/LeakyConstantDeclaration:
-  Exclude:
-    - 'spec/fasti/formatter_custom_styles_spec.rb'
-    - 'spec/fasti/formatter_spec.rb'
 
 # Configuration parameters: Max.
 RSpec/MultipleExpectations:
