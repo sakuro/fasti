@@ -258,7 +258,7 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Acknowledgments
 
-- Built with Ruby 3.4+ for modern performance and features
+- Built with Ruby 3.2+ for broad compatibility and modern features
 - Uses the excellent [holidays](https://github.com/holidays/holidays) gem for accurate holiday data
 - Color support provided by the [paint](https://github.com/janlelis/paint) gem
 - Follows XDG Base Directory Specification for configuration files

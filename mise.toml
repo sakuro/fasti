@@ -1,2 +1,5 @@
+[tools]
+ruby = "3.2.9"
+
 [env]
 _.path = ["bin", "exe"]

@@ -140,7 +140,7 @@ module Fasti
       OptionParser.new do |opts|
         # Register custom type converters
         opts.accept(Symbol) {|value| value.to_sym }
-        opts.accept(:downcase_symbol) { it.downcase.to_sym }
+        opts.accept(:downcase_symbol) {|value| value.downcase.to_sym }
         if include_help
           opts.banner = "Usage: fasti [options]"
           opts.separator ""

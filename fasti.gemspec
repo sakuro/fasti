@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description = "A Ruby calendar gem with multiple formats and holiday highlighting for many countries"
   spec.homepage = "https://github.com/sakuro/fasti"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.4.5"
+  spec.required_ruby_version = ">= 3.2.9"
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "#{spec.homepage}.git"
