@@ -239,6 +239,26 @@ This project uses automated GitHub Actions workflows for releases. Maintainers c
 
 **For detailed instructions, troubleshooting, and setup requirements, see [`.github/RELEASING.md`](.github/RELEASING.md).**
 
+## Known Limitations
+
+### Historical Calendar Support
+
+Fasti currently does not handle historical calendar transitions correctly. Each country switched from the Julian to Gregorian calendar at different times, and these transition periods contain non-existent dates that are not properly handled.
+
+When displaying calendars from historical transition periods, you may encounter errors or incorrect date displays.
+
+For example:
+```bash
+# This may result in an error depending on the historical period
+fasti --month 10 --year 1582 --country IT
+```
+
+**Note**: Standard UNIX calendar tools like `cal` and `gcal` correctly handle these historical transitions by appropriately skipping non-existent dates during calendar reforms.
+
+**Technical Details**: Ruby's `Date` class uses Italy's transition date (`Date::ITALY`) by default but supports other country-specific transition dates through configuration. However, Fasti's calendar generation logic does not yet account for these historical discontinuities in date sequences.
+
+**Future Plans**: Support for country-specific Julian to Gregorian calendar transition dates is planned and tracked in our [TODO.md](TODO.md) file. This will allow accurate display of historical calendars for different countries and regions.
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/sakuro/fasti.
