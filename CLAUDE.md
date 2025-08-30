@@ -31,7 +31,7 @@ fasti/
 
 ## Technology Stack
 
-- **Ruby**: 3.4+ (modern Ruby features)
+- **Ruby**: 3.2+ (modern Ruby features with broad compatibility)
 - **Core Dependencies**:
   - `holidays` (~> 8.0): Country-specific holiday data
   - `paint` (~> 2.0): ANSI color support
