@@ -61,6 +61,7 @@ bin/console               # Interactive console
 
 **CRITICAL: These linked files MUST be read before starting any development work**:
 
+- **[Feature Development Guidelines](.claude/feature-development.md)**: Planning-based development process (**MANDATORY**)
 - **[Git Workflow Guide](.claude/git-workflow.md)**: Commit message format, git operation constraints (**MANDATORY**)
 - **[Project Conventions](.claude/project-conventions.md)**: Project-specific rules (**MANDATORY**)
 - **[Code Quality Management](.claude/code-quality.md)**: RuboCop standards and quality gates (**MANDATORY**)
