@@ -20,7 +20,7 @@ plugins:
   - rubocop-rspec
 
 inherit_gem:
-  sakuro-rubocop-config:
+  docquet:
     - config/cops/bundler.yml
     - config/cops/gemspec.yml
     - config/cops/layout.yml

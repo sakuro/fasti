@@ -6,11 +6,11 @@ source "https://rubygems.org"
 gemspec
 
 group :development do
+  gem "docquet", github: "sakuro/docquet" # RuboCop configuration
   gem "rubocop", "~> 1.21" # Ruby static code analyzer and formatter
   gem "rubocop-performance" # RuboCop plugin for performance
   gem "rubocop-rake" # RuboCop plugin for Rake tasks
   gem "rubocop-rspec" # RuboCop plugin for RSpec
-  gem "sakuro-rubocop-config", github: "sakuro/rubocop-config" # RuboCop configuration
   gem "yard", github: "lsegal/yard", ref: "5b93b3a" # Documentation generation tool (Data class support)
 end
 
