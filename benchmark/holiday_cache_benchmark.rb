@@ -14,9 +14,7 @@ class LegacyCalendar < Fasti::Calendar
 
     begin
       Holidays.on(date, country).any?
-    rescue Holidays::InvalidRegion
-      false
-    rescue
+    rescue Holidays::InvalidRegion, StandardError
       false
     end
   end
