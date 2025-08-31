@@ -18,6 +18,7 @@ def measure_memory_usage
   after - before
 end
 
+# Formats memory usage in human-readable units (slots/K slots/M slots)
 def format_memory(slots)
   # Rough estimation: each object slot ≈ 40 bytes on 64-bit systems
   bytes = slots * 40
