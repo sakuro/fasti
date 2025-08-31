@@ -69,3 +69,8 @@ Metrics/BlockLength:
   # Exclude CLI file which contains long OptionParser DSL block
   Exclude:
     - 'lib/fasti/cli.rb'
+
+# Benchmark scripts are executable utilities, not library code
+Style/TopLevelMethodDefinition:
+  Exclude:
+    - 'benchmark/**/*'

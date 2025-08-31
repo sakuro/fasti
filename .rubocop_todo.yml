@@ -68,13 +68,3 @@ RSpec/NestedGroups:
   Exclude:
     - 'spec/fasti/formatter_spec.rb'
 
-# Configuration parameters: AllowedMethods, RequireForNonPublicMethods.
-Style/DocumentationMethod:
-  Exclude:
-    - 'benchmark/holiday_cache_benchmark.rb'
-    - 'benchmark/memory_benchmark.rb'
-
-Style/TopLevelMethodDefinition:
-  Exclude:
-    - 'benchmark/holiday_cache_benchmark.rb'
-    - 'benchmark/memory_benchmark.rb'

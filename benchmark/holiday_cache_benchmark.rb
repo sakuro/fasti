@@ -20,6 +20,7 @@ class LegacyCalendar < Fasti::Calendar
   end
 end
 
+# Benchmarks month display performance by checking holidays for all days in a month
 def benchmark_month_display(calendar_class, year, month, country, iterations=100)
   calendar = calendar_class.new(year, month, country:)
 
@@ -33,6 +34,7 @@ def benchmark_month_display(calendar_class, year, month, country, iterations=100
   end
 end
 
+# Benchmarks year display performance by checking holidays for all days in all months
 def benchmark_year_display(calendar_class, year, country, iterations=10)
   Benchmark.realtime do
     iterations.times do
@@ -46,6 +48,7 @@ def benchmark_year_display(calendar_class, year, country, iterations=10)
   end
 end
 
+# Formats benchmark time results in appropriate units (μs/ms/s)
 def format_time(seconds)
   if seconds < 0.001
     "#{(seconds * 1_000_000).round(2)}μs"
@@ -56,6 +59,7 @@ def format_time(seconds)
   end
 end
 
+# Calculates and formats performance improvement ratio between two benchmark times
 def format_speedup(old_time, new_time)
   return "N/A" if new_time.zero?
 
