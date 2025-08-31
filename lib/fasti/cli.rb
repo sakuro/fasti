@@ -340,7 +340,9 @@ module Fasti
     #   ENV["LC_ALL"] = "en_US.UTF-8"  # -> :us
     #   ENV["LANG"] = "ja_JP.UTF-8"    # -> :jp (if LC_ALL is unset)
     private def detect_country_from_environment
-      env_vars = [ENV["LC_ALL"], ENV["LANG"]].compact.reject(&:empty?)
+      env_vars = [ENV["LC_ALL"], ENV["LANG"]]
+      env_vars.compact!
+      env_vars.reject!(&:empty?)
 
       env_vars.each do |var|
         # Skip C and POSIX locales as they don't represent specific countries

@@ -179,7 +179,8 @@ RSpec.describe Fasti::Calendar do
         end
 
         # Should contain all days of the month
-        all_days = grid.flatten.compact
+        all_days = grid.flatten
+        all_days.compact!
         expect(all_days).to eq((1..30).to_a)
       end
     end
@@ -193,7 +194,8 @@ RSpec.describe Fasti::Calendar do
         expect(grid[0]).to eq([nil, nil, nil, nil, nil, 1, 2])
 
         # Should contain all days of the month
-        all_days = grid.flatten.compact
+        all_days = grid.flatten
+        all_days.compact!
         expect(all_days).to eq((1..30).to_a)
       end
     end

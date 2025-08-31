@@ -42,10 +42,6 @@ Metrics/PerceivedComplexity:
     - 'lib/fasti/formatter.rb'
     - 'lib/fasti/style.rb'
 
-Performance/ChainArrayAllocation:
-  Exclude:
-    - 'lib/fasti/cli.rb'
-    - 'spec/fasti/calendar_spec.rb'
 
 
 # Configuration parameters: Max, CountAsOne.
