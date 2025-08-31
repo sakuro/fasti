@@ -72,12 +72,19 @@ raise ModPortalValidationError,
   "Invalid version: #{version}. Valid values are: #{VALID_VERSIONS.join(", ")}"
 ```
 
-### Exclude Complex Violations
+### TODO File Management
+
+#### Regenerating TODO File
 
 ```bash
-# Regenerate TODO file to exclude violations
-bundle exec rake rubocop:regenerate_todo
+# Preferred method (if available)
+docquet regenerate-todo
+
+# Alternative method
+bundle exec rubocop --auto-gen-config --no-exclude-limit --no-offense-counts --no-auto-gen-timestamp
 ```
+
+**Important**: Always regenerate the TODO file after fixing violations rather than manually removing entries. Manual removal can miss newly introduced violations or violations in other files.
 
 **Examples of violations to exclude**:
 - `Metrics/MethodLength` requiring large-scale method splitting
@@ -86,19 +93,43 @@ bundle exec rake rubocop:regenerate_todo
 
 ### Commit Strategy for RuboCop Fixes
 
-#### Separate commits by violation type
+#### Separate commits by violation type (Recommended: 1 cop = 1 commit)
 
 ```bash
-# Style fix commit
-git add -p  # Selectively stage target files
-git commit -m ":police_officer: Fix Style/CommentedKeyword violations"
+# Individual cop fix commit
+git add specific_file.rb
+git commit -m ":zap: Fix Performance/CollectionLiteralInLoop violations"
 
 # Exclusion settings commit
 git add .rubocop_todo.yml
 git commit -m ":police_officer: Regenerate RuboCop TODO to exclude complex violations"
 ```
 
+#### RuboCop TODO Reduction Workflow
+
+1. **Fix violations**: Address one cop type at a time
+2. **Run tests**: Execute `bundle exec rspec` to verify no functionality is broken
+3. **Regenerate TODO**: Use `docquet regenerate-todo` (preferred) or `rubocop --auto-gen-config`
+4. **Check for new violations**: The regeneration process may reveal new violations introduced during fixes
+5. **Fix new violations**: Address any newly discovered violations
+6. **Commit changes**: Use descriptive commit messages with appropriate emojis
+
 ## Commit Message Patterns for Code Quality
+
+### Individual cop fixes (Recommended)
+```
+:zap: Fix Performance/CollectionLiteralInLoop violations
+
+Extract array literal to constant NON_COUNTRY_LOCALES to avoid
+recreation in loop iterations.
+```
+
+```
+:zap: Fix Style/ConstantVisibility violations
+
+Add private_constant declaration for NON_COUNTRY_LOCALES to
+maintain proper encapsulation.
+```
 
 ### Auto-correction
 ```
@@ -117,12 +148,20 @@ Remove inline comments from class definitions to comply with rubocop rules.
 Class purposes are documented in design documentation.
 ```
 
+### TODO file regeneration
+```
+:police_officer: Regenerate RuboCop TODO after violation fixes
+
+Update .rubocop_todo.yml to reflect current state after fixing
+Performance and Style violations.
+```
+
 ### Exclusion settings
 ```
-:police_officer: Regenerate RuboCop TODO to exclude complex violations
+:police_officer: Add exclusion for benchmark scripts
 
-Regenerate .rubocop_todo.yml to exclude remaining Metrics violations
-that require significant refactoring.
+Add Style/TopLevelMethodDefinition exclusion for benchmark/**/*
+as these are executable utilities, not library code.
 ```
 
 ## Common Issues and Solutions
@@ -166,7 +205,7 @@ that require significant refactoring.
 As part of the standard development workflow, code quality verification is essential:
 
 1. **Before Committing**: Always run `bundle exec rubocop` to check for violations
-2. **During PR Review**: Ensure all RuboCop issues are resolved or properly documented  
+2. **During PR Review**: Ensure all RuboCop issues are resolved or properly documented
 3. **Continuous Integration**: RuboCop checks should be part of the CI pipeline
 4. **Code Quality**: RuboCop helps maintain consistent code style and catches potential issues
 
