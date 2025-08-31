@@ -6,6 +6,11 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
+# Configuration parameters: IgnoreLiteralBranches, IgnoreConstantBranches, IgnoreDuplicateElseBranch.
+Lint/DuplicateBranch:
+  Exclude:
+    - 'benchmark/holiday_cache_benchmark.rb'
+
 # Configuration parameters: AllowedMethods, AllowedPatterns, CountRepeatedAttributes, Max.
 Metrics/AbcSize:
   Exclude:
@@ -42,6 +47,27 @@ Metrics/PerceivedComplexity:
     - 'lib/fasti/formatter.rb'
     - 'lib/fasti/style.rb'
 
+Performance/ChainArrayAllocation:
+  Exclude:
+    - 'lib/fasti/cli.rb'
+    - 'spec/fasti/calendar_spec.rb'
+
+# Configuration parameters: MinSize.
+Performance/CollectionLiteralInLoop:
+  Exclude:
+    - 'lib/fasti/cli.rb'
+
+# This cop supports safe autocorrection (--autocorrect).
+Performance/IoReadlines:
+  Exclude:
+    - 'fasti.gemspec'
+
+# This cop supports unsafe autocorrection (--autocorrect-all).
+Performance/RangeInclude:
+  Exclude:
+    - 'lib/fasti/calendar.rb'
+    - 'lib/fasti/cli.rb'
+
 # Configuration parameters: Max, CountAsOne.
 RSpec/ExampleLength:
   Exclude:
@@ -65,3 +91,14 @@ RSpec/MultipleExpectations:
 RSpec/NestedGroups:
   Exclude:
     - 'spec/fasti/formatter_spec.rb'
+
+# Configuration parameters: AllowedMethods, RequireForNonPublicMethods.
+Style/DocumentationMethod:
+  Exclude:
+    - 'benchmark/holiday_cache_benchmark.rb'
+    - 'benchmark/memory_benchmark.rb'
+
+Style/TopLevelMethodDefinition:
+  Exclude:
+    - 'benchmark/holiday_cache_benchmark.rb'
+    - 'benchmark/memory_benchmark.rb'
