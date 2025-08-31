@@ -47,10 +47,6 @@ Performance/ChainArrayAllocation:
     - 'lib/fasti/cli.rb'
     - 'spec/fasti/calendar_spec.rb'
 
-# Configuration parameters: MinSize.
-Performance/CollectionLiteralInLoop:
-  Exclude:
-    - 'lib/fasti/cli.rb'
 
 # Configuration parameters: Max, CountAsOne.
 RSpec/ExampleLength:

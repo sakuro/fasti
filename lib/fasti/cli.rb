@@ -40,6 +40,9 @@ module Fasti
   # @example Config file content ($HOME/.config/fastirc)
   #   --format quarter --start-of-week monday --country US
   class CLI
+    # Non-country locales that should be skipped in country detection
+    NON_COUNTRY_LOCALES = %w[C POSIX].freeze
+    
     # Runs the CLI with the specified arguments.
     #
     # @param argv [Array<String>] Command line arguments to parse
@@ -341,7 +344,7 @@ module Fasti
 
       env_vars.each do |var|
         # Skip C and POSIX locales as they don't represent specific countries
-        next if %w[C POSIX].include?(var.upcase)
+        next if NON_COUNTRY_LOCALES.include?(var.upcase)
 
         begin
           locale_part = var.split(".").first
