@@ -6,6 +6,7 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
+
 # Configuration parameters: AllowedMethods, AllowedPatterns, CountRepeatedAttributes, Max.
 Metrics/AbcSize:
   Exclude:
@@ -41,8 +42,6 @@ Metrics/PerceivedComplexity:
   Exclude:
     - 'lib/fasti/formatter.rb'
     - 'lib/fasti/style.rb'
-
-
 
 # Configuration parameters: Max, CountAsOne.
 RSpec/ExampleLength:

@@ -42,7 +42,8 @@ module Fasti
   class CLI
     # Non-country locales that should be skipped in country detection
     NON_COUNTRY_LOCALES = %w[C POSIX].freeze
-    
+    private_constant :NON_COUNTRY_LOCALES
+
     # Runs the CLI with the specified arguments.
     #
     # @param argv [Array<String>] Command line arguments to parse
