@@ -23,11 +23,12 @@ Each development plan must include:
 5. **Target Architecture**: Desired system state after implementation
 6. **Development Phases**: Step-by-step implementation breakdown
 7. **Technical Implementation Details**: Code examples, API changes, data structures
-8. **Risk Assessment**: Potential issues and mitigation strategies
-9. **Success Criteria**: Checklist of completion requirements
-10. **Files to Modify/Create**: Complete list of affected files
-11. **Breaking Changes**: Documentation of compatibility impacts
-12. **Migration Examples**: User-facing change guidance
+8. **Design Decisions**: Document significant architectural or interface choices (see ADR section below)
+9. **Risk Assessment**: Potential issues and mitigation strategies
+10. **Success Criteria**: Checklist of completion requirements
+11. **Files to Modify/Create**: Complete list of affected files
+12. **Breaking Changes**: Documentation of compatibility impacts
+13. **Migration Examples**: User-facing change guidance
 
 ### Feature Classification
 **Requires Development Plan:**
@@ -157,7 +158,49 @@ When referencing other plans:
 
 ## Breaking Changes
 - **[Change Type]**: [Description and impact]
+
+## Design Decisions
+### [Decision Topic]
+**Decision**: [What was decided]
+
+**Alternative Considered**: [Alternative approaches that were evaluated]
+
+**Rationale**: 
+- [Key reasoning point 1]
+- [Key reasoning point 2]
+
+**Trade-offs**: 
+- [What was gained vs what was sacrificed]
 ```
+
+## Architecture Decision Records (ADR)
+
+### Design Decision Documentation
+**All significant design decisions must be documented in the plan's "Design Decisions" section.**
+
+This serves as a lightweight Architecture Decision Record (ADR) approach:
+- **Preserves reasoning**: Future developers understand why choices were made
+- **Prevents re-debate**: Avoided repeatedly revisiting settled decisions  
+- **Facilitates reviews**: Reviewers can evaluate decision quality
+- **Enables evolution**: Clear context for when decisions need revisiting
+
+### What Constitutes a Significant Decision
+Document decisions about:
+- **Interface design**: CLI argument structure, API signatures
+- **Data structures**: How information is organized and passed
+- **Architecture patterns**: Parsing order, validation approach
+- **User experience**: Error handling, default behaviors
+- **Technology choices**: Libraries, frameworks, approaches
+
+### Decision Documentation Format
+For each significant decision:
+1. **State the decision clearly**
+2. **List alternatives considered** 
+3. **Provide concrete rationale** with specific benefits/drawbacks
+4. **Acknowledge trade-offs** - what was sacrificed for what was gained
+
+### Example Reference
+See `positional-arguments.md` "Design Decisions" section for a good example of documenting the choice between fixed vs automatic argument ordering.
 
 ## Quality Standards
 

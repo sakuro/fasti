@@ -91,9 +91,9 @@ Options = Data.define(:format, :start_of_week, :country, :style)
 ### Phase 2: Integration
 5. **Modify Option Parsing Flow**
    - Update `parse_options(argv)` method to:
-     1. Parse positional arguments first and extract month/year values
-     2. Remove month/year arguments from argv before OptionParser processing
-     3. Parse remaining options with modified OptionParser (without --month/--year)
+     1. Parse options first with modified OptionParser (without --month/--year)
+     2. OptionParser.parse! automatically removes processed options from argv
+     3. Parse remaining arguments (now only positional) to extract month/year values
      4. Pass month/year separately to calendar generation methods
 
 6. **Update Calendar Generation Methods**
@@ -118,7 +118,6 @@ Options = Data.define(:format, :start_of_week, :country, :style)
    - CLI class documentation: Update method comments and examples
    - Help text: Show new positional argument usage
    - README.md: Update usage examples throughout
-   - Migration guide: Document breaking change from options to arguments
 
 10. **Quality Assurance**
     - RuboCop compliance
@@ -134,8 +133,57 @@ Options = Data.define(:format, :start_of_week, :country, :style)
 
 ## Technical Implementation Details
 
+### Design Decisions
+
+#### Argument Order for Two Arguments
+**Decision**: Fixed positional order (first argument = month, second argument = year)
+
+**Alternative Considered**: Automatic order detection (larger value = year, smaller value = month)
+
+**Rationale for Fixed Order**:
+- **Predictable behavior**: Users know exactly what `fasti 6 2024` means
+- **Standard CLI convention**: Most command-line tools use fixed positional argument order
+- **Clear error handling**: Invalid month (e.g., `fasti 13 2024`) immediately produces a clear error message
+- **No hidden corrections**: Invalid input fails explicitly rather than being "corrected" silently
+- **Easier debugging**: Behavior is deterministic and traceable
+
+**Problems with Automatic Detection**:
+- **Ambiguous error cases**: `fasti 13 2024` would be interpreted as "2024 year, 13 month" and fail in a confusing way
+- **Unexpected behavior**: Users might not understand why `fasti 25 2024` becomes "2024 year, 25 month"
+- **Debugging complexity**: Non-obvious transformations make troubleshooting difficult
+
 ### Argument Parsing Logic
 ```ruby
+# Option parsing flow
+def parse_options(argv)
+  options_hash = default_options.to_h
+  
+  # 1. Parse options first - removes them from argv automatically
+  parser = create_option_parser(options_hash, include_help: true)
+  parser.parse!(argv)  # Destructively modifies argv
+  
+  # 2. Parse remaining positional arguments
+  month, year = parse_positional_args(argv)
+  
+  # 3. Create options and return with month/year
+  options = Options.new(**options_hash)
+  [month, year, options]
+end
+
+# Positional argument parsing (after options removed)
+def parse_positional_args(argv)
+  case argv.length
+  when 0
+    [Time.now.month, Time.now.year]
+  when 1
+    interpret_single_argument(argv[0])
+  when 2
+    validate_two_arguments(argv[0], argv[1])
+  else
+    raise ArgumentError, "Too many arguments. Expected 0-2, got #{argv.length}"
+  end
+end
+
 # Single argument interpretation
 def interpret_single_argument(arg)
   value = arg.to_i
@@ -214,7 +262,7 @@ Error: Invalid argument: -5. Expected 1-12 (month) or 13+ (year).
 - **Medium Risk**: Breaking change to CLI interface and Options structure
 - **Medium Risk**: Internal API changes to calendar generation methods
 - **Low Risk**: Core functionality preserved, only interface changes
-- **Mitigation**: Clear migration documentation and helpful error messages
+- **Mitigation**: Clear documentation and helpful error messages
 
 ## Success Criteria
 - [ ] Options structure updated to remove month/year fields
@@ -224,7 +272,7 @@ Error: Invalid argument: -5. Expected 1-12 (month) or 13+ (year).
 - [ ] Comprehensive error handling with clear messages
 - [ ] Documentation updated with examples
 - [ ] All tests passing
-- [ ] User migration path clearly documented
+- [ ] Documentation updated with new interface examples
 - [ ] Help text and CLI documentation updated
 
 ## Files to Modify
@@ -238,19 +286,18 @@ Error: Invalid argument: -5. Expected 1-12 (month) or 13+ (year).
 - **Options Structure**: `Options` no longer contains `:month` and `:year` fields
 - **Internal API**: Calendar generation methods now accept month/year as separate parameters
 - **New Interface**: Must use positional arguments for month/year specification
-- **Migration Required**: Users must update scripts using `--month`/`--year` options
-
-### Migration Examples
+### Interface Examples
 ```bash
-# Old interface → New interface
-fasti --month 6 --year 2024    →  fasti 6 2024
-fasti --month 6                →  fasti 6  
-fasti --year 2024              →  fasti 2024
-fasti                          →  fasti          # unchanged
+# New positional argument interface
+fasti 6 2024                          # June 2024
+fasti 6                               # June current year
+fasti 2024                            # Current month 2024
+fasti                                 # Current month/year
 
 # Combined with other options
-fasti --month 6 --format year  →  fasti 6 --format year
+fasti 6 --format year                 # June current year with year format
+fasti 2024 --country US               # Current month 2024 with US holidays
 ```
 
 ---
-*This plan serves as a comprehensive roadmap for implementing positional arguments while maintaining the core functionality and providing clear migration guidance.*
+*This plan serves as a comprehensive roadmap for implementing positional arguments while maintaining the core functionality.*
