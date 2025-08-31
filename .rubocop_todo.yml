@@ -52,17 +52,6 @@ Performance/CollectionLiteralInLoop:
   Exclude:
     - 'lib/fasti/cli.rb'
 
-# This cop supports safe autocorrection (--autocorrect).
-Performance/IoReadlines:
-  Exclude:
-    - 'fasti.gemspec'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Performance/RangeInclude:
-  Exclude:
-    - 'lib/fasti/calendar.rb'
-    - 'lib/fasti/cli.rb'
-
 # Configuration parameters: Max, CountAsOne.
 RSpec/ExampleLength:
   Exclude:

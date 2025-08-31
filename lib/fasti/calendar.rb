@@ -254,7 +254,7 @@ module Fasti
 
     private def validate_inputs
       raise ArgumentError, "Invalid year: #{year}" unless year.is_a?(Integer) && year.positive?
-      raise ArgumentError, "Invalid month: #{month}" unless (1..12).include?(month)
+      raise ArgumentError, "Invalid month: #{month}" unless (1..12).cover?(month)
 
       return if WEEK_DAYS.include?(start_of_week)
 

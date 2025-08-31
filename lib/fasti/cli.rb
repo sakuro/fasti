@@ -313,7 +313,7 @@ module Fasti
     # @param month [Integer] Month to validate
     # @raise [ArgumentError] If month is invalid
     private def validate_month!(month)
-      raise ArgumentError, "Month must be between 1 and 12" unless (1..12).include?(month)
+      raise ArgumentError, "Month must be between 1 and 12" unless (1..12).cover?(month)
     end
 
     # Validates year parameter.
