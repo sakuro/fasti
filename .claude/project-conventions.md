@@ -86,7 +86,7 @@ This document contains conventions and guidelines specific to the Fasti project.
 
 ## Testing Conventions
 - Write comprehensive test coverage for calendar logic
-- Test CLI functionality with tty-command
+- Test CLI functionality with RSpec output matcher for direct method testing
 - Use descriptive test names
 - Group related tests logically
 - Test both success and failure cases
