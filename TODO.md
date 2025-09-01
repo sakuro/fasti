@@ -8,19 +8,19 @@
 - [ ] Configurable Julian to Gregorian calendar transition date
 
 ## Code Quality Improvements (Post Positional Arguments)
-- [ ] Optimize method arguments in calendar generation methods
+- [ ] Optimize method arguments in calendar generation methods ([#28](https://github.com/sakuro/fasti/issues/28))
   - Currently `generate_*_calendar` methods receive full `options` object but only use `options.country`
   - Should pass only required `country` parameter for clearer dependencies
-- [ ] Fix Time.now consistency during command execution
+- [ ] Fix Time.now consistency during command execution ([#29](https://github.com/sakuro/fasti/issues/29))
   - Multiple `Time.now` calls can cause inconsistent results when crossing month/year boundaries
   - Should call `Time.now` once at start and pass to all dependent methods
-- [ ] Extract Options class to separate file
+- [ ] Extract Options class to separate file ([#30](https://github.com/sakuro/fasti/issues/30))
   - Move `Options = Data.define(...)` from `lib/fasti/cli.rb` to `lib/fasti/options.rb`
   - Better separation of concerns and clearer architecture
-- [ ] Restore coverage threshold to 70%
+- [ ] Restore coverage threshold to 70% ([#31](https://github.com/sakuro/fasti/issues/31))
   - Currently temporarily lowered to 69.5% for positional arguments feature
   - Add more tests to achieve proper coverage for new code
-- [ ] **URGENT: Fix time-dependent test failures**
+- [ ] **URGENT: Fix time-dependent test failures** ([#32](https://github.com/sakuro/fasti/issues/32))
   - Tests depend on current month/year (`Time.now`) which causes failures across date boundaries
   - **Risk**: Tests will fail starting October 1st, 2025 (current date: September 1st)
   - **Solution**: Use `timecop` gem to freeze time in tests (safer than `allow` stub which doesn't auto-restore)
