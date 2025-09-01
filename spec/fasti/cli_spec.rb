@@ -63,7 +63,7 @@ RSpec.describe Fasti::CLI do
 
       it "displays calendar for specified year (current month)" do
         result = cmd.run("ruby", exe_path, "2024", "--country", "US")
-        expect(result.out).to include("2024")
+        expect(result.out).to include("September 2024")
         expect(result.exitstatus).to eq(0)
       end
 
@@ -80,7 +80,7 @@ RSpec.describe Fasti::CLI do
 
       it "interprets large argument as year" do
         result = cmd.run("ruby", exe_path, "2023", "--country", "US")
-        expect(result.out).to include("2023")
+        expect(result.out).to include("September 2023")
         expect(result.exitstatus).to eq(0)
       end
     end
@@ -246,7 +246,7 @@ RSpec.describe Fasti::CLI do
 
       it "interprets 13 as year (boundary test)" do
         result = cmd.run("ruby", exe_path, "13", "--country", "US")
-        expect(result.out).to include("13") # Year 13 (Julian calendar era)
+        expect(result.out).to include("September 0013") # Year 13 (Julian calendar era)
         expect(result.exitstatus).to eq(0)
       end
 
