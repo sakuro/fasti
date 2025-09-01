@@ -127,49 +127,49 @@ RSpec.describe Fasti::CLI do
     context "with invalid arguments" do
       it "returns error for invalid month in two-argument case" do
         expect { cli.run(%w[13 2024 --country US]) }
-          .to output(/Error:.*month.*1.*12/i).to_stdout
+          .to output(include("Error: Month must be between 1 and 12")).to_stdout
           .and raise_error(SystemExit) {|error| expect(error.status).to eq(1) }
       end
 
       it "returns error for invalid year" do
         expect { cli.run(%w[6 -1 --country US]) }
-          .to output(/Error:.*invalid option.*-1/i).to_stdout
+          .to output(include("Error: invalid option: -1")).to_stdout
           .and raise_error(SystemExit) {|error| expect(error.status).to eq(1) }
       end
 
       it "returns error for too many arguments" do
         expect { cli.run(%w[6 2024 extra --country US]) }
-          .to output(/Error:.*arguments/i).to_stdout
+          .to output(include("Error: Too many arguments. Expected 0-2, got 3")).to_stdout
           .and raise_error(SystemExit) {|error| expect(error.status).to eq(1) }
       end
 
       it "returns error for invalid single argument (zero)" do
         expect { cli.run(%w[0 --country US]) }
-          .to output(/Error:.*month.*year/i).to_stdout
+          .to output(include("Error: Invalid argument: 0. Expected 1-12 (month) or 13+ (year).")).to_stdout
           .and raise_error(SystemExit) {|error| expect(error.status).to eq(1) }
       end
 
       it "returns error for invalid single argument (negative)" do
         expect { cli.run(%w[-5 --country US]) }
-          .to output(/Error:.*invalid option.*-5/i).to_stdout
+          .to output(include("Error: invalid option: -5")).to_stdout
           .and raise_error(SystemExit) {|error| expect(error.status).to eq(1) }
       end
 
       it "returns error for non-integer arguments" do
         expect { cli.run(%w[abc --country US]) }
-          .to output(/Error:.*invalid/i).to_stdout
+          .to output(include("Error: Invalid argument: 'abc'. Expected integer.")).to_stdout
           .and raise_error(SystemExit) {|error| expect(error.status).to eq(1) }
       end
 
       it "returns error for invalid month string in two-argument case" do
         expect { cli.run(%w[abc 2024 --country US]) }
-          .to output(/Error:.*month/i).to_stdout
+          .to output(include("Error: Invalid month: 'abc'")).to_stdout
           .and raise_error(SystemExit) {|error| expect(error.status).to eq(1) }
       end
 
       it "returns error for invalid year string in two-argument case" do
         expect { cli.run(%w[6 abc --country US]) }
-          .to output(/Error:.*year/i).to_stdout
+          .to output(include("Error: Invalid year: 'abc'")).to_stdout
           .and raise_error(SystemExit) {|error| expect(error.status).to eq(1) }
       end
 
@@ -192,13 +192,13 @@ RSpec.describe Fasti::CLI do
 
       it "returns error for invalid format" do
         expect { cli.run(%w[6 2024 --format invalid --country US]) }
-          .to output(/Error:.*format/i).to_stdout
+          .to output(include("Error: invalid argument: --format invalid")).to_stdout
           .and raise_error(SystemExit) {|error| expect(error.status).to eq(1) }
       end
 
       it "returns error for invalid start-of-week" do
         expect { cli.run(%w[6 2024 --start-of-week invalid --country US]) }
-          .to output(/Error:.*start.*week/i).to_stdout
+          .to output(include("Error: invalid argument: --start-of-week invalid")).to_stdout
           .and raise_error(SystemExit) {|error| expect(error.status).to eq(1) }
       end
     end
@@ -272,7 +272,7 @@ RSpec.describe Fasti::CLI do
         ENV["LC_ALL"] = "C"
         ENV["LANG"] = "POSIX"
         expect { cli.run(%w[1 2024 --format month]) }
-          .to output(/Error:.*Country could not be determined/i).to_stdout
+          .to output(include("Error: Country could not be determined")).to_stdout
           .and raise_error(SystemExit) {|error| expect(error.status).to eq(1) }
       end
     end
