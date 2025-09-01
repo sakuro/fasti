@@ -41,26 +41,26 @@ Display the current month:
 fasti
 ```
 
-Display a specific month:
+Display a specific month and year:
 ```bash
-fasti --month 6 --year 2024
+fasti 6 2024
 ```
 
 ### Display Formats
 
 **Month View** (default):
 ```bash
-fasti --format month --month 6 --year 2024
+fasti 6 2024 --format month
 ```
 
 **Quarter View** (3 months side by side):
 ```bash
-fasti --format quarter --month 6 --year 2024
+fasti 6 2024 --format quarter
 ```
 
 **Year View** (all 12 months):
 ```bash
-fasti --format year --year 2024
+fasti 2024 --format year
 ```
 
 ### Week Start Configuration
@@ -92,18 +92,42 @@ Fasti automatically detects your country from environment variables (`LC_ALL`, `
 ### Command Line Options
 
 ```
-Usage: fasti [options]
+Usage: fasti [month] [year] [options]
+
+Arguments:
+  month  Month (1-12, optional)
+  year   Year (optional)
 
 Calendar display options:
-  -m, --month MONTH              Month (1-12, default: current)
-  -y, --year YEAR               Year (default: current)
   -f, --format FORMAT           Output format (month, quarter, year)
   -w, --start-of-week WEEKDAY   Week start day (any day of the week)
   -c, --country COUNTRY         Country code for holidays (e.g., JP, US, GB, DE)
+  -s, --style STYLE             Custom styling (e.g., "sunday:bold holiday:foreground=red today:inverse")
 
 Other options:
   -v, --version                 Show version
   -h, --help                    Show this help
+```
+
+### Positional Arguments
+
+**No arguments** - Display current month:
+```bash
+fasti
+```
+
+**One argument** - Interpreted based on value:
+- 1-12: Month for current year
+- 13+: Year for current month
+
+```bash
+fasti 6        # June current year
+fasti 2024     # Current month 2024
+```
+
+**Two arguments** - Month and year:
+```bash
+fasti 6 2024   # June 2024
 ```
 
 ### Configuration File
@@ -141,12 +165,12 @@ fasti --start-of-week wednesday
 
 Show quarter view for summer 2024 in Japan:
 ```bash
-fasti --format quarter --month 7 --year 2024 --country JP
+fasti 7 2024 --format quarter --country JP
 ```
 
 Full year 2024 with US holidays:
 ```bash
-fasti --format year --year 2024 --country US
+fasti 2024 --format year --country US
 ```
 
 ## Environment Variables
@@ -250,7 +274,7 @@ When displaying calendars from historical transition periods, you may encounter 
 For example:
 ```bash
 # This may result in an error depending on the historical period
-fasti --month 10 --year 1582 --country IT
+fasti 10 1582 --country IT
 ```
 
 **Note**: Standard UNIX calendar tools like `cal` and `gcal` correctly handle these historical transitions by appropriately skipping non-existent dates during calendar reforms.
