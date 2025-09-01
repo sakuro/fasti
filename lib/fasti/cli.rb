@@ -65,9 +65,9 @@ module Fasti
     #
     # @param argv [Array<String>] Command line arguments to parse
     def run(argv)
-      current_time = Time.now # Single source of truth for time
+      @current_time = Time.now # Single source of truth for time
       catch(:early_exit) do
-        month, year, options = parse_options(argv, current_time)
+        month, year, options = parse_options(argv)
         generate_calendar(month, year, options)
       end
     rescue => e
@@ -79,15 +79,15 @@ module Fasti
     #
     # @param argv [Array<String>] Arguments to parse
     # @return [Options] Parsed options object
-    private def parse_options(argv, current_time)
+    private def parse_options(argv)
       options_hash = default_options.to_h
 
       # 1. Parse options first - removes them from argv automatically
       parser = create_option_parser(options_hash, include_help: true)
       parser.parse!(argv) # Destructively modifies argv
 
-      # 2. Parse remaining positional arguments with consistent time reference
-      month, year = parse_positional_args(argv, current_time)
+      # 2. Parse remaining positional arguments using instance variable
+      month, year = parse_positional_args(argv)
 
       # 3. Create options and return with month/year
       options = Options.new(**options_hash)
@@ -334,13 +334,13 @@ module Fasti
     end
 
     # Parse positional arguments for month and year specification
-    private def parse_positional_args(argv, current_time)
+    private def parse_positional_args(argv)
       case argv.length
       when 0
-        # Use current month and year from consistent time reference
-        [current_time.month, current_time.year]
+        # Use current month and year from instance variable
+        [@current_time.month, @current_time.year]
       when 1
-        interpret_single_argument(argv[0], current_time)
+        interpret_single_argument(argv[0])
       when 2
         validate_two_arguments(argv[0], argv[1])
       else
@@ -349,7 +349,7 @@ module Fasti
     end
 
     # Single argument interpretation
-    private def interpret_single_argument(arg, current_time)
+    private def interpret_single_argument(arg)
       begin
         value = Integer(arg, 10)
       rescue ArgumentError
@@ -357,9 +357,9 @@ module Fasti
       end
 
       if (1..12).cover?(value)
-        [value, current_time.year] # Return [month, current_year]
+        [value, @current_time.year] # Return [month, current_year]
       elsif value >= 13
-        [current_time.month, value] # Return [current_month, year]
+        [@current_time.month, value] # Return [current_month, year]
       else
         raise ArgumentError, "Invalid argument: #{value}. Expected 1-12 (month) or 13+ (year)."
       end
