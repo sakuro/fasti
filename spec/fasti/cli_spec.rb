@@ -244,6 +244,12 @@ RSpec.describe Fasti::CLI do
         expect(result.exitstatus).to eq(0)
       end
 
+      it "interprets 13 as year (boundary test)" do
+        result = cmd.run("ruby", exe_path, "13", "--country", "US")
+        expect(result.out).to include("13") # Year 13 (Julian calendar era)
+        expect(result.exitstatus).to eq(0)
+      end
+
       it "returns error for invalid format" do
         expect {
           cmd.run("ruby", exe_path, "6", "2024", "--format", "invalid", "--country", "US")
