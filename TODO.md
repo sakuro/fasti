@@ -1,11 +1,11 @@
 # TODO
 
 ## New Features
-- [ ] Structured configuration file format using dry-configurable
-- [ ] I18n of day names, month names, and help messages (gettext?)
-- [ ] Support for multiple countries' holidays simultaneously
-- [ ] Extract Style class into independent gem
-- [ ] Configurable Julian to Gregorian calendar transition date
+- [ ] Structured configuration file format using dry-configurable ([#35](https://github.com/sakuro/fasti/issues/35))
+- [ ] I18n of day names, month names, and help messages (gettext?) ([#36](https://github.com/sakuro/fasti/issues/36))
+- [ ] Support for multiple countries' holidays simultaneously ([#37](https://github.com/sakuro/fasti/issues/37))
+- [ ] Extract Style class into independent gem ([#38](https://github.com/sakuro/fasti/issues/38))
+- [ ] Configurable Julian to Gregorian calendar transition date ([#39](https://github.com/sakuro/fasti/issues/39))
 
 ## Code Quality Improvements (Post Positional Arguments)
 - [ ] Optimize method arguments in calendar generation methods ([#28](https://github.com/sakuro/fasti/issues/28))
