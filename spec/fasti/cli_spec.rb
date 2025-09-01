@@ -55,8 +55,9 @@ RSpec.describe Fasti::CLI do
       end
 
       it "displays calendar for specified month (current year)" do
+        current_year = Time.now.year
         result = cmd.run("ruby", exe_path, "6", "--country", "US")
-        expect(result.out).to include("June")
+        expect(result.out).to include("June #{current_year}")
         expect(result.out).to include("Su Mo Tu We Th Fr Sa")
         expect(result.exitstatus).to eq(0)
       end
@@ -68,13 +69,18 @@ RSpec.describe Fasti::CLI do
       end
 
       it "displays current calendar with no arguments" do
+        current_time = Time.now
+        current_month_name = current_time.strftime("%B")
+        current_year = current_time.year
         result = cmd.run("ruby", exe_path, "--country", "US")
+        expect(result.out).to include("#{current_month_name} #{current_year}")
         expect(result.exitstatus).to eq(0)
       end
 
       it "interprets single digit argument as month" do
+        current_year = Time.now.year
         result = cmd.run("ruby", exe_path, "3", "--country", "US")
-        expect(result.out).to include("March")
+        expect(result.out).to include("March #{current_year}")
         expect(result.exitstatus).to eq(0)
       end
 
