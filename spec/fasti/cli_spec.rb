@@ -26,10 +26,11 @@ RSpec.describe Fasti::CLI do
     context "with --help option" do
       it "displays help message" do
         result = cmd.run("ruby", exe_path, "--help")
-        expect(result.out).to include("Usage: fasti [options]")
+        expect(result.out).to include("Usage: fasti [month] [year] [options]")
+        expect(result.out).to include("Arguments:")
+        expect(result.out).to include("month  Month (1-12, optional)")
+        expect(result.out).to include("year   Year (optional)")
         expect(result.out).to include("Calendar display options:")
-        expect(result.out).to include("--month")
-        expect(result.out).to include("--year")
         expect(result.out).to include("--format")
         expect(result.out).to include("--start-of-week")
         expect(result.out).to include("--country")
@@ -45,18 +46,48 @@ RSpec.describe Fasti::CLI do
       end
     end
 
-    context "with valid month and year" do
-      it "displays calendar for specified month" do
-        result = cmd.run("ruby", exe_path, "--month", "6", "--year", "2024", "--country", "US")
+    context "with positional arguments" do
+      it "displays calendar for specified month and year" do
+        result = cmd.run("ruby", exe_path, "6", "2024", "--country", "US")
         expect(result.out).to include("June 2024")
         expect(result.out).to include("Su Mo Tu We Th Fr Sa")
+        expect(result.exitstatus).to eq(0)
+      end
+
+      it "displays calendar for specified month (current year)" do
+        result = cmd.run("ruby", exe_path, "6", "--country", "US")
+        expect(result.out).to include("June")
+        expect(result.out).to include("Su Mo Tu We Th Fr Sa")
+        expect(result.exitstatus).to eq(0)
+      end
+
+      it "displays calendar for specified year (current month)" do
+        result = cmd.run("ruby", exe_path, "2024", "--country", "US")
+        expect(result.out).to include("2024")
+        expect(result.exitstatus).to eq(0)
+      end
+
+      it "displays current calendar with no arguments" do
+        result = cmd.run("ruby", exe_path, "--country", "US")
+        expect(result.exitstatus).to eq(0)
+      end
+
+      it "interprets single digit argument as month" do
+        result = cmd.run("ruby", exe_path, "3", "--country", "US")
+        expect(result.out).to include("March")
+        expect(result.exitstatus).to eq(0)
+      end
+
+      it "interprets large argument as year" do
+        result = cmd.run("ruby", exe_path, "2023", "--country", "US")
+        expect(result.out).to include("2023")
         expect(result.exitstatus).to eq(0)
       end
     end
 
     context "with quarter format" do
       it "displays three months side by side" do
-        result = cmd.run("ruby", exe_path, "--format", "quarter", "--month", "6", "--year", "2024", "--country", "US")
+        result = cmd.run("ruby", exe_path, "6", "2024", "--format", "quarter", "--country", "US")
         expect(result.out).to include("May 2024")
         expect(result.out).to include("June 2024")
         expect(result.out).to include("July 2024")
@@ -66,7 +97,7 @@ RSpec.describe Fasti::CLI do
 
     context "with year format" do
       it "displays full year calendar" do
-        result = cmd.run("ruby", exe_path, "--format", "year", "--year", "2024", "--country", "US")
+        result = cmd.run("ruby", exe_path, "2024", "--format", "year", "--country", "US")
         expect(result.out).to include("2024")
         expect(result.out).to include("January 2024")
         expect(result.out).to include("December 2024")
@@ -79,12 +110,10 @@ RSpec.describe Fasti::CLI do
         result = cmd.run(
           "ruby",
           exe_path,
+          "6",
+          "2024",
           "--start-of-week",
           "monday",
-          "--month",
-          "6",
-          "--year",
-          "2024",
           "--country",
           "US"
         )
@@ -96,12 +125,10 @@ RSpec.describe Fasti::CLI do
         result = cmd.run(
           "ruby",
           exe_path,
+          "6",
+          "2024",
           "--start-of-week",
           "sunday",
-          "--month",
-          "6",
-          "--year",
-          "2024",
           "--country",
           "US"
         )
@@ -113,12 +140,10 @@ RSpec.describe Fasti::CLI do
         result = cmd.run(
           "ruby",
           exe_path,
+          "6",
+          "2024",
           "--start-of-week",
           "wednesday",
-          "--month",
-          "6",
-          "--year",
-          "2024",
           "--country",
           "US"
         )
@@ -130,12 +155,10 @@ RSpec.describe Fasti::CLI do
         result = cmd.run(
           "ruby",
           exe_path,
+          "6",
+          "2024",
           "--start-of-week",
           "friday",
-          "--month",
-          "6",
-          "--year",
-          "2024",
           "--country",
           "US"
         )
@@ -144,10 +167,10 @@ RSpec.describe Fasti::CLI do
       end
     end
 
-    context "with invalid options" do
-      it "returns error for invalid month" do
+    context "with invalid arguments" do
+      it "returns error for invalid month in two-argument case" do
         expect {
-          cmd.run("ruby", exe_path, "--month", "13", "--country", "US")
+          cmd.run("ruby", exe_path, "13", "2024", "--country", "US")
         }.to raise_error(TTY::Command::ExitError) do |error|
           expect(error.to_s).to include("exit status: 1")
         end
@@ -155,15 +178,75 @@ RSpec.describe Fasti::CLI do
 
       it "returns error for invalid year" do
         expect {
-          cmd.run("ruby", exe_path, "--year", "-1", "--country", "US")
+          cmd.run("ruby", exe_path, "6", "-1", "--country", "US")
         }.to raise_error(TTY::Command::ExitError) do |error|
           expect(error.to_s).to include("exit status: 1")
         end
       end
 
+      it "returns error for too many arguments" do
+        expect {
+          cmd.run("ruby", exe_path, "6", "2024", "extra", "--country", "US")
+        }.to raise_error(TTY::Command::ExitError) do |error|
+          expect(error.to_s).to include("exit status: 1")
+        end
+      end
+
+      it "returns error for invalid single argument (zero)" do
+        expect {
+          cmd.run("ruby", exe_path, "0", "--country", "US")
+        }.to raise_error(TTY::Command::ExitError) do |error|
+          expect(error.to_s).to include("exit status: 1")
+        end
+      end
+
+      it "returns error for invalid single argument (negative)" do
+        expect {
+          cmd.run("ruby", exe_path, "-5", "--country", "US")
+        }.to raise_error(TTY::Command::ExitError) do |error|
+          expect(error.to_s).to include("exit status: 1")
+        end
+      end
+
+      it "returns error for non-integer arguments" do
+        expect {
+          cmd.run("ruby", exe_path, "abc", "--country", "US")
+        }.to raise_error(TTY::Command::ExitError) do |error|
+          expect(error.to_s).to include("exit status: 1")
+        end
+      end
+
+      it "returns error for invalid month string in two-argument case" do
+        expect {
+          cmd.run("ruby", exe_path, "abc", "2024", "--country", "US")
+        }.to raise_error(TTY::Command::ExitError) do |error|
+          expect(error.to_s).to include("exit status: 1")
+        end
+      end
+
+      it "returns error for invalid year string in two-argument case" do
+        expect {
+          cmd.run("ruby", exe_path, "6", "abc", "--country", "US")
+        }.to raise_error(TTY::Command::ExitError) do |error|
+          expect(error.to_s).to include("exit status: 1")
+        end
+      end
+
+      it "handles edge case: month 12" do
+        result = cmd.run("ruby", exe_path, "12", "--country", "US")
+        expect(result.out).to include("December")
+        expect(result.exitstatus).to eq(0)
+      end
+
+      it "handles edge case: month 1" do
+        result = cmd.run("ruby", exe_path, "1", "--country", "US")
+        expect(result.out).to include("January")
+        expect(result.exitstatus).to eq(0)
+      end
+
       it "returns error for invalid format" do
         expect {
-          cmd.run("ruby", exe_path, "--format", "invalid", "--country", "US")
+          cmd.run("ruby", exe_path, "6", "2024", "--format", "invalid", "--country", "US")
         }.to raise_error(TTY::Command::ExitError) do |error|
           expect(error.to_s).to include("exit status: 1")
         end
@@ -171,7 +254,7 @@ RSpec.describe Fasti::CLI do
 
       it "returns error for invalid start-of-week" do
         expect {
-          cmd.run("ruby", exe_path, "--start-of-week", "invalid", "--country", "US")
+          cmd.run("ruby", exe_path, "6", "2024", "--start-of-week", "invalid", "--country", "US")
         }.to raise_error(TTY::Command::ExitError) do |error|
           expect(error.to_s).to include("exit status: 1")
         end
@@ -201,7 +284,7 @@ RSpec.describe Fasti::CLI do
 
       it "overrides config file with command line options" do
         File.write(config_file, "--format year --country JP")
-        result = cmd.run("ruby", exe_path, "--format", "month", "--month", "6", "--year", "2024")
+        result = cmd.run("ruby", exe_path, "6", "2024", "--format", "month")
         expect(result.out).to include("June 2024")
         expect(result.out).not_to include("January")
         expect(result.exitstatus).to eq(0)
@@ -209,14 +292,14 @@ RSpec.describe Fasti::CLI do
 
       it "handles empty config file" do
         File.write(config_file, "")
-        result = cmd.run("ruby", exe_path, "--month", "6", "--year", "2024", "--country", "US")
+        result = cmd.run("ruby", exe_path, "6", "2024", "--country", "US")
         expect(result.out).to include("June 2024")
         expect(result.exitstatus).to eq(0)
       end
 
       it "handles invalid config file" do
         File.write(config_file, "--invalid-option")
-        result = cmd.run("ruby", exe_path, "--month", "6", "--year", "2024", "--country", "US")
+        result = cmd.run("ruby", exe_path, "6", "2024", "--country", "US")
         expect(result.out).to include("Warning:")
         expect(result.out).to include("June 2024")
         expect(result.exitstatus).to eq(0)
@@ -237,14 +320,14 @@ RSpec.describe Fasti::CLI do
       it "detects country from LC_ALL" do
         ENV["LC_ALL"] = "ja_JP.UTF-8"
         ENV["LANG"] = "en_US.UTF-8"
-        result = cmd.run("ruby", exe_path, "--month", "1", "--year", "2024")
+        result = cmd.run("ruby", exe_path, "1", "2024")
         expect(result.exitstatus).to eq(0)
       end
 
       it "falls back to LANG when LC_ALL is not set" do
         ENV["LC_ALL"] = nil
         ENV["LANG"] = "en_US.UTF-8"
-        result = cmd.run("ruby", exe_path, "--month", "1", "--year", "2024")
+        result = cmd.run("ruby", exe_path, "1", "2024")
         expect(result.exitstatus).to eq(0)
       end
 
@@ -252,7 +335,7 @@ RSpec.describe Fasti::CLI do
         ENV["LC_ALL"] = "C"
         ENV["LANG"] = "POSIX"
         expect {
-          cmd.run("ruby", exe_path, "--format", "month", "--month", "1", "--year", "2024")
+          cmd.run("ruby", exe_path, "1", "2024", "--format", "month")
         }.to raise_error(TTY::Command::ExitError) do |error|
           expect(error.to_s).to include("Country could not be determined")
           expect(error.to_s).to include("exit status: 1")
