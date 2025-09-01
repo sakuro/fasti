@@ -17,6 +17,7 @@ end
 group :test do
   gem "rspec", "~> 3.0" # Testing framework
   gem "simplecov", "~> 0.22", require: false # Code coverage measurement
+  gem "timecop", "~> 0.9" # Time mocking for time-dependent tests
 end
 
 group :development, :test do

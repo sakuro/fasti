@@ -3,9 +3,17 @@
 require "pathname"
 require "spec_helper"
 require "tempfile"
+require "timecop"
 
 RSpec.describe Fasti::CLI do
   let(:cli) { Fasti::CLI.new }
+
+  # Fix time-dependent tests by freezing time to September 1, 2024
+  around do |example|
+    Timecop.freeze(Time.new(2024, 9, 1)) do
+      example.run
+    end
+  end
 
   describe "#run" do
     # Isolate each test from the user's actual config file (~/.config/fastirc)
