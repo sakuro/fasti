@@ -39,7 +39,6 @@ fasti/
 - **Development Tools**:
   - `rspec` (~> 3.0): Testing framework
   - `rubocop` (~> 1.21): Code style enforcement
-  - `tty-command` (~> 0.10): CLI testing support
 
 ## Development Commands
 
