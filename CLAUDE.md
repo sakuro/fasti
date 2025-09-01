@@ -114,4 +114,18 @@ bin/console               # Interactive console
 - **Internationalization**: Multi-country holiday support with locale detection
 - **User Experience**: Intuitive CLI with helpful defaults and error messages
 
+## Ongoing Maintenance Tasks
+
+### Code Quality
+- **Improve test coverage**: Aim for 70%+ coverage (currently 69.77%)
+- **Reduce RuboCop TODO violations**: Gradually address items in `.rubocop_todo.yml`
+- **Monitor code metrics**: Keep complexity and maintainability in check
+
+### Process
+- **Regular dependency updates**: Keep gems up-to-date for security and performance
+- **Documentation maintenance**: Ensure examples and API docs stay current
+- **Issue management**: Triage and prioritize GitHub issues regularly
+
+**Note**: Specific improvement tasks are tracked as GitHub Issues. This section covers ongoing maintenance activities.
+
 This guide serves as the primary reference for AI-assisted development on the Fasti project. Always refer to the linked documents in `.claude/` for detailed procedures and standards.
