@@ -65,6 +65,7 @@ module Fasti
     #
     # @param argv [Array<String>] Command line arguments to parse
     def run(argv)
+      @current_time = Time.now # Single source of truth for time
       catch(:early_exit) do
         month, year, options = parse_options(argv)
         generate_calendar(month, year, options)
@@ -85,7 +86,7 @@ module Fasti
       parser = create_option_parser(options_hash, include_help: true)
       parser.parse!(argv) # Destructively modifies argv
 
-      # 2. Parse remaining positional arguments
+      # 2. Parse remaining positional arguments using instance variable
       month, year = parse_positional_args(argv)
 
       # 3. Create options and return with month/year
@@ -336,8 +337,8 @@ module Fasti
     private def parse_positional_args(argv)
       case argv.length
       when 0
-        # Use current month and year
-        [Time.now.month, Time.now.year]
+        # Use current month and year from instance variable
+        [@current_time.month, @current_time.year]
       when 1
         interpret_single_argument(argv[0])
       when 2
@@ -356,9 +357,9 @@ module Fasti
       end
 
       if (1..12).cover?(value)
-        [value, Time.now.year] # Return [month, current_year]
+        [value, @current_time.year] # Return [month, current_year]
       elsif value >= 13
-        [Time.now.month, value] # Return [current_month, year]
+        [@current_time.month, value] # Return [current_month, year]
       else
         raise ArgumentError, "Invalid argument: #{value}. Expected 1-12 (month) or 13+ (year)."
       end
