@@ -16,7 +16,7 @@ RSpec.describe Fasti::CLI do
   end
 
   describe "#run" do
-    # Isolate each test from the user's actual config file (~/.config/fastirc)
+    # Isolate each test from the user's actual config file (~/.config/fasti/config.rb)
     # by redirecting XDG_CONFIG_HOME to a temporary directory.
     # This ensures tests are deterministic and don't depend on external configuration.
     around do |example|

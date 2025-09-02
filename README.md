@@ -8,7 +8,7 @@ A flexible calendar application with multi-country holiday support, written in R
 - **Configurable Week Start**: Start weeks on Sunday or Monday
 - **Holiday Support**: Country-specific holiday highlighting using the holidays gem
 - **Color Coding**: ANSI color support for holidays, weekends, and today's date
-- **Configuration File**: XDG-compliant configuration file support (`~/.config/fastirc`)
+- **Configuration File**: XDG-compliant Ruby-based configuration file support (`~/.config/fasti/config.rb`)
 - **Locale Detection**: Automatic country detection from `LC_ALL` and `LANG` environment variables
 - **Command Line Interface**: Full-featured CLI with comprehensive options
 
@@ -132,14 +132,24 @@ fasti 6 2024   # June 2024
 
 ### Configuration File
 
-Create a configuration file at `~/.config/fastirc` (or `$XDG_CONFIG_HOME/fastirc`) to set default options:
+Create a configuration file at `~/.config/fasti/config.rb` (or `$XDG_CONFIG_HOME/fasti/config.rb`) using Ruby syntax to set default options:
 
-```bash
+```ruby
 # Example configuration
---format quarter --start-of-week monday --country US
+Fasti.configure do |config|
+  config.format = :quarter
+  config.start_of_week = :monday
+  config.country = :US
+  # Custom styling (optional)
+  config.style = {
+    sunday: { bold: true },
+    holiday: { foreground: :red, bold: true },
+    today: { inverse: true }
+  }
+end
 ```
 
-See `examples/fastirc` for a complete configuration example.
+See `examples/config.rb` for a complete configuration example.
 
 Command line options override configuration file settings.
 

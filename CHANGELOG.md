@@ -6,7 +6,7 @@
 - **Holiday Support**: Country-specific holiday highlighting using the holidays gem
 - **Configurable Week Start**: Support for all 7 days of the week as week start
 - **Custom Styling System**: Comprehensive `--style` option with flexible styling rules for holidays, weekends, and today's date
-- **Configuration File**: XDG-compliant configuration file support (`~/.config/fastirc`)
+- **Configuration File**: XDG-compliant Ruby-based configuration file support (`~/.config/fasti/config.rb`)
 - **Locale Detection**: Automatic country detection from `LC_ALL` and `LANG` environment variables
 - **Examples Directory**: Sample configuration files for easy setup
 

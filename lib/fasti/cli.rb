@@ -31,8 +31,8 @@ module Fasti
   #
   # ## Configuration File
   # Default options can be specified in a configuration file:
-  # - Path: `$XDG_CONFIG_HOME/fastirc` (or `$HOME/.config/fastirc` if XDG_CONFIG_HOME is unset)
-  # - Format: Shell-style arguments (e.g., `--format year --country US`)
+  # - Path: `$XDG_CONFIG_HOME/fasti/config.rb` (or `$HOME/.config/fasti/config.rb` if XDG_CONFIG_HOME is unset)
+  # - Format: Ruby DSL using Fasti.configure block
   # - Precedence: Command line options override config file options
   #
   # @example Basic usage
@@ -47,8 +47,12 @@ module Fasti
   # @example Year view
   #   CLI.run(["2024", "--format", "year", "--country", "US"])
   #
-  # @example Config file content ($HOME/.config/fastirc)
-  #   --format quarter --start-of-week monday --country US
+  # @example Config file content ($HOME/.config/fasti/config.rb)
+  #   Fasti.configure do |config|
+  #     config.format = :quarter
+  #     config.start_of_week = :monday
+  #     config.country = :US
+  #   end
   class CLI
     # Non-country locales that should be skipped in country detection
     NON_COUNTRY_LOCALES = %w[C POSIX].freeze

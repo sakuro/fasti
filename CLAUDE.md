@@ -9,7 +9,7 @@ Fasti is a flexible calendar application with multi-country holiday support, wri
 - **Configurable Week Start**: Start weeks on any day of the week
 - **Holiday Support**: Country-specific holiday highlighting using the holidays gem
 - **Color Coding**: ANSI color support for holidays, weekends, and today's date
-- **Configuration File**: XDG-compliant configuration file support (`~/.config/fastirc`)
+- **Configuration File**: XDG-compliant Ruby-based configuration file support (`~/.config/fasti/config.rb`)
 - **Locale Detection**: Automatic country detection from `LC_ALL` and `LANG` environment variables
 - **Command Line Interface**: Full-featured CLI with comprehensive options
 
