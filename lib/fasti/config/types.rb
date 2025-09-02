@@ -34,11 +34,11 @@ module Fasti
         included_in: %i[red blue green yellow magenta cyan white black default]
       )
 
-      # Underline attribute value
-      UnderlineValue = Params::Bool | Coercible::Symbol.constrained(included_in: [:double])
+      # Underline attribute value (true | false | :double)
+      Underline = Params::Bool | Coercible::Symbol.constrained(included_in: [:double])
 
-      # Boolean attributes with coercion
-      BooleanAttribute = Params::Bool
+      # Boolean attributes with coercion (true | false | nil)
+      MaybeBool = Params::Bool
 
       # Make all type constants explicitly public
       public_constant :Format
@@ -46,8 +46,8 @@ module Fasti
       public_constant :Country
       public_constant :StyleTarget
       public_constant :Color
-      public_constant :UnderlineValue
-      public_constant :BooleanAttribute
+      public_constant :Underline
+      public_constant :MaybeBool
     end
   end
 end
