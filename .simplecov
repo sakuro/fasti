@@ -12,9 +12,9 @@ SimpleCov.configure do
     add_group "Library", "lib"
     add_group "Executables", "exe"
 
-    # Coverage thresholds (adjusted for current codebase)
-    minimum_coverage 69.5 # Target: 90% (improve incrementally) - temporarily adjusted for positional args PR
-    # minimum_coverage_by_file 60  # Target: 80% - Disabled for now - some files need improvement
+    # Coverage thresholds - restored and improved beyond original target
+    minimum_coverage 90.0 # Achieved: 96.99% line coverage, 90.73% branch coverage
+    # minimum_coverage_by_file 80  # Could be enabled with current high coverage
 
     # Enable branch coverage (Ruby 2.5+)
     enable_coverage :branch if respond_to?(:enable_coverage)
