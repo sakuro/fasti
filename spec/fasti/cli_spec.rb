@@ -213,11 +213,13 @@ RSpec.describe Fasti::CLI do
 
     context "with config file" do
       let(:config_dir) { Dir.mktmpdir }
-      let(:config_file) { File.join(config_dir, "fastirc") }
+      let(:fasti_config_dir) { File.join(config_dir, "fasti") }
+      let(:config_file) { File.join(fasti_config_dir, "config.rb") }
 
       around do |example|
         old_xdg_config_home = ENV["XDG_CONFIG_HOME"]
         ENV["XDG_CONFIG_HOME"] = config_dir
+        FileUtils.mkdir_p(fasti_config_dir)
         example.run
       ensure
         ENV["XDG_CONFIG_HOME"] = old_xdg_config_home
@@ -225,13 +227,25 @@ RSpec.describe Fasti::CLI do
       end
 
       it "uses config file options" do
-        File.write(config_file, "--format year --country JP")
+        config_content = <<~RUBY
+          Fasti.configure do |config|
+            config.format = :year
+            config.country = :jp
+          end
+        RUBY
+        File.write(config_file, config_content)
         expect { cli.run(%w[]) }
           .to output(include("January", "December")).to_stdout
       end
 
       it "overrides config file with command line options" do
-        File.write(config_file, "--format year --country JP")
+        config_content = <<~RUBY
+          Fasti.configure do |config|
+            config.format = :year
+            config.country = :jp
+          end
+        RUBY
+        File.write(config_file, config_content)
         expect { cli.run(%w[6 2024 --format month]) }
           .to output(include("June 2024")).to_stdout
         expect { cli.run(%w[6 2024 --format month]) }
@@ -245,7 +259,12 @@ RSpec.describe Fasti::CLI do
       end
 
       it "handles invalid config file" do
-        File.write(config_file, "--invalid-option")
+        invalid_content = <<~RUBY
+          Fasti.configure do |config|
+            config.invalid_option = true
+          end
+        RUBY
+        File.write(config_file, invalid_content)
         expect { cli.run(%w[6 2024 --country US]) }
           .to output(include("Warning:", "June 2024")).to_stdout
       end
@@ -297,6 +316,74 @@ RSpec.describe Fasti::CLI do
 
         expect(Fasti::CLI).to have_received(:new)
         expect(cli_instance).to have_received(:run).with(%w[--help])
+      end
+    end
+  end
+
+  describe "style composition" do
+    context "with config file and CLI arguments" do
+      let(:config_dir) { Dir.mktmpdir }
+      let(:fasti_config_dir) { File.join(config_dir, "fasti") }
+      let(:config_file) { File.join(fasti_config_dir, "config.rb") }
+
+      around do |example|
+        old_xdg_config_home = ENV["XDG_CONFIG_HOME"]
+        ENV["XDG_CONFIG_HOME"] = config_dir
+        FileUtils.mkdir_p(fasti_config_dir)
+
+        example.run
+      ensure
+        ENV["XDG_CONFIG_HOME"] = old_xdg_config_home
+        FileUtils.rm_rf(config_dir)
+      end
+
+      it "composes styles from config file and CLI arguments" do
+        # Config file: sunday is bold
+        config_content = <<~RUBY
+          Fasti.configure do |config|
+            config.style = {
+              sunday: { bold: true }
+            }
+          end
+        RUBY
+        File.write(config_file, config_content)
+
+        # CLI argument: sunday gets red foreground
+        # Expected result: sunday should be both bold and red
+        expect { cli.run(%w[--style sunday:foreground=red 9 2024]) }
+          .to output(include("\e[31;1m")).to_stdout # red + bold
+      end
+
+      it "CLI arguments override config file for same attributes" do
+        # Config file: sunday is bold and red
+        config_content = <<~RUBY
+          Fasti.configure do |config|
+            config.style = {
+              sunday: { bold: true, foreground: :red }
+            }
+          end
+        RUBY
+        File.write(config_file, config_content)
+
+        # CLI argument: sunday gets blue foreground (should override red)
+        expect { cli.run(%w[--style sunday:foreground=blue 9 2024]) }
+          .to output(include("\e[34;1m")).to_stdout # blue + bold
+      end
+
+      it "adds new style targets from CLI to config file styles" do
+        # Config file: only sunday style
+        config_content = <<~RUBY
+          Fasti.configure do |config|
+            config.style = {
+              sunday: { bold: true }
+            }
+          end
+        RUBY
+        File.write(config_file, config_content)
+
+        # CLI argument: add today style (inverse for current day)
+        expect { cli.run(%w[--style today:inverse 9 2024]) }
+          .to output(/\e\[1;7m\s*1\e\[0m/).to_stdout # Today (Sept 1) with inverse
       end
     end
   end

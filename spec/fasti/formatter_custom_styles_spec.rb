@@ -9,26 +9,44 @@ RSpec.describe Fasti::Formatter do
     context "with no custom styles" do
       let(:formatter) { Fasti::Formatter.new }
 
+      it "renders plain text without any styling" do
+        output = formatter.format_month(july_2024)
+        # Should not contain any ANSI escape sequences
+        expect(output).not_to include("\e[")
+        expect(output).to include("July 2024")
+      end
+    end
+
+    context "with basic styles (former defaults)" do
+      let(:basic_styles) do
+        {
+          sunday: Fasti::Style.new(bold: true),
+          holiday: Fasti::Style.new(bold: true),
+          today: Fasti::Style.new(inverse: true)
+        }
+      end
+      let(:formatter) { Fasti::Formatter.new(styles: basic_styles) }
+
       before do
         allow(Date).to receive(:today).and_return(Date.new(2024, 7, 1))
       end
 
-      it "uses default styling" do
+      it "applies basic Sunday styling" do
         output = formatter.format_month(july_2024)
-        # Sunday (July 7) should be bold by default
+        # Sunday (July 7) should be bold
         expect(output).to contain_styled(:bold, /\s*7/)
       end
 
-      it "applies default holiday styling" do
+      it "applies basic holiday styling" do
         output = formatter.format_month(july_2024)
-        # July 4 (Independence Day) should be bold by default
+        # July 4 (Independence Day) should be bold
         expect(output).to contain_styled(:bold, /\s*4/)
       end
 
-      it "applies default today styling when today" do
+      it "applies basic today styling when today" do
         allow(Date).to receive(:today).and_return(Date.new(2024, 7, 15))
         output = formatter.format_month(july_2024)
-        # July 15 (today) should be inverse by default
+        # July 15 (today) should be inverse
         expect(output).to contain_styled(:inverse, /\s*15/)
       end
     end
