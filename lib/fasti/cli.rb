@@ -246,14 +246,15 @@ module Fasti
 
       formatter = Formatter.new(styles:)
       start_of_week = options.start_of_week
+      country = options.country
 
       output = case options.format
                when :month
-                 generate_month_calendar(month, year, options, formatter, start_of_week)
+                 generate_month_calendar(month, year, country, formatter, start_of_week)
                when :quarter
-                 generate_quarter_calendar(month, year, options, formatter, start_of_week)
+                 generate_quarter_calendar(month, year, country, formatter, start_of_week)
                when :year
-                 generate_year_calendar(month, year, options, formatter, start_of_week)
+                 generate_year_calendar(month, year, country, formatter, start_of_week)
                else
                  raise ArgumentError, "Unknown format: #{options.format}"
                end
@@ -267,12 +268,12 @@ module Fasti
     # @param formatter [Formatter] Calendar formatter
     # @param start_of_week [Symbol] Week start preference
     # @return [String] Formatted calendar
-    private def generate_month_calendar(month, year, options, formatter, start_of_week)
+    private def generate_month_calendar(month, year, country, formatter, start_of_week)
       calendar = Calendar.new(
         year,
         month,
         start_of_week:,
-        country: options.country
+        country:
       )
       formatter.format_month(calendar)
     end
@@ -283,7 +284,7 @@ module Fasti
     # @param formatter [Formatter] Calendar formatter
     # @param start_of_week [Symbol] Week start preference
     # @return [String] Formatted quarter calendar
-    private def generate_quarter_calendar(month, year, options, formatter, start_of_week)
+    private def generate_quarter_calendar(month, year, country, formatter, start_of_week)
       base_month = month
 
       months = [(base_month - 1), base_month, (base_month + 1)].map {|m|
@@ -297,7 +298,7 @@ module Fasti
       }
 
       calendars = months.map {|y, m|
-        Calendar.new(y, m, start_of_week:, country: options.country)
+        Calendar.new(y, m, start_of_week:, country:)
       }
 
       formatter.format_quarter(calendars)
@@ -309,10 +310,10 @@ module Fasti
     # @param formatter [Formatter] Calendar formatter
     # @param start_of_week [Symbol] Week start preference
     # @return [String] Formatted year calendar
-    private def generate_year_calendar(_month, year, options, formatter, start_of_week)
+    private def generate_year_calendar(_month, year, country, formatter, start_of_week)
       formatter.format_year(
         year,
-        country: options.country,
+        country:,
         start_of_week:
       )
     end
