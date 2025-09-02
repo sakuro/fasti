@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require "dry-configurable"
-require_relative "config_schema"
-require_relative "config_types"
+require_relative "config/schema"
+require_relative "config/types"
 require_relative "style"
 
 # Fasti configuration management components
@@ -29,13 +29,13 @@ module Fasti
     extend Dry::Configurable
 
     # Calendar display format
-    setting :format, default: :month, constructor: ConfigTypes::Format
+    setting :format, default: :month, constructor: Types::Format
 
     # Week start day
-    setting :start_of_week, default: :sunday, constructor: ConfigTypes::StartOfWeek
+    setting :start_of_week, default: :sunday, constructor: Types::StartOfWeek
 
     # Country code for holiday detection
-    setting :country, default: :us, constructor: ConfigTypes::Country
+    setting :country, default: :us, constructor: Types::Country
 
     # Style configuration
     # Accepts a hash mapping style targets to their attributes
@@ -62,7 +62,7 @@ module Fasti
 
       style_hash.each do |target, attributes|
         # Validate and convert target
-        target_sym = ConfigTypes::StyleTarget.call(target)
+        target_sym = Types::StyleTarget.call(target)
 
         # Validate attributes structure
         unless attributes.is_a?(Hash)
@@ -70,7 +70,7 @@ module Fasti
         end
 
         # Validate individual attributes using schema
-        result = ConfigSchema::StyleAttributeSchema.call(attributes)
+        result = Schema::StyleAttribute.call(attributes)
         if result.success?
           validated_style[target_sym] = Style.new(**result.to_h)
         else
