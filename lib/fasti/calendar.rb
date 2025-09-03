@@ -28,7 +28,8 @@ module Fasti
     # @return [Integer] The month of the calendar (1-12)
     # @return [Symbol] The start of week preference (:sunday, :monday, :tuesday, etc.)
     # @return [Symbol] The country code for holiday context
-    attr_reader :year, :month, :start_of_week, :country
+    # @return [Boolean] Whether to show calendar transition gaps
+    attr_reader :year, :month, :start_of_week, :country, :show_gaps
 
     # Full weekday names for internal reference (as symbols)
     WEEK_DAYS = %i[sunday monday tuesday wednesday thursday friday saturday].freeze
@@ -51,11 +52,12 @@ module Fasti
     #
     # @example Monday-start calendar
     #   Calendar.new(2024, 6, country: :us, start_of_week: :monday)
-    def initialize(year, month, country:, start_of_week: :sunday)
+    def initialize(year, month, country:, start_of_week: :sunday, show_gaps: false)
       @year = year
       @month = month
       @start_of_week = start_of_week.to_sym
       @country = country
+      @show_gaps = show_gaps
       @holidays_for_month = nil
 
       validate_inputs
@@ -84,11 +86,9 @@ module Fasti
     rescue ArgumentError
       # If day 1 is in a gap (very rare), try day 2, then 3, etc.
       (2..31).each do |day|
-        begin
-          return CalendarTransitions.create_date(year, month, day, country)
-        rescue ArgumentError
-          next
-        end
+        return CalendarTransitions.create_date(year, month, day, country)
+      rescue ArgumentError
+        next
       end
       # Fallback to standard Date if all fails
       Date.new(year, month, 1)
@@ -104,12 +104,10 @@ module Fasti
     def last_day_of_month
       # Start from the theoretical last day and work backwards
       max_days = Date.new(year, month, -1).day
-      (max_days).downto(1).each do |day|
-        begin
-          return CalendarTransitions.create_date(year, month, day, country)
-        rescue ArgumentError
-          next
-        end
+      max_days.downto(1).each do |day|
+        return CalendarTransitions.create_date(year, month, day, country)
+      rescue ArgumentError
+        next
       end
       # Fallback to standard Date if all fails
       Date.new(year, month, -1)
@@ -140,36 +138,11 @@ module Fasti
     #   # Returns: [[nil, nil, nil, nil, nil, nil, 1],
     #   #           [2, 3, 4, 5, 6, 7, 8], ...]
     def calendar_grid
-      grid = []
-      current_row = []
-
-      # Add leading empty cells for days before month starts
-      leading_empty_days.times do
-        current_row << nil
+      if show_gaps
+        calendar_grid_with_gaps
+      else
+        calendar_grid_continuous
       end
-
-      # Add only existing days (skip gap days) for continuous display
-      (1..days_in_month).each do |day|
-        # Only add days that actually exist (not in transition gaps)
-        if to_date(day)
-          current_row << day
-
-          # Start new row on end of week
-          if current_row.length == 7
-            grid << current_row
-            current_row = []
-          end
-        end
-        # Skip gap days completely - they don't take up space in the grid
-      end
-
-      # Add trailing empty cells and final row if needed
-      if current_row.any?
-        current_row << nil while current_row.length < 7
-        grid << current_row
-      end
-
-      grid
     end
 
     # Calculates the number of empty cells needed before the first day.
@@ -291,6 +264,103 @@ module Fasti
       return if WEEK_DAYS.include?(start_of_week)
 
       raise ArgumentError, "Invalid start_of_week: #{start_of_week}. Must be one of: #{WEEK_DAYS.join(", ")}"
+    end
+
+    # Calendar grid with gaps displayed as empty spaces
+    private def calendar_grid_with_gaps
+      grid = []
+      current_row = []
+
+      # Calculate the actual position of each day based on its date
+      # Start with the first day of the month's position
+      start_wday = WEEK_DAYS.index(start_of_week) || 0
+
+      # Add leading empty cells for days before month starts
+      leading_empty_days.times do
+        current_row << nil
+      end
+
+      # Keep track of the current position in the week
+      current_position = leading_empty_days
+
+      (1..days_in_month).each do |day|
+        # Get the actual date for this day (might be nil for gaps)
+        actual_date = to_date(day)
+
+        if actual_date
+          # Calculate where this date should appear in the week
+          expected_position = (actual_date.wday - start_wday) % 7
+
+          # Fill in any gaps between current position and expected position
+          while current_position % 7 != expected_position
+            current_row << nil
+            current_position += 1
+
+            # Start new row if we've filled 7 positions
+            if current_position % 7 == 0
+              grid << current_row
+              current_row = []
+            end
+          end
+
+          # Add the actual day
+          current_row << day
+
+        else
+          # Day doesn't exist (gap), but we still need to account for its position
+          # Add nil to maintain the sequence
+          current_row << nil
+        end
+        current_position += 1
+
+        # Start new row if we've filled 7 positions
+        if current_position % 7 == 0
+          grid << current_row
+          current_row = []
+        end
+      end
+
+      # Add trailing empty cells and final row if needed
+      if current_row.any?
+        current_row << nil while current_row.length < 7
+        grid << current_row
+      end
+
+      grid
+    end
+
+    # Calendar grid with gaps compressed (UNIX cal style)
+    private def calendar_grid_continuous
+      grid = []
+      current_row = []
+
+      # Add leading empty cells for days before month starts
+      leading_empty_days.times do
+        current_row << nil
+      end
+
+      # Add only existing days (skip gap days) for continuous display
+      (1..days_in_month).each do |day|
+        # Only add days that actually exist (not in transition gaps)
+        next unless to_date(day)
+
+        current_row << day
+
+        # Start new row on end of week
+        if current_row.length == 7
+          grid << current_row
+          current_row = []
+        end
+        # Skip gap days completely - they don't take up space in the grid
+      end
+
+      # Add trailing empty cells and final row if needed
+      if current_row.any?
+        current_row << nil while current_row.length < 7
+        grid << current_row
+      end
+
+      grid
     end
   end
 end

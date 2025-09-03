@@ -50,6 +50,7 @@ RSpec.describe Fasti::CLI do
               -w, --start-of-week WEEKDAY      Week start day (sunday, monday, tuesday, wednesday, thursday, friday, saturday)
               -c, --country COUNTRY            Country code for holidays (e.g., JP, US, GB, DE)
               -s, --style STYLE                Custom styling (e.g., "sunday:bold holiday:foreground=red today:inverse")
+                  --[no-]show-gaps             Show calendar transition gaps as empty space (default: compress like UNIX cal)
 
           Other options:
               -v, --version                    Show version
