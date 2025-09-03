@@ -3,7 +3,6 @@
 require "locale"
 require "optparse"
 require "pathname"
-require "shellwords"
 
 module Fasti
   # Immutable data structure for CLI options
