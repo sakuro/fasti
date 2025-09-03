@@ -35,11 +35,11 @@ module Fasti
       gb: Date::ENGLAND, # 2361222
 
       # Common countries using Italian transition (Catholic countries)
-      es: Date::ITALY,     # Spain - same as Italy
-      fr: Date::ITALY,     # France - same as Italy
-      pt: Date::ITALY,     # Portugal - same as Italy
-      pl: Date::ITALY,     # Poland - same as Italy
-      at: Date::ITALY,     # Austria - same as Italy
+      es: Date::ITALY,     # Spain - same as Italy (1582-10-15)
+      fr: 2_299_229,       # France - 1582-12-20 (2 months later than Italy)
+      pt: Date::ITALY,     # Portugal - same as Italy (1582-10-15)
+      pl: Date::ITALY,     # Poland - same as Italy (1582-10-15)
+      at: Date::ITALY,     # Austria - same as Italy (1582-10-15)
 
       # Countries using British transition (British influence)
       us: Date::ENGLAND,   # United States - followed British calendar
@@ -51,38 +51,36 @@ module Fasti
       # Germany (complex - varied by region, using common date)
       de: Date::ITALY, # Most German states adopted in 1582-1584
 
-      # Nordic countries (Swedish transition was complex, Denmark/Norway 1700)
-      se: 2_342_032,         # Sweden - March 1, 1753 (complex transition)
-      dk: 2_341_973,         # Denmark - March 1, 1700
-      no: 2_341_973,         # Norway - same as Denmark
+      # Nordic countries (varied transitions)
+      se: 2_361_391,         # Sweden - March 1, 1753 (complex gradual transition)
+      dk: 2_342_032,         # Denmark - March 1, 1700
+      no: 2_342_032,         # Norway - same as Denmark (March 1, 1700)
 
       # Eastern European countries (much later adoption)
-      ru: 2_421_639,         # Russia - February 14, 1918
-      gr: 2_423_480,         # Greece - March 1, 1923
+      ru: 2_421_640,         # Russia - February 14, 1918 (corrected JDN)
+      gr: 2_423_410,         # Greece - March 1, 1923 (corrected JDN)
 
-      # Netherlands (complex regional adoption)
-      nl: Date::ITALY, # Most regions by 1582-1583
+      # Netherlands (complex regional adoption - using latest Protestant adoption)
+      nl: 2_342_164, # Netherlands - July 12, 1700 (Gelderland, last province)
 
-      # Japan adopted Gregorian calendar on 1873-01-01 (Meiji 6)
-      # Before 1873: used lunisolar calendar, but we approximate with Julian for simplicity
-      jp: 2_405_160,
+      # Additional European countries from historical table
+      be: 2_299_245,         # Belgium (Spanish Netherlands) - January 6, 1583
+      ch: 2_342_150,         # Switzerland (Protestant cantons) - January 23, 1700
+      bg: 2_421_344,         # Bulgaria - April 14, 1916
+      ro: 2_421_972,         # Romania - April 14, 1919
+      rs: 2_421_972,         # Serbia (Yugoslavia) - April 14, 1919
+      hr: 2_421_972,         # Croatia (Yugoslavia) - April 14, 1919
+      si: 2_421_972,         # Slovenia (Yugoslavia) - April 14, 1919
+      tr: 2_424_858,         # Turkey (civil calendar) - January 1, 1927
 
-      # China adopted Gregorian calendar on 1912-01-01 (Republic of China establishment)
-      # Before 1912: used lunisolar calendar, but we approximate with Julian for simplicity
-      cn: 2_419_403,     # Mainland China
-      tw: 2_419_403,     # Taiwan (same historical root as mainland)
-
-      # Korea adopted Gregorian calendar on 1896-01-01 (Korean Empire, Geonyang 1)
-      # Before 1896: used lunisolar calendar, but we approximate with Julian for simplicity
-      kr: 2_413_560,
-
-      # Vietnam adopted Gregorian calendar in 1967
-      # Before 1967: used lunisolar calendar, but we approximate with Julian for simplicity
-      vn: 2_439_492,
-
-      # Thailand adopted Gregorian calendar on 1888-01-01 (Rattanakosin 107)
-      # Before 1888: used lunisolar calendar, but we approximate with Julian for simplicity
-      th: 2_410_638
+      # Asian countries: transitioned from lunisolar calendars, use proleptic Gregorian for consistency
+      # This provides computational consistency while noting historical inaccuracy in documentation
+      jp: Date::GREGORIAN,  # Japan adopted Gregorian calendar on 1873-01-01 (Meiji 6)
+      cn: Date::GREGORIAN,  # China adopted Gregorian calendar on 1912-01-01 (Republic of China establishment)
+      tw: Date::GREGORIAN,  # Taiwan (same historical root as mainland China)
+      kr: Date::GREGORIAN,  # Korea adopted Gregorian calendar on 1896-01-01 (Korean Empire, Geonyang 1)
+      vn: Date::GREGORIAN,  # Vietnam adopted Gregorian calendar in 1967
+      th: Date::GREGORIAN   # Thailand adopted Gregorian calendar on 1888-01-01 (Rattanakosin 107)
     }.freeze
     private_constant :TRANSITIONS
 
