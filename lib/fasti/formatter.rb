@@ -171,8 +171,15 @@ module Fasti
     private def format_day(day, calendar)
       return "  " unless day
 
-      day_str = day.to_s.rjust(2)
       date = calendar.to_date(day)
+
+      # Handle calendar transition gaps - date might be nil
+      unless date
+        # For gap days, return empty space to show the gap visually
+        return "  "
+      end
+
+      day_str = day.to_s.rjust(2)
 
       # Collect applicable styles based on day characteristics
       applicable_styles = []

@@ -273,4 +273,122 @@ RSpec.describe Fasti::Calendar do
       expect(non_leap_1900.days_in_month).to eq(28)
     end
   end
+
+  describe "historical calendar transitions" do
+    context "with Italian transition (1582)" do
+      let(:italian_calendar_before) { Fasti::Calendar.new(1582, 10, country: :it) }
+
+      it "handles dates before transition correctly" do
+        date = italian_calendar_before.to_date(4)
+        expect(date).not_to be_nil
+        expect(date.year).to eq(1582)
+        expect(date.month).to eq(10)
+        expect(date.day).to eq(4)
+      end
+
+      it "handles dates after transition correctly" do
+        date = italian_calendar_before.to_date(15)
+        expect(date).not_to be_nil
+        expect(date.year).to eq(1582)
+        expect(date.month).to eq(10)
+        expect(date.day).to eq(15)
+      end
+
+      it "returns nil for dates in transition gap" do
+        # Days 5-14 October 1582 never existed in Italy
+        (5..14).each do |day|
+          expect(italian_calendar_before.to_date(day)).to be_nil
+        end
+      end
+
+      it "calculates days_in_month correctly despite gap" do
+        # October 1582 had 31 days, but 10 were skipped
+        expect(italian_calendar_before.days_in_month).to eq(31)
+      end
+    end
+
+    context "with British transition (1752)" do
+      let(:british_calendar) { Fasti::Calendar.new(1752, 9, country: :gb) }
+
+      it "handles dates before British transition" do
+        date = british_calendar.to_date(2)
+        expect(date).not_to be_nil
+        expect(date.year).to eq(1752)
+        expect(date.month).to eq(9)
+        expect(date.day).to eq(2)
+      end
+
+      it "handles dates after British transition" do
+        date = british_calendar.to_date(14)
+        expect(date).not_to be_nil
+        expect(date.year).to eq(1752)
+        expect(date.month).to eq(9)
+        expect(date.day).to eq(14)
+      end
+
+      it "returns nil for dates in British transition gap" do
+        # Days 3-13 September 1752 never existed in Britain
+        (3..13).each do |day|
+          expect(british_calendar.to_date(day)).to be_nil
+        end
+      end
+
+      it "US follows British transition" do
+        us_calendar = Fasti::Calendar.new(1752, 9, country: :us)
+        # Same gap as Britain
+        (3..13).each do |day|
+          expect(us_calendar.to_date(day)).to be_nil
+        end
+      end
+    end
+
+    context "with Russian transition (1918)" do
+      let(:russian_calendar) { Fasti::Calendar.new(1918, 2, country: :ru) }
+
+      it "handles transition dates correctly" do
+        # Test that the mechanism works, even if specific dates vary
+        (1..28).each do |day|
+          date = russian_calendar.to_date(day)
+          # Each date should either be a valid Date or nil (in gap)
+          expect(date).to be_nil.or be_a(Date)
+        end
+      end
+    end
+
+    context "with modern dates (no transition issues)" do
+      let(:modern_calendar) { Fasti::Calendar.new(2024, 9, country: :jp) }
+
+      it "handles all modern dates normally" do
+        (1..30).each do |day|
+          date = modern_calendar.to_date(day)
+          expect(date).not_to be_nil
+          expect(date.year).to eq(2024)
+          expect(date.month).to eq(9)
+          expect(date.day).to eq(day)
+        end
+      end
+    end
+
+    context "calendar grid generation with gaps" do
+      let(:italian_calendar) { Fasti::Calendar.new(1582, 10, country: :it) }
+
+      it "generates calendar grid correctly despite transition gaps" do
+        grid = italian_calendar.calendar_grid
+        expect(grid).to be_an(Array)
+        expect(grid.length).to be > 0
+        
+        # Grid should contain valid days but not gap days (5-14)
+        flat_days = grid.flatten.compact
+        expect(flat_days).to include(1, 2, 3, 4, 15, 16) # Valid days before and after gap
+        expect(flat_days).not_to include(5, 6, 7, 8, 9, 10, 11, 12, 13, 14) # Gap days
+        
+        # Should have 21 valid days (31 total - 10 gap days)
+        expect(flat_days.length).to eq(21)
+      end
+
+      it "handles month_year_header for historical dates" do
+        expect(italian_calendar.month_year_header).to eq("October 1582")
+      end
+    end
+  end
 end

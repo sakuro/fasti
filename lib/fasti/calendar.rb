@@ -2,6 +2,7 @@
 
 require "date"
 require "holidays"
+require_relative "calendar_transitions"
 
 module Fasti
   # Represents a calendar for a specific month and year with configurable start of week.
@@ -79,6 +80,17 @@ module Fasti
     #   Calendar.new(2024, 6, country: :jp).first_day_of_month
     #   #=> #<Date: 2024-06-01>
     def first_day_of_month
+      CalendarTransitions.create_date(year, month, 1, country)
+    rescue ArgumentError
+      # If day 1 is in a gap (very rare), try day 2, then 3, etc.
+      (2..31).each do |day|
+        begin
+          return CalendarTransitions.create_date(year, month, day, country)
+        rescue ArgumentError
+          next
+        end
+      end
+      # Fallback to standard Date if all fails
       Date.new(year, month, 1)
     end
 
@@ -90,6 +102,16 @@ module Fasti
     #   Calendar.new(2024, 6, country: :jp).last_day_of_month
     #   #=> #<Date: 2024-06-30>
     def last_day_of_month
+      # Start from the theoretical last day and work backwards
+      max_days = Date.new(year, month, -1).day
+      (max_days).downto(1).each do |day|
+        begin
+          return CalendarTransitions.create_date(year, month, day, country)
+        rescue ArgumentError
+          next
+        end
+      end
+      # Fallback to standard Date if all fails
       Date.new(year, month, -1)
     end
 
@@ -121,17 +143,51 @@ module Fasti
       grid = []
       current_row = []
 
+      # Calculate the actual position of each day based on its date
+      # Start with the first day of the month's position
+      start_wday = WEEK_DAYS.index(start_of_week) || 0
+      
       # Add leading empty cells for days before month starts
       leading_empty_days.times do
         current_row << nil
       end
 
-      # Add all days of the month
-      (1..days_in_month).each do |day|
-        current_row << day
+      # Keep track of the current position in the week
+      current_position = leading_empty_days
 
-        # Start new row on end of week
-        if current_row.length == 7
+      (1..days_in_month).each do |day|
+        # Get the actual date for this day (might be nil for gaps)
+        actual_date = to_date(day)
+        
+        if actual_date
+          # Calculate where this date should appear in the week
+          expected_position = (actual_date.wday - start_wday) % 7
+          
+          # Fill in any gaps between current position and expected position
+          while current_position % 7 != expected_position
+            current_row << nil
+            current_position += 1
+            
+            # Start new row if we've filled 7 positions
+            if current_position % 7 == 0
+              grid << current_row
+              current_row = []
+            end
+          end
+          
+          # Add the actual day
+          current_row << day
+          current_position += 1
+          
+        else
+          # Day doesn't exist (gap), but we still need to account for its position
+          # Add nil to maintain the sequence
+          current_row << nil
+          current_position += 1
+        end
+        
+        # Start new row if we've filled 7 positions
+        if current_position % 7 == 0
           grid << current_row
           current_row = []
         end
@@ -139,7 +195,9 @@ module Fasti
 
       # Add trailing empty cells and final row if needed
       if current_row.any?
-        current_row << nil while current_row.length < 7
+        while current_row.length < 7
+          current_row << nil
+        end
         grid << current_row
       end
 
@@ -194,7 +252,7 @@ module Fasti
     #   Calendar.new(2024, 6, country: :jp).month_year_header  #=> "June 2024"
     #   Calendar.new(2024, 12, country: :jp).month_year_header #=> "December 2024"
     def month_year_header
-      date = Date.new(year, month, 1)
+      date = first_day_of_month
       date.strftime("%B %Y")
     end
 
@@ -211,7 +269,12 @@ module Fasti
       return nil unless day
       return nil unless (1..days_in_month).cover?(day)
 
-      Date.new(year, month, day)
+      begin
+        CalendarTransitions.create_date(year, month, day, country)
+      rescue ArgumentError
+        # Date falls in calendar transition gap (non-existent)
+        nil
+      end
     end
 
     # Checks if a specific day in this calendar month is a holiday.
@@ -236,8 +299,9 @@ module Fasti
     # @return [Hash<Date, Hash>] Hash mapping holiday dates to holiday information
     private def holidays_for_month
       @holidays_for_month ||= begin
-        start_date = first_day_of_month
-        end_date = last_day_of_month
+        # Use standard Date creation for holidays lookup to avoid recursion
+        start_date = Date.new(year, month, 1)
+        end_date = Date.new(year, month, -1)
 
         begin
           holidays = Holidays.between(start_date, end_date, country)
