@@ -74,7 +74,7 @@ module Fasti
     def run(argv)
       @current_time = Time.now # Single source of truth for time
       catch(:early_exit) do
-        month, year, options = parse_options(argv)
+        month, year, options = parse_arguments(argv)
         generate_calendar(month, year, options)
       end
     rescue => e
@@ -82,38 +82,42 @@ module Fasti
       exit 1
     end
 
-    # Parses command line options using OptionParser.
+    # Parses all command line arguments (positional + options).
     #
     # @param argv [Array<String>] Arguments to parse
-    # @return [Options] Parsed options object
-    private def parse_options(argv)
-      # 1. Get base options from config file + defaults
-      base_options = default_options
+    # @return [Array<Integer, Integer, Options>] Month, year, and parsed options
+    private def parse_arguments(argv)
+      options = parse_options(argv)
+      month, year = parse_positional_args(argv)
+      [month, year, options]
+    end
 
-      # 2. Parse CLI arguments into separate hash
+    # Parses CLI options, merges with config/defaults, and validates.
+    #
+    # @param argv [Array<String>] Arguments to parse (destructively modified)
+    # @return [Options] Final validated options object
+    private def parse_options(argv)
+      # 1. Parse CLI arguments into separate hash
       cli_options_hash = {}
       parser = create_option_parser(cli_options_hash, include_help: true)
       parser.parse!(argv) # Destructively modifies argv
 
-      # 3. Parse remaining positional arguments
-      month, year = parse_positional_args(argv)
-
-      # 4. Apply CLI option overrides to base options
+      # 2. Apply CLI option overrides to base options (Options + Hash → Options)
       final_options = apply_cli_overrides(base_options, cli_options_hash)
 
-      # 5. Validate required options
+      # 3. Validate required options
       unless final_options.country
         raise ArgumentError,
           "Country could not be determined. Use --country with a country code or set LANG/LC_ALL environment variables"
       end
 
-      [month, year, final_options]
+      final_options
     end
 
-    # Returns base option values (defaults merged with config file settings).
+    # Returns base configuration (defaults + config file settings).
     #
-    # @return [Options] Base options for further CLI option composition
-    private def default_options
+    # @return [Options] Base options before CLI overrides
+    private def base_options
       defaults = base_default_values
       config_options = load_config_options
       merge_defaults_with_config(defaults, config_options)
@@ -131,6 +135,21 @@ module Fasti
       }
     end
 
+    # Loads options from the config file if it exists.
+    #
+    # @return [Hash] Config options or empty hash if no config file
+    private def load_config_options
+      config_file = config_file_path
+      return {} unless config_file.exist?
+
+      begin
+        Config.load_from_file(config_file.to_s)
+      rescue => e
+        puts "Warning: Failed to load config file #{config_file}: #{e.message}"
+        {}
+      end
+    end
+
     # Merges default values with config file options.
     #
     # @param defaults [Hash] Base default values
@@ -145,21 +164,6 @@ module Fasti
       merged_options = merged_general.merge(style: config_options[:style])
 
       Options.new(**merged_options)
-    end
-
-    # Loads options from the config file if it exists.
-    #
-    # @return [Hash] Config options or empty hash if no config file
-    private def load_config_options
-      config_file = config_file_path
-      return {} unless config_file.exist?
-
-      begin
-        Config.load_from_file(config_file.to_s)
-      rescue => e
-        puts "Warning: Failed to load config file #{config_file}: #{e.message}"
-        {}
-      end
     end
 
     # Determines the config file path using XDG specification.
