@@ -78,8 +78,7 @@ module Fasti
         generate_calendar(month, year, options)
       end
     rescue => e
-      puts "Error: #{e.message}"
-      exit 1
+      handle_error(e)
     end
 
     # Parses all command line arguments (positional + options).
@@ -498,6 +497,17 @@ module Fasti
       end
 
       result
+    end
+
+    # Handles errors that occur during CLI execution.
+    #
+    # This method is extracted to improve testability by allowing
+    # error handling to be mocked or stubbed during testing.
+    #
+    # @param error [Exception] The error that occurred
+    private def handle_error(error)
+      puts "Error: #{error.message}"
+      exit 1
     end
   end
 end
