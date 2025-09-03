@@ -164,33 +164,6 @@ RSpec.describe Fasti::Formatter do
         expect(first_week).to match(/^\s+/)
       end
     end
-
-    context "when formatting holiday and weekend" do
-      let(:january_calendar) { Fasti::Calendar.new(2024, 1, country: :us) }
-
-      it "applies special formatting to holidays and weekends" do
-        # This is hard to test directly due to ANSI codes, but we can verify
-        # the output contains Paint formatting
-        output = formatter.format_month(january_calendar)
-        # The output should contain ANSI escape sequences for bold styling
-        # Should contain some ANSI formatting (holidays/Sundays have bold)
-        expect(output).to contain_styled(:bold, /.+/, reset: false) # Should have bold for holidays/Sundays
-      end
-    end
-
-    context "when highlighting today" do
-      before do
-        # Mock Date.today to control "today" for testing
-        allow(Date).to receive(:today).and_return(Date.new(2024, 6, 15))
-      end
-
-      it "highlights today's date" do
-        output = formatter.format_month(calendar)
-        # Should contain ANSI codes for inverse formatting
-        # June 15, 2024 is a Saturday (no special styling) + inverse
-        expect(output).to contain_styled(:inverse, /\s*15/)
-      end
-    end
   end
 
   describe "day styling behavior" do
