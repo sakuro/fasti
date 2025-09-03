@@ -19,13 +19,13 @@ module Fasti
         optional(:background).maybe(Types::Color)
 
         # Boolean styling attributes
-        optional(:bold).maybe(Types::MaybeBool)
-        optional(:italic).maybe(Types::MaybeBool)
-        optional(:faint).maybe(Types::MaybeBool)
-        optional(:inverse).maybe(Types::MaybeBool)
-        optional(:blink).maybe(Types::MaybeBool)
-        optional(:hide).maybe(Types::MaybeBool)
-        optional(:overline).maybe(Types::MaybeBool)
+        optional(:bold).maybe(Types::Params::Bool)
+        optional(:italic).maybe(Types::Params::Bool)
+        optional(:faint).maybe(Types::Params::Bool)
+        optional(:inverse).maybe(Types::Params::Bool)
+        optional(:blink).maybe(Types::Params::Bool)
+        optional(:hide).maybe(Types::Params::Bool)
+        optional(:overline).maybe(Types::Params::Bool)
 
         # Special underline attribute
         optional(:underline).maybe(Types::Underline)
