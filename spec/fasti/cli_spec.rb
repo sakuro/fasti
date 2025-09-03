@@ -444,4 +444,50 @@ RSpec.describe Fasti::CLI do
       end
     end
   end
+
+  describe "error handling" do
+    describe "#handle_error" do
+      it "can be mocked for testability" do
+        # Mock the error handling to avoid process exit during testing
+        allow(cli).to receive(:handle_error)
+
+        # This would normally cause an exit, but now we can test it safely
+        cli.run(%w[invalid_month 2024 --country US])
+
+        expect(cli).to have_received(:handle_error)
+          .with(instance_of(ArgumentError))
+      end
+
+      it "outputs error message and exits when not mocked" do
+        # Test the actual error handling behavior
+        error = ArgumentError.new("Test error message")
+
+        expect { cli.__send__(:handle_error, error) }
+          .to output("Error: Test error message\n").to_stdout
+          .and raise_error(SystemExit) {|e| expect(e.status).to eq(1) }
+      end
+    end
+
+    context "when errors occur during execution" do
+      it "calls handle_error for parsing errors" do
+        allow(cli).to receive(:handle_error)
+
+        # Force a parsing error
+        cli.run(%w[abc --country US])
+
+        expect(cli).to have_received(:handle_error)
+          .with(instance_of(ArgumentError))
+      end
+
+      it "calls handle_error for validation errors" do
+        allow(cli).to receive(:handle_error)
+
+        # Force a validation error
+        cli.run(%w[13 2024 --country US])
+
+        expect(cli).to have_received(:handle_error)
+          .with(instance_of(ArgumentError))
+      end
+    end
+  end
 end
