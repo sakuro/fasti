@@ -191,7 +191,7 @@ module Fasti
           opts.separator "  month  Month (1-12, optional)"
           opts.separator "  year   Year (optional)"
           opts.separator ""
-          opts.separator "Calendar display options:"
+          opts.separator "Format options:"
         end
 
         opts.on(
@@ -202,6 +202,35 @@ module Fasti
           "Output format (month, quarter, year)"
         ) do |format|
           options[:format] = format
+        end
+
+        opts.on(
+          "-m",
+          "--month",
+          "Display month format (equivalent to --format month)"
+        ) do
+          options[:format] = :month
+        end
+
+        opts.on(
+          "-q",
+          "--quarter",
+          "Display quarter format (equivalent to --format quarter)"
+        ) do
+          options[:format] = :quarter
+        end
+
+        opts.on(
+          "-y",
+          "--year",
+          "Display year format (equivalent to --format year)"
+        ) do
+          options[:format] = :year
+        end
+
+        if include_help
+          opts.separator ""
+          opts.separator "Calendar display options:"
         end
 
         opts.on(

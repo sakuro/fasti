@@ -40,8 +40,13 @@ RSpec.describe Fasti::CLI do
             month  Month (1-12, optional)
             year   Year (optional)
 
-          Calendar display options:
+          Format options:
               -f, --format FORMAT              Output format (month, quarter, year)
+              -m, --month                      Display month format (equivalent to --format month)
+              -q, --quarter                    Display quarter format (equivalent to --format quarter)
+              -y, --year                       Display year format (equivalent to --format year)
+
+          Calendar display options:
               -w, --start-of-week WEEKDAY      Week start day (sunday, monday, tuesday, wednesday, thursday, friday, saturday)
               -c, --country COUNTRY            Country code for holidays (e.g., JP, US, GB, DE)
               -s, --style STYLE                Custom styling (e.g., "sunday:bold holiday:foreground=red today:inverse")
@@ -129,6 +134,58 @@ RSpec.describe Fasti::CLI do
       it "displays calendar with friday start" do
         expect { cli.run(%w[6 2024 --start-of-week friday --country US]) }
           .to output(include("June 2024", "Fr Sa Su Mo Tu We Th")).to_stdout
+      end
+    end
+
+    context "with format shortcut options" do
+      it "displays month format using --month" do
+        expect { cli.run(%w[6 2024 --month --country US]) }
+          .to output(include("June 2024", "Su Mo Tu We Th Fr Sa")).to_stdout
+      end
+
+      it "displays month format using -m" do
+        expect { cli.run(%w[6 2024 -m --country US]) }
+          .to output(include("June 2024", "Su Mo Tu We Th Fr Sa")).to_stdout
+      end
+
+      it "displays quarter format using --quarter" do
+        expect { cli.run(%w[6 2024 --quarter --country US]) }
+          .to output(include("May 2024", "June 2024", "July 2024")).to_stdout
+      end
+
+      it "displays quarter format using -q" do
+        expect { cli.run(%w[6 2024 -q --country US]) }
+          .to output(include("May 2024", "June 2024", "July 2024")).to_stdout
+      end
+
+      it "displays year format using --year" do
+        expect { cli.run(%w[2024 --year --country US]) }
+          .to output(include("2024", "January 2024", "December 2024")).to_stdout
+      end
+
+      it "displays year format using -y" do
+        expect { cli.run(%w[2024 -y --country US]) }
+          .to output(include("2024", "January 2024", "December 2024")).to_stdout
+      end
+
+      it "uses last specified option when multiple shortcuts are provided" do
+        expect { cli.run(%w[6 2024 --month --quarter --year --country US]) }
+          .to output(include("2024", "January 2024", "December 2024")).to_stdout
+      end
+
+      it "uses last specified option when mixing shortcuts with --format" do
+        expect { cli.run(%w[6 2024 --format month --year --country US]) }
+          .to output(include("2024", "January 2024", "December 2024")).to_stdout
+      end
+
+      it "uses last specified option when --format comes after shortcuts" do
+        expect { cli.run(%w[6 2024 --year --format quarter --country US]) }
+          .to output(include("May 2024", "June 2024", "July 2024")).to_stdout
+      end
+
+      it "uses last specified option with short flags" do
+        expect { cli.run(%w[6 2024 -m -q -y --country US]) }
+          .to output(include("2024", "January 2024", "December 2024")).to_stdout
       end
     end
 

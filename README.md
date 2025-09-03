@@ -51,16 +51,25 @@ fasti 6 2024
 **Month View** (default):
 ```bash
 fasti 6 2024 --format month
+# Or using shortcuts:
+fasti 6 2024 --month
+fasti 6 2024 -m
 ```
 
 **Quarter View** (3 months side by side):
 ```bash
 fasti 6 2024 --format quarter
+# Or using shortcuts:
+fasti 6 2024 --quarter
+fasti 6 2024 -q
 ```
 
 **Year View** (all 12 months):
 ```bash
 fasti 2024 --format year
+# Or using shortcuts:
+fasti 2024 --year
+fasti 2024 -y
 ```
 
 ### Week Start Configuration
@@ -98,8 +107,13 @@ Arguments:
   month  Month (1-12, optional)
   year   Year (optional)
 
-Calendar display options:
+Format options:
   -f, --format FORMAT           Output format (month, quarter, year)
+  -m, --month                   Display month format (equivalent to --format month)
+  -q, --quarter                 Display quarter format (equivalent to --format quarter)
+  -y, --year                    Display year format (equivalent to --format year)
+
+Calendar display options:
   -w, --start-of-week WEEKDAY   Week start day (any day of the week)
   -c, --country COUNTRY         Country code for holidays (e.g., JP, US, GB, DE)
   -s, --style STYLE             Custom styling (e.g., "sunday:bold holiday:foreground=red today:inverse")
