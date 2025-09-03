@@ -63,8 +63,26 @@ module Fasti
       # Netherlands (complex regional adoption)
       nl: Date::ITALY, # Most regions by 1582-1583
 
-      # Japan uses Gregorian calendar since 1873 but for simplicity use Italian
-      jp: Date::ITALY
+      # Japan adopted Gregorian calendar on 1873-01-01 (Meiji 6)
+      # Before 1873: used lunisolar calendar, but we approximate with Julian for simplicity
+      jp: 2_405_160,
+
+      # China adopted Gregorian calendar on 1912-01-01 (Republic of China establishment)
+      # Before 1912: used lunisolar calendar, but we approximate with Julian for simplicity
+      cn: 2_419_403,     # Mainland China
+      tw: 2_419_403,     # Taiwan (same historical root as mainland)
+
+      # Korea adopted Gregorian calendar on 1896-01-01 (Korean Empire, Geonyang 1)
+      # Before 1896: used lunisolar calendar, but we approximate with Julian for simplicity
+      kr: 2_413_560,
+
+      # Vietnam adopted Gregorian calendar in 1967
+      # Before 1967: used lunisolar calendar, but we approximate with Julian for simplicity
+      vn: 2_439_492,
+
+      # Thailand adopted Gregorian calendar on 1888-01-01 (Rattanakosin 107)
+      # Before 1888: used lunisolar calendar, but we approximate with Julian for simplicity
+      th: 2_410_638
     }.freeze
     private_constant :TRANSITIONS
 

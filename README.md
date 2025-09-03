@@ -112,13 +112,24 @@ fasti 10 1582 --country IT --show-gaps
 
 # British transition - September 3-13, 1752 never existed in Britain
 fasti 9 1752 --country GB --show-gaps
+
+# Asian countries transitioned from lunisolar calendars
+# Japan transitioned in 1873 (Meiji era)
+fasti 12 1872 --country JP --show-gaps
+
+# Korea transitioned in 1896 (Korean Empire era)
+fasti 12 1895 --country KR --show-gaps
 ```
 
 **Gap Display Options:**
 - `--show-gaps`: Show calendar transition gaps as empty spaces
 - `--no-show-gaps` (default): Compress gaps like UNIX `cal` command for continuous display
 
-Supported countries with different transition dates include Italy (1582), Great Britain/US (1752), Russia (1918), and many others.
+Supported countries include:
+- **European**: Italy (1582), Great Britain/US (1752), Russia (1918), Germany, France, and others
+- **Asian**: Japan (1873), China/Taiwan (1912), Korea (1896), Vietnam (1967), Thailand (1888)
+
+Note: Asian countries transitioned from lunisolar calendars to Gregorian; pre-transition dates use Julian calendar approximation.
 
 ### Command Line Options
 
@@ -314,21 +325,27 @@ This project uses automated GitHub Actions workflows for releases. Maintainers c
 
 ### Historical Calendar Support
 
-Fasti currently does not handle historical calendar transitions correctly. Each country switched from the Julian to Gregorian calendar at different times, and these transition periods contain non-existent dates that are not properly handled.
+Fasti properly handles historical calendar transitions with country-specific transition dates. Each country switched from Julian to Gregorian calendar at different times, and these transition periods contain non-existent dates that are handled correctly.
 
-When displaying calendars from historical transition periods, you may encounter errors or incorrect date displays.
+Historical transition periods display correctly with proper gap handling:
 
-For example:
 ```bash
-# This may result in an error depending on the historical period
-fasti 10 1582 --country IT
+# Italian transition works correctly - shows gaps or compressed display
+fasti 10 1582 --country IT --show-gaps
+
+# Asian countries show transitions from lunisolar calendars
+fasti 12 1872 --country JP --show-gaps
 ```
 
 **Note**: Standard UNIX calendar tools like `cal` and `gcal` correctly handle these historical transitions by appropriately skipping non-existent dates during calendar reforms.
 
 **Technical Details**: Fasti uses country-specific Julian to Gregorian calendar transition dates with proper gap handling. Ruby's `Date` class uses Italy's transition date (`Date::ITALY`) by default, but Fasti's `CalendarTransitions` module supports historical transitions for different countries, properly handling non-existent dates during calendar reforms.
 
-**Available Countries**: Fasti supports calendar transitions for Italy (1582), Great Britain & US (1752), Russia (1918), Greece (1923), Nordic countries, and many others. See the source code for the complete list of supported countries.
+**Available Countries**: Fasti supports calendar transitions for:
+- **European countries**: Italy (1582), Great Britain & US (1752), Russia (1918), Germany, France, Greece (1923), Nordic countries, and others  
+- **Asian countries**: Japan (1873), China & Taiwan (1912), Korea (1896), Vietnam (1967), Thailand (1888)
+
+Asian countries used lunisolar calendars before adoption; pre-transition dates use Julian calendar approximation for computational consistency.
 
 ## Contributing
 
