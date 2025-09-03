@@ -36,7 +36,7 @@ module Fasti
 
       # Common countries using Italian transition (Catholic countries)
       es: Date::ITALY,     # Spain - same as Italy (1582-10-15)
-      fr: 2_299_229,       # France - 1582-12-20 (2 months later than Italy)
+      fr: 2_299_227,       # France - 1582-12-20 (corrected JDN from Wikipedia)
       pt: Date::ITALY,     # Portugal - same as Italy (1582-10-15)
       pl: Date::ITALY,     # Poland - same as Italy (1582-10-15)
       at: Date::ITALY,     # Austria - same as Italy (1582-10-15)
@@ -57,7 +57,7 @@ module Fasti
       no: 2_342_032,         # Norway - same as Denmark (March 1, 1700)
 
       # Eastern European countries (much later adoption)
-      ru: 2_421_640,         # Russia - February 14, 1918 (corrected JDN)
+      ru: 2_421_639,         # Russia - February 14, 1918 (corrected JDN)
       gr: 2_423_410,         # Greece - March 1, 1923 (corrected JDN)
 
       # Netherlands (complex regional adoption - using latest Protestant adoption)
@@ -72,6 +72,9 @@ module Fasti
       hr: 2_421_972,         # Croatia (Yugoslavia) - April 14, 1919
       si: 2_421_972,         # Slovenia (Yugoslavia) - April 14, 1919
       tr: 2_424_858,         # Turkey (civil calendar) - January 1, 1927
+
+      # Recent adopters from non-Julian calendars
+      sa: Date::GREGORIAN, # Saudi Arabia - adopted 2016-10-01 (from Islamic/Hijri calendar)
 
       # Asian countries: transitioned from lunisolar calendars, use proleptic Gregorian for consistency
       # This provides computational consistency while noting historical inaccuracy in documentation

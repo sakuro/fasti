@@ -18,7 +18,7 @@ RSpec.describe Fasti::CalendarTransitions do
     end
 
     it "returns correct JDN for Russia" do
-      expect(Fasti::CalendarTransitions.gregorian_start_jdn(:ru)).to eq(2_421_640)
+      expect(Fasti::CalendarTransitions.gregorian_start_jdn(:ru)).to eq(2_421_639)
     end
 
     it "returns default (Italian) JDN for unknown countries" do
@@ -132,7 +132,7 @@ RSpec.describe Fasti::CalendarTransitions do
     it "returns correct information for Russia" do
       info = Fasti::CalendarTransitions.transition_info(:ru)
 
-      expect(info[:gregorian_start_jdn]).to eq(2_421_640)
+      expect(info[:gregorian_start_jdn]).to eq(2_421_639)
       expect(info[:gregorian_start_date]).to be_a(Date)
       expect(info[:julian_end_date]).to be_a(Date)
       expect(info[:gap_days]).to be >= 0
