@@ -23,26 +23,14 @@ module Fasti
   #   formatter = Formatter.new
   #   puts formatter.format_year(2024, start_of_week: :sunday, country: :jp)
   class Formatter
-    # Default styles for different day types
-    # This defines the standard styling behavior when no custom styles are provided
-    DEFAULT_STYLES = {
-      sunday: Style.new(bold: true),
-      holiday: Style.new(bold: true),
-      today: Style.new(inverse: true)
-    }.freeze
-    private_constant :DEFAULT_STYLES
-
     # Creates a new formatter instance.
     #
-    # @param styles [Hash<Symbol, Style>] Custom styles for different day types
+    # @param styles [Hash<Symbol, Style>] Styles for different day types
     #   Keys can be :sunday, :monday, ..., :saturday, :holiday, :today
-    #   If styles is empty, DEFAULT_STYLES will be used
-    #   If styles is provided, it completely replaces the defaults
     # @example
-    #   Formatter.new  # Uses DEFAULT_STYLES
-    #   Formatter.new(styles: { sunday: Style.new(foreground: :red) })  # Only sunday styled
+    #   Formatter.new(styles: config.style)
     def initialize(styles: {})
-      @styles = styles.empty? ? DEFAULT_STYLES : styles
+      @styles = styles
     end
 
     # Formats a single month calendar with headers and color coding.

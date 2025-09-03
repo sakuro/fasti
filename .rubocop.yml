@@ -74,3 +74,9 @@ Metrics/BlockLength:
 Style/TopLevelMethodDefinition:
   Exclude:
     - 'benchmark/**/*'
+
+Style/Documentation:
+  # Exclude config.rb: Contains methods in module re-opening (not namespace module),
+  # but main Fasti module documentation is already provided in lib/fasti.rb
+  Exclude:
+    - 'lib/fasti/config.rb'

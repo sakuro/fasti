@@ -135,6 +135,15 @@ RSpec.describe Fasti::Formatter do
   end
 
   describe "#format_day (private method)" do
+    let(:basic_styles) do
+      {
+        sunday: Fasti::Style.new(bold: true),
+        holiday: Fasti::Style.new(bold: true),
+        today: Fasti::Style.new(inverse: true)
+      }
+    end
+    let(:formatter) { Fasti::Formatter.new(styles: basic_styles) }
+
     # Test the formatting through public methods that use it
     context "when formatting day through format_month" do
       let(:july_calendar) { Fasti::Calendar.new(2024, 7, country: :us) }
@@ -185,6 +194,14 @@ RSpec.describe Fasti::Formatter do
   end
 
   describe "day styling behavior" do
+    let(:basic_styles) do
+      {
+        sunday: Fasti::Style.new(bold: true),
+        holiday: Fasti::Style.new(bold: true),
+        today: Fasti::Style.new(inverse: true)
+      }
+    end
+    let(:formatter) { Fasti::Formatter.new(styles: basic_styles) }
     let(:july_2024) { Fasti::Calendar.new(2024, 7, country: :us) }
 
     describe "Sunday styling" do
@@ -299,6 +316,14 @@ RSpec.describe Fasti::Formatter do
   end
 
   describe "color coding behavior" do
+    let(:basic_styles) do
+      {
+        sunday: Fasti::Style.new(bold: true),
+        holiday: Fasti::Style.new(bold: true),
+        today: Fasti::Style.new(inverse: true)
+      }
+    end
+    let(:formatter) { Fasti::Formatter.new(styles: basic_styles) }
     let(:january_us) { Fasti::Calendar.new(2024, 1, country: :us) }
     let(:output) { formatter.format_month(january_us) }
 

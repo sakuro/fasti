@@ -3,7 +3,6 @@
 require "locale"
 require "optparse"
 require "pathname"
-require "shellwords"
 
 module Fasti
   # Immutable data structure for CLI options
@@ -31,8 +30,8 @@ module Fasti
   #
   # ## Configuration File
   # Default options can be specified in a configuration file:
-  # - Path: `$XDG_CONFIG_HOME/fastirc` (or `$HOME/.config/fastirc` if XDG_CONFIG_HOME is unset)
-  # - Format: Shell-style arguments (e.g., `--format year --country US`)
+  # - Path: `$XDG_CONFIG_HOME/fasti/config.rb` (or `$HOME/.config/fasti/config.rb` if XDG_CONFIG_HOME is unset)
+  # - Format: Ruby DSL using Fasti.configure block
   # - Precedence: Command line options override config file options
   #
   # @example Basic usage
@@ -47,12 +46,20 @@ module Fasti
   # @example Year view
   #   CLI.run(["2024", "--format", "year", "--country", "US"])
   #
-  # @example Config file content ($HOME/.config/fastirc)
-  #   --format quarter --start-of-week monday --country US
+  # @example Config file content ($HOME/.config/fasti/config.rb)
+  #   Fasti.configure do |config|
+  #     config.format = :quarter
+  #     config.start_of_week = :monday
+  #     config.country = :US
+  #   end
   class CLI
     # Non-country locales that should be skipped in country detection
     NON_COUNTRY_LOCALES = %w[C POSIX].freeze
     private_constant :NON_COUNTRY_LOCALES
+
+    # General configuration attributes (non-style attributes)
+    GENERAL_ATTRIBUTES = %i[format start_of_week country].freeze
+    private_constant :GENERAL_ATTRIBUTES
 
     # Runs the CLI with the specified arguments.
     #
@@ -67,7 +74,7 @@ module Fasti
     def run(argv)
       @current_time = Time.now # Single source of truth for time
       catch(:early_exit) do
-        month, year, options = parse_options(argv)
+        month, year, options = parse_arguments(argv)
         generate_calendar(month, year, options)
       end
     rescue => e
@@ -75,48 +82,57 @@ module Fasti
       exit 1
     end
 
-    # Parses command line options using OptionParser.
+    # Parses all command line arguments (positional + options).
     #
     # @param argv [Array<String>] Arguments to parse
-    # @return [Options] Parsed options object
-    private def parse_options(argv)
-      options_hash = default_options.to_h
+    # @return [Array<Integer, Integer, Options>] Month, year, and parsed options
+    private def parse_arguments(argv)
+      options = parse_options(argv)
+      month, year = parse_positional_args(argv)
+      [month, year, options]
+    end
 
-      # 1. Parse options first - removes them from argv automatically
-      parser = create_option_parser(options_hash, include_help: true)
+    # Parses CLI options, merges with config/defaults, and validates.
+    #
+    # @param argv [Array<String>] Arguments to parse (destructively modified)
+    # @return [Options] Final validated options object
+    private def parse_options(argv)
+      # 1. Parse CLI arguments into separate hash
+      cli_options_hash = {}
+      parser = create_option_parser(cli_options_hash, include_help: true)
       parser.parse!(argv) # Destructively modifies argv
 
-      # 2. Parse remaining positional arguments using instance variable
-      month, year = parse_positional_args(argv)
+      # 2. Apply CLI option overrides to base options (Options + Hash → Options)
+      final_options = apply_cli_overrides(base_options, cli_options_hash)
 
-      # 3. Create options and return with month/year
-      options = Options.new(**options_hash)
-
-      # Validate required options
-      unless options.country
+      # 3. Validate required options
+      unless final_options.country
         raise ArgumentError,
           "Country could not be determined. Use --country with a country code or set LANG/LC_ALL environment variables"
       end
 
-      [month, year, options]
+      final_options
     end
 
-    # Returns default option values merged with config file settings.
+    # Returns base configuration (defaults + config file settings).
     #
-    # @return [Options] Default options
-    private def default_options
-      defaults = {
+    # @return [Options] Base options before CLI overrides
+    private def base_options
+      defaults = base_default_values
+      config_options = load_config_options
+      merge_defaults_with_config(defaults, config_options)
+    end
+
+    # Returns the base default option values.
+    #
+    # @return [Hash] Base default values
+    private def base_default_values
+      {
         format: :month,
         start_of_week: :sunday,
         country: detect_country_from_environment,
         style: nil
       }
-
-      # Merge with config file options if available
-      config_options = load_config_options
-      merged_options = defaults.merge(config_options)
-
-      Options.new(**merged_options)
     end
 
     # Loads options from the config file if it exists.
@@ -127,16 +143,27 @@ module Fasti
       return {} unless config_file.exist?
 
       begin
-        content = config_file.read.strip
-        return {} if content.empty?
-
-        # Parse config file content as shell arguments
-        config_args = Shellwords.split(content)
-        parse_config_args(config_args)
+        Config.load_from_file(config_file.to_s)
       rescue => e
-        puts "Warning: Failed to parse config file #{config_file}: #{e.message}"
+        puts "Warning: Failed to load config file #{config_file}: #{e.message}"
         {}
       end
+    end
+
+    # Merges default values with config file options.
+    #
+    # @param defaults [Hash] Base default values
+    # @param config_options [Hash] Config file options
+    # @return [Options] Merged options object
+    private def merge_defaults_with_config(defaults, config_options)
+      # Merge general attributes (config overrides defaults)
+      merged_general = defaults.slice(*GENERAL_ATTRIBUTES)
+        .merge(config_options.slice(*GENERAL_ATTRIBUTES))
+
+      # Handle style separately (just use config style, no defaults)
+      merged_options = merged_general.merge(style: config_options[:style])
+
+      Options.new(**merged_options)
     end
 
     # Determines the config file path using XDG specification.
@@ -144,7 +171,7 @@ module Fasti
     # @return [Pathname] Path to config file
     private def config_file_path
       config_home = ENV["XDG_CONFIG_HOME"] || (Pathname.new(Dir.home) / ".config")
-      Pathname.new(config_home) / "fastirc"
+      Pathname.new(config_home) / "fasti" / "config.rb"
     end
 
     # Creates a shared OptionParser for both CLI and config file parsing.
@@ -202,7 +229,8 @@ module Fasti
           String,
           "Custom styling (e.g., \"sunday:bold holiday:foreground=red today:inverse\")"
         ) do |style|
-          options[:style] = style
+          # Parse style string immediately to Hash format
+          options[:style] = StyleParser.new.parse(style)
         end
 
         if include_help
@@ -222,27 +250,11 @@ module Fasti
       end
     end
 
-    # Parses config file arguments and returns option hash.
-    #
-    # @param args [Array<String>] Arguments from config file
-    # @return [Hash] Parsed options
-    private def parse_config_args(args)
-      options = {}
-      parser = create_option_parser(options, include_help: false)
-
-      # Parse config file args
-      parser.parse!(args.dup)
-      options
-    rescue OptionParser::InvalidOption, OptionParser::MissingArgument, OptionParser::InvalidArgument => e
-      raise StandardError, "Invalid option in config file: #{e.message}"
-    end
-
     # Generates and displays the calendar based on parsed options.
     #
     # @param options [Options] Parsed options
     private def generate_calendar(month, year, options)
-      # Parse custom styles if provided
-      styles = options.style ? StyleParser.new.parse(options.style) : {}
+      styles = options.style || {}
 
       formatter = Formatter.new(styles:)
       start_of_week = options.start_of_week
@@ -417,6 +429,46 @@ module Fasti
       end
 
       nil
+    end
+
+    # Applies CLI option overrides to base options, handling style composition specially.
+    #
+    # @param base_options [Options] Base options (config + defaults)
+    # @param cli_overrides [Hash] CLI option overrides
+    # @return [Options] Final options with CLI overrides applied
+    private def apply_cli_overrides(base_options, cli_overrides)
+      # Merge general attributes (CLI overrides base)
+      merged_general = base_options.to_h.slice(*GENERAL_ATTRIBUTES)
+        .merge(cli_overrides.slice(*GENERAL_ATTRIBUTES))
+
+      # Compose styles specially (not simple override)
+      merged_style = compose_styles(base_options.style, cli_overrides[:style])
+
+      # Create final options
+      Options.new(**merged_general, style: merged_style)
+    end
+
+    # Composes two style hashes using Style >> operator for same targets
+    #
+    # @param base_styles [Hash<Symbol, Style>, nil] Base style hash
+    # @param overlay_styles [Hash<Symbol, Style>, nil] Overlay style hash
+    # @return [Hash<Symbol, Style>] Composed style hash
+    private def compose_styles(base_styles, overlay_styles)
+      return overlay_styles if base_styles.nil?
+      return base_styles if overlay_styles.nil?
+
+      result = base_styles.dup
+      overlay_styles.each do |target, overlay_style|
+        result[target] = if result[target]
+                           # Same target: compose using >> operator
+                           result[target] >> overlay_style
+                         else
+                           # New target: add directly
+                           overlay_style
+                         end
+      end
+
+      result
     end
   end
 end

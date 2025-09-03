@@ -1,4 +1,0 @@
---format quarter
---country JP
---start-of-week monday
---style "saturday:foreground=blue sunday:foreground=red holiday:foreground=red today:inverse"

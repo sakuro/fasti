@@ -33,6 +33,9 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   # Dependencies for fasti implementation
+  spec.add_dependency "dry-configurable", "~> 1.0"
+  spec.add_dependency "dry-schema", "~> 1.13"
+  spec.add_dependency "dry-types", "~> 1.7"
   spec.add_dependency "holidays", "~> 8.0"
   spec.add_dependency "locale", "~> 2.1"
   spec.add_dependency "paint", "~> 2.0"
