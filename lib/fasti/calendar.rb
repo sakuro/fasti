@@ -143,61 +143,29 @@ module Fasti
       grid = []
       current_row = []
 
-      # Calculate the actual position of each day based on its date
-      # Start with the first day of the month's position
-      start_wday = WEEK_DAYS.index(start_of_week) || 0
-      
       # Add leading empty cells for days before month starts
       leading_empty_days.times do
         current_row << nil
       end
 
-      # Keep track of the current position in the week
-      current_position = leading_empty_days
-
+      # Add only existing days (skip gap days) for continuous display
       (1..days_in_month).each do |day|
-        # Get the actual date for this day (might be nil for gaps)
-        actual_date = to_date(day)
-        
-        if actual_date
-          # Calculate where this date should appear in the week
-          expected_position = (actual_date.wday - start_wday) % 7
-          
-          # Fill in any gaps between current position and expected position
-          while current_position % 7 != expected_position
-            current_row << nil
-            current_position += 1
-            
-            # Start new row if we've filled 7 positions
-            if current_position % 7 == 0
-              grid << current_row
-              current_row = []
-            end
-          end
-          
-          # Add the actual day
+        # Only add days that actually exist (not in transition gaps)
+        if to_date(day)
           current_row << day
-          current_position += 1
-          
-        else
-          # Day doesn't exist (gap), but we still need to account for its position
-          # Add nil to maintain the sequence
-          current_row << nil
-          current_position += 1
+
+          # Start new row on end of week
+          if current_row.length == 7
+            grid << current_row
+            current_row = []
+          end
         end
-        
-        # Start new row if we've filled 7 positions
-        if current_position % 7 == 0
-          grid << current_row
-          current_row = []
-        end
+        # Skip gap days completely - they don't take up space in the grid
       end
 
       # Add trailing empty cells and final row if needed
       if current_row.any?
-        while current_row.length < 7
-          current_row << nil
-        end
+        current_row << nil while current_row.length < 7
         grid << current_row
       end
 

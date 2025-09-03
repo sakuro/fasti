@@ -187,14 +187,35 @@ module Fasti
     #   #   }
     def self.transition_info(country)
       transition_jdn = gregorian_start_jdn(country)
-      gregorian_start = Date.jd(transition_jdn)
+      
+      # Use explicit calendar system to avoid implicit Italian transition
+      gregorian_start = Date.jd(transition_jdn, Date::GREGORIAN)
       julian_end = Date.jd(transition_jdn - 1, Date::JULIAN)
-
+      
+      # Calculate actual gap in calendar dates, not just JDN difference
+      # For example: Oct 4 (Julian) -> Oct 15 (Gregorian) has 10 gap days (5-14)
+      if transition_jdn == DEFAULT_TRANSITION
+        # For Italy, Ruby's Date class already handles the gap
+        gap_days = 10  # Known historical gap for Italy
+      else
+        # For other countries, calculate based on calendar date differences
+        # The gap is the difference between the date numbers minus 1
+        gap_days = gregorian_start.day - julian_end.day - 1
+        
+        # Handle cross-month transitions (like Denmark Dec 21 -> Jan 1)
+        if gap_days < 0
+          # When crossing months, need to account for days in the previous month
+          # This is a simplified calculation - may need refinement for complex cases
+          prev_month_days = Date.new(julian_end.year, julian_end.month, -1, Date::JULIAN).day
+          gap_days = (prev_month_days - julian_end.day) + gregorian_start.day - 1
+        end
+      end
+      
       {
         gregorian_start_jdn: transition_jdn,
         gregorian_start_date: gregorian_start,
         julian_end_date: julian_end,
-        gap_days: transition_jdn - julian_end.jd - 1
+        gap_days: gap_days
       }
     end
 
