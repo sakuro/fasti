@@ -72,6 +72,22 @@ RSpec.describe Fasti::Config do
       expect(Fasti.config.style).to be_nil
     end
 
+    it "accepts hex colors in various formats" do
+      Fasti.configure do |config|
+        config.style = {
+          monday: {foreground: "#FF0000"},    # #RRGGBB
+          tuesday: {foreground: "#F00"},      # #RGB
+          wednesday: {foreground: "FF0000"},  # RRGGBB
+          thursday: {foreground: "F00"}       # RGB
+        }
+      end
+
+      expect(Fasti.config.style[:monday].foreground).to eq("#FF0000")
+      expect(Fasti.config.style[:tuesday].foreground).to eq("#F00")
+      expect(Fasti.config.style[:wednesday].foreground).to eq("FF0000")
+      expect(Fasti.config.style[:thursday].foreground).to eq("F00")
+    end
+
     it "raises error for invalid format" do
       expect {
         Fasti.configure do |config|
@@ -109,7 +125,7 @@ RSpec.describe Fasti::Config do
         Fasti.configure do |config|
           config.style = {sunday: {foreground: :invalid_color}}
         end
-      }.to raise_error(ArgumentError, /must be one of/)
+      }.to raise_error(ArgumentError, /must be Symbol or is in invalid format/)
     end
 
     it "raises error for non-hash style" do

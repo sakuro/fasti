@@ -29,15 +29,25 @@ module Fasti
         included_in: %i[sunday monday tuesday wednesday thursday friday saturday holiday today]
       )
 
-      # Color values (named colors only for now, hex colors can be added later)
-      Color = Coercible::Symbol.constrained(
+      # Named color values
+      NamedColor = Coercible::Symbol.constrained(
         included_in: %i[red blue green yellow magenta cyan white black default]
       )
+
+      # Hex color values (e.g., "#FF0000", "#F00", "FF0000", "F00")
+      HexColor = Coercible::String.constrained(format: /\A#?\h{3}(?:\h{3})?\z/)
+
+      # Color values (named colors or hex colors)
+      Color = NamedColor | HexColor
 
       # Underline attribute value (true | false | :double)
       Underline = Params::Bool | Coercible::Symbol.constrained(included_in: [:double])
 
-      # Make all type constants explicitly public
+      # Internal type constants (used only for composition)
+      private_constant :NamedColor
+      private_constant :HexColor
+
+      # Make public type constants explicitly public
       public_constant :Format
       public_constant :StartOfWeek
       public_constant :Country

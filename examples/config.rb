@@ -47,7 +47,7 @@ end
 #
 # Color attributes:
 # - foreground: :red, :blue, :green, :yellow, :magenta, :cyan, :white, :black, :default
-# - foreground: "#FF0000", "#00FF00", "#0000FF" (hex colors)
+# - foreground: "#FF0000", "#F00", "FF0000", "F00" (hex colors in various formats)
 # - background: (same options as foreground)
 #
 # Boolean attributes:
