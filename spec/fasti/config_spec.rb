@@ -44,7 +44,6 @@ RSpec.describe Fasti::Config do
         config.style = style_hash
       end
 
-      # Now returns Style objects instead of plain hashes
       expect(Fasti.config.style[:sunday]).to be_a(Fasti::Style)
       expect(Fasti.config.style[:sunday].bold).to be(true)
       expect(Fasti.config.style[:sunday].foreground).to eq(:red)

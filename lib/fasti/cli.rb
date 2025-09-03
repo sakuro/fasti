@@ -237,7 +237,6 @@ module Fasti
     #
     # @param options [Options] Parsed options
     private def generate_calendar(month, year, options)
-      # StyleParser already returns Hash<Symbol, Style>, so use directly
       styles = options.style || {}
 
       formatter = Formatter.new(styles:)

@@ -11,7 +11,6 @@ Fasti.configure do |config|
   config.country = :jp # ISO country code for holidays
 
   # Style configuration using structured hash format
-  # This is much cleaner and more maintainable than string-based definitions
   config.style = {
     # Weekday styles
     sunday: {
