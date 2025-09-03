@@ -5,7 +5,6 @@ require_relative "config/schema"
 require_relative "config/types"
 require_relative "style"
 
-# Fasti configuration management components
 module Fasti
   # Configuration management using dry-configurable
   #
