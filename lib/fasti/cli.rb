@@ -57,6 +57,10 @@ module Fasti
     NON_COUNTRY_LOCALES = %w[C POSIX].freeze
     private_constant :NON_COUNTRY_LOCALES
 
+    # General configuration attributes (non-style attributes)
+    GENERAL_ATTRIBUTES = %i[format start_of_week country].freeze
+    private_constant :GENERAL_ATTRIBUTES
+
     # Runs the CLI with the specified arguments.
     #
     # @param argv [Array<String>] Command line arguments to parse
@@ -94,8 +98,8 @@ module Fasti
       # 3. Parse remaining positional arguments
       month, year = parse_positional_args(argv)
 
-      # 4. Compose base options with CLI options
-      final_options = compose_options(base_options, cli_options_hash)
+      # 4. Apply CLI option overrides to base options
+      final_options = apply_cli_overrides(base_options, cli_options_hash)
 
       # 5. Validate required options
       unless final_options.country
@@ -106,28 +110,38 @@ module Fasti
       [month, year, final_options]
     end
 
-    # Returns default option values merged with config file settings.
+    # Returns base option values (defaults merged with config file settings).
     #
-    # @return [Options] Default options
+    # @return [Options] Base options for further CLI option composition
     private def default_options
-      defaults = {
+      defaults = base_default_values
+      config_options = load_config_options
+      merge_defaults_with_config(defaults, config_options)
+    end
+
+    # Returns the base default option values.
+    #
+    # @return [Hash] Base default values
+    private def base_default_values
+      {
         format: :month,
         start_of_week: :sunday,
         country: detect_country_from_environment,
         style: nil
       }
+    end
 
-      # Load config file options
-      config_options = load_config_options
+    # Merges default values with config file options.
+    #
+    # @param defaults [Hash] Base default values
+    # @param config_options [Hash] Config file options
+    # @return [Options] Merged options object
+    private def merge_defaults_with_config(defaults, config_options)
+      # Merge general attributes (config overrides defaults)
+      merged_general = defaults.slice(*GENERAL_ATTRIBUTES)
+        .merge(config_options.slice(*GENERAL_ATTRIBUTES))
 
-      # Define attribute categories
-      general_attrs = %i[format start_of_week country]
-
-      # Merge general attributes (simple override)
-      merged_general = defaults.slice(*general_attrs)
-        .merge(config_options.slice(*general_attrs))
-
-      # Handle style separately (no CLI args yet, so just use config style)
+      # Handle style separately (just use config style, no defaults)
       merged_options = merged_general.merge(style: config_options[:style])
 
       Options.new(**merged_options)
@@ -413,21 +427,18 @@ module Fasti
       nil
     end
 
-    # Composes base options with CLI options, handling style composition specially
+    # Applies CLI option overrides to base options, handling style composition specially.
     #
     # @param base_options [Options] Base options (config + defaults)
-    # @param cli_options_hash [Hash] CLI options hash
-    # @return [Options] Composed options
-    private def compose_options(base_options, cli_options_hash)
-      # Define attribute categories
-      general_attrs = %i[format start_of_week country]
-
+    # @param cli_overrides [Hash] CLI option overrides
+    # @return [Options] Final options with CLI overrides applied
+    private def apply_cli_overrides(base_options, cli_overrides)
       # Merge general attributes (CLI overrides base)
-      merged_general = base_options.to_h.slice(*general_attrs)
-        .merge(cli_options_hash.slice(*general_attrs))
+      merged_general = base_options.to_h.slice(*GENERAL_ATTRIBUTES)
+        .merge(cli_overrides.slice(*GENERAL_ATTRIBUTES))
 
-      # Compose styles specially
-      merged_style = compose_styles(base_options.style, cli_options_hash[:style])
+      # Compose styles specially (not simple override)
+      merged_style = compose_styles(base_options.style, cli_overrides[:style])
 
       # Create final options
       Options.new(**merged_general, style: merged_style)
