@@ -129,13 +129,12 @@ module Fasti
     # @param year [Integer] The year to display
     # @param start_of_week [Symbol] Week start preference (:sunday or :monday)
     # @param country [String] Country code for holiday context
-    # @param show_gaps [Boolean] Whether to show calendar transition gaps
     # @return [String] Formatted year view string
     #
     # @example Full year display
-    #   formatter.format_year(2024, start_of_week: :sunday, country: :jp, show_gaps: false)
+    #   formatter.format_year(2024, start_of_week: :sunday, country: :jp)
     #   # Displays all 12 months in 4 rows of 3 months each
-    def format_year(year, country:, start_of_week: :sunday, show_gaps: false)
+    def format_year(year, country:, start_of_week: :sunday)
       output = []
 
       # Year header
@@ -145,7 +144,7 @@ module Fasti
       # Process 4 quarters (3 months each)
       quarters = []
       (1..12).each_slice(3) do |months|
-        calendars = months.map {|month| Calendar.new(year, month, start_of_week:, country:, show_gaps:) }
+        calendars = months.map {|month| Calendar.new(year, month, start_of_week:, country:) }
         quarters << format_quarter(calendars)
       end
 

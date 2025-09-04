@@ -33,7 +33,6 @@ Metrics/ClassLength:
 # Configuration parameters: AllowedMethods, AllowedPatterns, Max.
 Metrics/CyclomaticComplexity:
   Exclude:
-    - 'lib/fasti/calendar.rb'
     - 'lib/fasti/formatter.rb'
     - 'lib/fasti/style.rb'
 
@@ -49,15 +48,9 @@ Metrics/MethodLength:
     - 'lib/fasti/style_parser.rb'
     - 'spec/support/ansi_matchers.rb'
 
-# Configuration parameters: Max, CountKeywordArgs, MaxOptionalParameters.
-Metrics/ParameterLists:
-  Exclude:
-    - 'lib/fasti/cli.rb'
-
 # Configuration parameters: AllowedMethods, AllowedPatterns, Max.
 Metrics/PerceivedComplexity:
   Exclude:
-    - 'lib/fasti/calendar.rb'
     - 'lib/fasti/formatter.rb'
     - 'lib/fasti/style.rb'
 
