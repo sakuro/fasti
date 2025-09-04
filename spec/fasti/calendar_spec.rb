@@ -371,9 +371,8 @@ RSpec.describe Fasti::Calendar do
 
     context "calendar grid generation with gaps" do
       let(:italian_calendar) { Fasti::Calendar.new(1582, 10, country: :it) }
-      let(:italian_calendar_show_gaps) { Fasti::Calendar.new(1582, 10, country: :it, show_gaps: true) }
 
-      it "generates calendar grid correctly despite transition gaps (compressed mode - default)" do
+      it "generates calendar grid correctly despite transition gaps (compressed mode)" do
         grid = italian_calendar.calendar_grid
         expect(grid).to be_an(Array)
         expect(grid.length).to be > 0
@@ -388,48 +387,8 @@ RSpec.describe Fasti::Calendar do
         expect(flat_days.length).to eq(21)
       end
 
-      it "generates calendar grid with gaps shown as empty spaces (show_gaps: true)" do
-        grid = italian_calendar_show_gaps.calendar_grid
-        expect(grid).to be_an(Array)
-        expect(grid.length).to be > 0
-
-        # Grid should still only contain valid days when compacted
-        flat_days = grid.flatten
-        flat_days.compact!
-        expect(flat_days).to include(1, 2, 3, 4, 15, 16) # Valid days before and after gap
-        expect(flat_days).not_to include(5, 6, 7, 8, 9, 10, 11, 12, 13, 14) # Gap days
-
-        # Should have 21 valid days (31 total - 10 gap days)
-        expect(flat_days.length).to eq(21)
-
-        # But the grid should have more nil entries to show the gaps
-        all_entries = grid.flatten
-        nil_count = all_entries.count(nil)
-        expect(nil_count).to be > 10 # Should have extra nils for the gap
-      end
-
-      it "show_gaps mode maintains proper weekday alignment" do
-        grid = italian_calendar_show_gaps.calendar_grid
-
-        # Each week should still have exactly 7 entries
-        grid.each do |week|
-          expect(week.length).to eq(7)
-        end
-
-        # Check that Oct 15, 1582 (first day after gap) is properly aligned
-        # Oct 1 was a Friday, so Oct 15 should be a Friday too (JDN continuity)
-        flat_days = grid.flatten
-        oct_15_index = flat_days.index(15)
-        expect(oct_15_index).not_to be_nil
-
-        # Oct 15 should be in the same weekday position as it would be in compressed mode
-        oct_15_week_pos = oct_15_index % 7
-        expect(oct_15_week_pos).to eq(5) # Friday position (0=Sunday, 1=Monday, ..., 5=Friday)
-      end
-
       it "handles month_year_header for historical dates" do
         expect(italian_calendar.month_year_header).to eq("October 1582")
-        expect(italian_calendar_show_gaps.month_year_header).to eq("October 1582")
       end
     end
   end

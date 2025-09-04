@@ -104,32 +104,27 @@ Fasti automatically detects your country from environment variables (`LC_ALL`, `
 For historical dates, Fasti supports country-specific Julian to Gregorian calendar transitions with proper gap handling:
 
 ```bash
-# Show October 1582 (Italian transition) - compressed gaps (default)
+# Show October 1582 (Italian transition) - compressed display
 fasti 10 1582 --country IT
 
-# Show gaps historically - October 5-14, 1582 never existed in Italy
-fasti 10 1582 --country IT --show-gaps
-
 # British transition - September 3-13, 1752 never existed in Britain
-fasti 9 1752 --country GB --show-gaps
+fasti 9 1752 --country GB
 
 # Asian countries transitioned from lunisolar calendars
 # Japan transitioned in 1873 (Meiji era)
-fasti 12 1872 --country JP --show-gaps
+fasti 12 1872 --country JP
 
 # Korea transitioned in 1896 (Korean Empire era)
-fasti 12 1895 --country KR --show-gaps
+fasti 12 1895 --country KR
 
 # France had different transition date than Italy
-fasti 12 1582 --country FR --show-gaps
+fasti 12 1582 --country FR
 
 # Sweden's complex transition in 1753
-fasti 3 1753 --country SE --show-gaps
+fasti 3 1753 --country SE
 ```
 
-**Gap Display Options:**
-- `--show-gaps`: Show calendar transition gaps as empty spaces
-- `--no-show-gaps` (default): Compress gaps like UNIX `cal` command for continuous display
+Calendar transitions are displayed in compressed format (like UNIX `cal` command) for continuous display without confusing gaps.
 
 Supported countries with calendar transition dates:
 
@@ -170,7 +165,6 @@ Calendar display options:
   -w, --start-of-week WEEKDAY   Week start day (any day of the week)
   -c, --country COUNTRY         Country code for holidays (e.g., JP, US, GB, DE)
   -s, --style STYLE             Custom styling (e.g., "sunday:bold holiday:foreground=red today:inverse")
-      --[no-]show-gaps          Show calendar transition gaps as empty space (default: compress like UNIX cal)
 
 Other options:
   -v, --version                 Show version
@@ -208,7 +202,6 @@ Fasti.configure do |config|
   config.format = :quarter
   config.start_of_week = :monday
   config.country = :US
-  config.show_gaps = false  # Default: compress calendar transition gaps
   # Custom styling (optional)
   config.style = {
     sunday: { bold: true },
@@ -350,11 +343,11 @@ Fasti properly handles historical calendar transitions with country-specific tra
 Historical transition periods display correctly with proper gap handling:
 
 ```bash
-# Italian transition works correctly - shows gaps or compressed display
-fasti 10 1582 --country IT --show-gaps
+# Italian transition works correctly - shows compressed display
+fasti 10 1582 --country IT
 
 # Asian countries show transitions from lunisolar calendars
-fasti 12 1872 --country JP --show-gaps
+fasti 12 1872 --country JP
 ```
 
 **Note**: Standard UNIX calendar tools like `cal` and `gcal` correctly handle these historical transitions by appropriately skipping non-existent dates during calendar reforms.

@@ -36,9 +36,6 @@ module Fasti
     # Country code for holiday detection
     setting :country, default: :us, constructor: Types::Country
 
-    # Show calendar transition gaps
-    setting :show_gaps, default: false, constructor: Types::Params::Bool
-
     # Style configuration
     # Accepts a hash mapping style targets to their attributes
     # @param value [Hash<Symbol|String, Hash>] Style configuration hash
@@ -92,7 +89,6 @@ module Fasti
         config.format = :month
         config.start_of_week = :sunday
         config.country = :us
-        config.show_gaps = false
         config.style = nil
       end
     end

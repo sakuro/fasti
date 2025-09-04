@@ -158,7 +158,6 @@ RSpec.describe Fasti::Config do
         format: :quarter,
         start_of_week: :sunday, # default
         country: :jp,
-        show_gaps: false, # default
         style: {sunday: Fasti::Style.new(bold: true)}
       })
     end

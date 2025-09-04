@@ -6,7 +6,7 @@ require "pathname"
 
 module Fasti
   # Immutable data structure for CLI options
-  Options = Data.define(:format, :start_of_week, :country, :style, :show_gaps)
+  Options = Data.define(:format, :start_of_week, :country, :style)
 
   # Command-line interface for the fasti calendar application.
   #
@@ -58,7 +58,7 @@ module Fasti
     private_constant :NON_COUNTRY_LOCALES
 
     # General configuration attributes (non-style attributes)
-    GENERAL_ATTRIBUTES = %i[format start_of_week country show_gaps].freeze
+    GENERAL_ATTRIBUTES = %i[format start_of_week country].freeze
     private_constant :GENERAL_ATTRIBUTES
 
     # Runs the CLI with the specified arguments.
@@ -130,8 +130,7 @@ module Fasti
         format: :month,
         start_of_week: :sunday,
         country: detect_country_from_environment,
-        style: nil,
-        show_gaps: false # Default: compress gaps like UNIX cal
+        style: nil
       }
     end
 
@@ -262,13 +261,6 @@ module Fasti
           options[:style] = StyleParser.new.parse(style)
         end
 
-        opts.on(
-          "--[no-]show-gaps",
-          "Show calendar transition gaps as empty space (default: compress like UNIX cal)"
-        ) do |show_gaps|
-          options[:show_gaps] = show_gaps
-        end
-
         if include_help
           opts.separator ""
           opts.separator "Other options:"
@@ -295,15 +287,13 @@ module Fasti
       formatter = Formatter.new(styles:)
       start_of_week = options.start_of_week
       country = options.country
-      show_gaps = options.show_gaps
-
       output = case options.format
                when :month
-                 generate_month_calendar(month, year, country, formatter, start_of_week, show_gaps)
+                 generate_month_calendar(month, year, country, formatter, start_of_week)
                when :quarter
-                 generate_quarter_calendar(month, year, country, formatter, start_of_week, show_gaps)
+                 generate_quarter_calendar(month, year, country, formatter, start_of_week)
                when :year
-                 generate_year_calendar(month, year, country, formatter, start_of_week, show_gaps)
+                 generate_year_calendar(month, year, country, formatter, start_of_week)
                else
                  raise ArgumentError, "Unknown format: #{options.format}"
                end
@@ -317,13 +307,12 @@ module Fasti
     # @param formatter [Formatter] Calendar formatter
     # @param start_of_week [Symbol] Week start preference
     # @return [String] Formatted calendar
-    private def generate_month_calendar(month, year, country, formatter, start_of_week, show_gaps)
+    private def generate_month_calendar(month, year, country, formatter, start_of_week)
       calendar = Calendar.new(
         year,
         month,
         start_of_week:,
-        country:,
-        show_gaps:
+        country:
       )
       formatter.format_month(calendar)
     end
@@ -334,7 +323,7 @@ module Fasti
     # @param formatter [Formatter] Calendar formatter
     # @param start_of_week [Symbol] Week start preference
     # @return [String] Formatted quarter calendar
-    private def generate_quarter_calendar(month, year, country, formatter, start_of_week, show_gaps)
+    private def generate_quarter_calendar(month, year, country, formatter, start_of_week)
       base_month = month
 
       months = [(base_month - 1), base_month, (base_month + 1)].map {|m|
@@ -348,7 +337,7 @@ module Fasti
       }
 
       calendars = months.map {|y, m|
-        Calendar.new(y, m, start_of_week:, country:, show_gaps:)
+        Calendar.new(y, m, start_of_week:, country:)
       }
 
       formatter.format_quarter(calendars)
@@ -360,12 +349,11 @@ module Fasti
     # @param formatter [Formatter] Calendar formatter
     # @param start_of_week [Symbol] Week start preference
     # @return [String] Formatted year calendar
-    private def generate_year_calendar(_month, year, country, formatter, start_of_week, show_gaps)
+    private def generate_year_calendar(_month, year, country, formatter, start_of_week)
       formatter.format_year(
         year,
         country:,
-        start_of_week:,
-        show_gaps:
+        start_of_week:
       )
     end
 
