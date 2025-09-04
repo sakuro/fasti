@@ -179,7 +179,7 @@ as these are executable utilities, not library code.
 ### 3. Exclusion settings not reflected
 
 **Cause**: Misconfiguration in `.rubocop_todo.yml`
-**Solution**: Regenerate with `bundle exec rake rubocop:regenerate_todo`
+**Solution**: Regenerate with `bundle exec rubocop --regenerate-todo`
 
 ## Best Practices
 
