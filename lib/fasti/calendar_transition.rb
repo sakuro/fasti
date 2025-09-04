@@ -3,20 +3,23 @@
 require "date"
 
 module Fasti
-  # Manages Julian to Gregorian calendar transitions for different countries.
+  # Manages Julian to Gregorian calendar transitions for a specific country.
   #
-  # This module provides country-specific calendar transition data and validation
+  # This class provides country-specific calendar transition data and validation
   # methods to handle historical calendar reforms. It uses Julian Day Numbers (JDN)
   # for precise date calculations and gap management during transition periods.
   #
   # @example Basic usage
-  #   CalendarTransitions.gregorian_start_jdn(:gb)  #=> 2361222
-  #   CalendarTransitions.valid_date?(Date.new(1752, 9, 10), :gb)  #=> false (in gap)
+  #   transition = CalendarTransition.new(:gb)
+  #   transition.gregorian_start_jdn  #=> 2361222
+  #   transition.valid_date?(Date.new(1752, 9, 10))  #=> false (in gap)
   #
   # @example Date creation with country-specific transitions
-  #   CalendarTransitions.create_date(1752, 9, 2, :gb)   #=> Date object with British transition
-  #   CalendarTransitions.create_date(1582, 10, 4, :it)  #=> Date object with Italian transition
-  module CalendarTransitions
+  #   gb = CalendarTransition.new(:gb)
+  #   gb.create_date(1752, 9, 2)   #=> Date object with British transition
+  #   it = CalendarTransition.new(:it)
+  #   it.create_date(1582, 10, 4)  #=> Date object with Italian transition
+  class CalendarTransition
     # Calendar transition data mapping countries to their Gregorian adoption dates.
     #
     # Each entry contains the Julian Day Number when the country switched to
@@ -91,20 +94,37 @@ module Fasti
     DEFAULT_TRANSITION = Date::ITALY
     private_constant :DEFAULT_TRANSITION
 
-    # Returns the Julian Day Number when the specified country adopted the Gregorian calendar.
+    # Creates a new CalendarTransition instance for the specified country.
     #
-    # @param country [Symbol, String] Country code (e.g., :gb, :us, :it)
+    # @param country [Symbol] Country code (e.g., :gb, :us, :it)
+    def initialize(country)
+      @country = country
+      @transition_jdn = TRANSITIONS[@country] || DEFAULT_TRANSITION
+    end
+
+    # Returns the country code for this transition.
+    #
+    # @return [Symbol] Country code
+    attr_reader :country
+
+    # Returns the Julian Day Number when this country adopted the Gregorian calendar.
+    #
     # @return [Integer] Julian Day Number of Gregorian calendar adoption
     #
     # @example
-    #   CalendarTransitions.gregorian_start_jdn(:gb)  #=> 2361222
-    #   CalendarTransitions.gregorian_start_jdn(:it)  #=> 2299161
-    #   CalendarTransitions.gregorian_start_jdn(:unknown)  #=> 2299161 (default)
-    def self.gregorian_start_jdn(country)
-      TRANSITIONS[country.to_sym] || DEFAULT_TRANSITION
+    #   gb = CalendarTransition.new(:gb)
+    #   gb.gregorian_start_jdn  #=> 2361222
+    #
+    #   it = CalendarTransition.new(:it)
+    #   it.gregorian_start_jdn  #=> 2299161
+    #
+    #   unknown = CalendarTransition.new(:unknown)
+    #   unknown.gregorian_start_jdn  #=> 2299161 (default)
+    def gregorian_start_jdn
+      @transition_jdn
     end
 
-    # Creates a Date object using the appropriate calendar system for the given country.
+    # Creates a Date object using the appropriate calendar system for this country.
     #
     # This method automatically selects Julian or Gregorian calendar based on
     # the date and country's transition point, ensuring appropriate calendar
@@ -113,26 +133,24 @@ module Fasti
     # @param year [Integer] Year
     # @param month [Integer] Month (1-12)
     # @param day [Integer] Day of month
-    # @param country [Symbol, String] Country code
     # @return [Date] Date object with appropriate calendar system
     # @raise [ArgumentError] If the date falls in the transition gap (non-existent)
     #
     # @example
+    #   gb = CalendarTransition.new(:gb)
     #   # Before British transition - uses Julian
-    #   CalendarTransitions.create_date(1752, 9, 2, :gb)
+    #   gb.create_date(1752, 9, 2)
     #
     #   # After British transition - uses Gregorian
-    #   CalendarTransitions.create_date(1752, 9, 14, :gb)
+    #   gb.create_date(1752, 9, 14)
     #
     #   # In gap - raises ArgumentError
-    #   CalendarTransitions.create_date(1752, 9, 10, :gb)  # => ArgumentError
-    def self.create_date(year, month, day, country)
-      transition_jdn = gregorian_start_jdn(country)
-
+    #   gb.create_date(1752, 9, 10)  # => ArgumentError
+    def create_date(year, month, day)
       # Try creating the date with Gregorian first (most common case)
       gregorian_date = Date.new(year, month, day, Date::GREGORIAN)
 
-      if gregorian_date.jd >= transition_jdn
+      if gregorian_date.jd >= @transition_jdn
         # Date is on or after transition - use Gregorian
         gregorian_date
       else
@@ -140,36 +158,34 @@ module Fasti
         julian_date = Date.new(year, month, day, Date::JULIAN)
 
         # Check if this date would fall in the gap
-        if julian_date.jd >= transition_jdn
+        if julian_date.jd >= @transition_jdn
           raise ArgumentError,
             "Date #{year}-#{month.to_s.rjust(2, "0")}-#{day.to_s.rjust(2, "0")} " \
-            "does not exist in #{country.upcase} due to calendar transition"
+            "does not exist in #{@country.upcase} due to calendar transition"
         end
 
         julian_date
       end
     end
 
-    # Checks if a date exists in the given country's calendar system.
+    # Checks if a date exists in this country's calendar system.
     #
     # During calendar transitions, certain dates were skipped and never existed.
-    # This method validates whether a specific date is valid for a country.
+    # This method validates whether a specific date is valid for this country.
     #
     # @param date [Date] Date to validate
-    # @param country [Symbol, String] Country code
     # @return [Boolean] true if date exists, false if it falls in transition gap
     #
     # @example
+    #   gb = CalendarTransition.new(:gb)
     #   date1 = Date.new(1752, 9, 10)  # In British gap
-    #   CalendarTransitions.valid_date?(date1, :gb)  #=> false
+    #   gb.valid_date?(date1)  #=> false
     #
     #   date2 = Date.new(1752, 9, 2)   # Before British gap
-    #   CalendarTransitions.valid_date?(date2, :gb)  #=> true
-    def self.valid_date?(date, country)
-      transition_jdn = gregorian_start_jdn(country)
-
+    #   gb.valid_date?(date2)  #=> true
+    def valid_date?(date)
       # If we're dealing with the default transition (Italy), Ruby handles it correctly
-      return true if transition_jdn == DEFAULT_TRANSITION && date.jd != transition_jdn - 1
+      return true if @transition_jdn == DEFAULT_TRANSITION && date.jd != @transition_jdn - 1
 
       # For other countries, check if the date falls in a gap
       # We need to check both Julian and Gregorian representations
@@ -181,8 +197,8 @@ module Fasti
         return true if julian_version.jd == gregorian_version.jd
 
         # Check if either version is valid for this country
-        julian_valid = julian_version.jd < transition_jdn
-        gregorian_valid = gregorian_version.jd >= transition_jdn
+        julian_valid = julian_version.jd < @transition_jdn
+        gregorian_valid = gregorian_version.jd >= @transition_jdn
 
         julian_valid || gregorian_valid
       rescue ArgumentError
@@ -191,29 +207,28 @@ module Fasti
       end
     end
 
-    # Returns information about a country's calendar transition.
+    # Returns information about this country's calendar transition.
     #
-    # @param country [Symbol, String] Country code
     # @return [Hash] Transition information including JDN and gap details
     #
     # @example
-    #   CalendarTransitions.transition_info(:gb)
+    #   gb = CalendarTransition.new(:gb)
+    #   gb.transition_info
     #   #=> {
+    #   #     country: :gb,
     #   #     gregorian_start_jdn: 2361222,
     #   #     gregorian_start_date: #<Date: 1752-09-14>,
     #   #     julian_end_date: #<Date: 1752-09-02>,
     #   #     gap_days: 11
     #   #   }
-    def self.transition_info(country)
-      transition_jdn = gregorian_start_jdn(country)
-
+    def transition_info
       # Use explicit calendar system to avoid implicit Italian transition
-      gregorian_start = Date.jd(transition_jdn, Date::GREGORIAN)
-      julian_end = Date.jd(transition_jdn - 1, Date::JULIAN)
+      gregorian_start = Date.jd(@transition_jdn, Date::GREGORIAN)
+      julian_end = Date.jd(@transition_jdn - 1, Date::JULIAN)
 
       # Calculate actual gap in calendar dates, not just JDN difference
       # For example: Oct 4 (Julian) -> Oct 15 (Gregorian) has 10 gap days (5-14)
-      if transition_jdn == DEFAULT_TRANSITION
+      if @transition_jdn == DEFAULT_TRANSITION
         # For Italy, Ruby's Date class already handles the gap
         gap_days = 10 # Known historical gap for Italy
       else
@@ -231,7 +246,8 @@ module Fasti
       end
 
       {
-        gregorian_start_jdn: transition_jdn,
+        country: @country,
+        gregorian_start_jdn: @transition_jdn,
         gregorian_start_date: gregorian_start,
         julian_end_date: julian_end,
         gap_days:
@@ -243,6 +259,18 @@ module Fasti
     # @return [Array<Symbol>] List of supported country codes
     def self.supported_countries
       TRANSITIONS.keys.sort
+    end
+
+    # Factory method for creating CalendarTransition instances.
+    #
+    # @param country [Symbol] Country code
+    # @return [CalendarTransition] New instance for the specified country
+    #
+    # @example
+    #   gb = CalendarTransition.for(:gb)
+    #   gb.create_date(1752, 9, 2)
+    def self.for(country)
+      new(country)
     end
   end
 end

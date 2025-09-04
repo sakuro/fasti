@@ -2,7 +2,7 @@
 
 require "date"
 require "holidays"
-require_relative "calendar_transitions"
+require_relative "calendar_transition"
 
 module Fasti
   # Represents a calendar for a specific month and year with configurable start of week.
@@ -59,6 +59,7 @@ module Fasti
       @country = country
       @show_gaps = show_gaps
       @holidays_for_month = nil
+      @calendar_transition = CalendarTransition.new(@country)
 
       validate_inputs
     end
@@ -82,11 +83,11 @@ module Fasti
     #   Calendar.new(2024, 6, country: :jp).first_day_of_month
     #   #=> #<Date: 2024-06-01>
     def first_day_of_month
-      CalendarTransitions.create_date(year, month, 1, country)
+      @calendar_transition.create_date(year, month, 1)
     rescue ArgumentError
       # If day 1 is in a gap (very rare), try day 2, then 3, etc.
       (2..31).each do |day|
-        return CalendarTransitions.create_date(year, month, day, country)
+        return @calendar_transition.create_date(year, month, day)
       rescue ArgumentError
         next
       end
@@ -105,7 +106,7 @@ module Fasti
       # Start from the theoretical last day and work backwards
       max_days = Date.new(year, month, -1).day
       max_days.downto(1).each do |day|
-        return CalendarTransitions.create_date(year, month, day, country)
+        return @calendar_transition.create_date(year, month, day)
       rescue ArgumentError
         next
       end
@@ -211,7 +212,7 @@ module Fasti
       return nil unless (1..days_in_month).cover?(day)
 
       begin
-        CalendarTransitions.create_date(year, month, day, country)
+        @calendar_transition.create_date(year, month, day)
       rescue ArgumentError
         # Date falls in calendar transition gap (non-existent)
         nil
