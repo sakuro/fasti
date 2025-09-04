@@ -15,3 +15,6 @@ Gemfile.lock
 # Serena MCP - ignore all except project.yml
 /.serena/*
 !/.serena/project.yml
+
+# Today I Learned files (personal notes)
+TIL*.md
