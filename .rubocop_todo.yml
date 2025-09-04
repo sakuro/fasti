@@ -27,7 +27,6 @@ Metrics/BlockLength:
 Metrics/ClassLength:
   Exclude:
     - 'lib/fasti/calendar.rb'
-    - 'lib/fasti/calendar_transition.rb'
     - 'lib/fasti/cli.rb'
     - 'lib/fasti/style_parser.rb'
 

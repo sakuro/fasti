@@ -103,18 +103,6 @@ module Fasti
       TRANSITIONS.keys.sort
     end
 
-    # Factory method for creating CalendarTransition instances.
-    #
-    # @param country [Symbol] Country code
-    # @return [CalendarTransition] New instance for the specified country
-    #
-    # @example
-    #   gb = CalendarTransition.for(:gb)
-    #   gb.create_date(1752, 9, 2)
-    def self.for(country)
-      new(country)
-    end
-
     # Creates a new CalendarTransition instance for the specified country.
     #
     # @param country [Symbol] Country code (e.g., :gb, :us, :it)

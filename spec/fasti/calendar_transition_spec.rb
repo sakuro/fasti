@@ -175,14 +175,6 @@ RSpec.describe Fasti::CalendarTransition do
     end
   end
 
-  describe ".for" do
-    it "creates instance using factory method" do
-      transition = Fasti::CalendarTransition.for(:gb)
-      expect(transition).to be_a(Fasti::CalendarTransition)
-      expect(transition.country).to eq(:gb)
-    end
-  end
-
   describe "integration with Date class" do
     it "properly handles Julian Day Number calculations" do
       # Test that our JDN calculations match Ruby's Date constants
