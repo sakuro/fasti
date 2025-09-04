@@ -131,7 +131,7 @@ fasti 3 1753 --country SE --show-gaps
 - `--show-gaps`: Show calendar transition gaps as empty spaces
 - `--no-show-gaps` (default): Compress gaps like UNIX `cal` command for continuous display
 
-Supported countries with historically accurate transition dates:
+Supported countries with calendar transition dates:
 
 **Early Catholic adoption (1582-1583):**
 - Italy, Spain, Portugal (1582-10-15)
@@ -359,9 +359,9 @@ fasti 12 1872 --country JP --show-gaps
 
 **Note**: Standard UNIX calendar tools like `cal` and `gcal` correctly handle these historical transitions by appropriately skipping non-existent dates during calendar reforms.
 
-**Technical Details**: Fasti uses country-specific Julian to Gregorian calendar transition dates with proper gap handling. Ruby's `Date` class uses Italy's transition date (`Date::ITALY`) by default, but Fasti's `CalendarTransitions` module supports historical transitions for different countries, properly handling non-existent dates during calendar reforms.
+**Technical Details**: Fasti uses country-specific Julian to Gregorian calendar transition dates with proper gap handling. Ruby's `Date` class uses Italy's transition date (`Date::ITALY`) by default, but Fasti's `CalendarTransition` class supports transitions for different countries, properly handling non-existent dates during calendar reforms.
 
-**Available Countries**: Fasti supports **25+ countries** with historically accurate calendar transitions:
+**Available Countries**: Fasti supports **25+ countries** with calendar transitions:
 - **Catholic countries**: Italy/Spain/Portugal (1582), France (1582), Belgium (1583)
 - **Protestant countries**: Netherlands (1700), Switzerland (1700), Denmark/Norway (1700), Great Britain & colonies (1752), Sweden (1753)  
 - **Eastern Europe**: Bulgaria (1916), Russia (1918), Romania/Yugoslavia (1919), Greece (1923), Turkey (1927)

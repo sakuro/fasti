@@ -39,7 +39,7 @@ module Fasti
 
       # Common countries using Italian transition (Catholic countries)
       es: Date::ITALY,     # Spain - same as Italy (1582-10-15)
-      fr: 2_299_227,       # France - 1582-12-20 (corrected JDN from Wikipedia)
+      fr: 2_299_227,       # France - 1582-12-20
       pt: Date::ITALY,     # Portugal - same as Italy (1582-10-15)
       pl: Date::ITALY,     # Poland - same as Italy (1582-10-15)
       at: Date::ITALY,     # Austria - same as Italy (1582-10-15)
@@ -60,8 +60,8 @@ module Fasti
       no: 2_342_032,         # Norway - same as Denmark (March 1, 1700)
 
       # Eastern European countries (much later adoption)
-      ru: 2_421_639,         # Russia - February 14, 1918 (corrected JDN)
-      gr: 2_423_410,         # Greece - March 1, 1923 (corrected JDN)
+      ru: 2_421_639,         # Russia - February 14, 1918
+      gr: 2_423_410,         # Greece - March 1, 1923
 
       # Netherlands (complex regional adoption - using latest Protestant adoption)
       nl: 2_342_164, # Netherlands - July 12, 1700 (Gelderland, last province)
@@ -76,11 +76,13 @@ module Fasti
       si: 2_421_972,         # Slovenia (Yugoslavia) - April 14, 1919
       tr: 2_424_858,         # Turkey (civil calendar) - January 1, 1927
 
-      # Recent adopters from non-Julian calendars
+      # The following countries never used Julian calendar before Gregorian adoption
+      # Use proleptic Gregorian calendar (Date::GREGORIAN) for computational consistency
+
+      # Recent adopters from lunar calendars
       sa: Date::GREGORIAN, # Saudi Arabia - adopted 2016-10-01 (from Islamic/Hijri calendar)
 
-      # Asian countries: transitioned from lunisolar calendars, use proleptic Gregorian for consistency
-      # This provides computational consistency while noting historical inaccuracy in documentation
+      # Asian countries: transitioned from lunisolar calendars
       jp: Date::GREGORIAN,  # Japan adopted Gregorian calendar on 1873-01-01 (Meiji 6)
       cn: Date::GREGORIAN,  # China adopted Gregorian calendar on 1912-01-01 (Republic of China establishment)
       tw: Date::GREGORIAN,  # Taiwan (same historical root as mainland China)
