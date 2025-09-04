@@ -10,7 +10,7 @@
 Metrics/AbcSize:
   Exclude:
     - 'lib/fasti/calendar.rb'
-    - 'lib/fasti/calendar_transitions.rb'
+    - 'lib/fasti/calendar_transition.rb'
     - 'lib/fasti/cli.rb'
     - 'lib/fasti/config.rb'
     - 'lib/fasti/formatter.rb'
@@ -27,6 +27,7 @@ Metrics/BlockLength:
 Metrics/ClassLength:
   Exclude:
     - 'lib/fasti/calendar.rb'
+    - 'lib/fasti/calendar_transition.rb'
     - 'lib/fasti/cli.rb'
     - 'lib/fasti/style_parser.rb'
 
@@ -41,7 +42,7 @@ Metrics/CyclomaticComplexity:
 Metrics/MethodLength:
   Exclude:
     - 'lib/fasti/calendar.rb'
-    - 'lib/fasti/calendar_transitions.rb'
+    - 'lib/fasti/calendar_transition.rb'
     - 'lib/fasti/cli.rb'
     - 'lib/fasti/config.rb'
     - 'lib/fasti/formatter.rb'
@@ -71,6 +72,7 @@ RSpec/ContextWording:
 RSpec/ExampleLength:
   Exclude:
     - 'spec/fasti/calendar_spec.rb'
+    - 'spec/fasti/calendar_transition_spec.rb'
     - 'spec/fasti/cli_spec.rb'
     - 'spec/fasti/config_spec.rb'
     - 'spec/fasti/formatter_custom_styles_spec.rb'
@@ -81,7 +83,7 @@ RSpec/ExampleLength:
 RSpec/MultipleExpectations:
   Exclude:
     - 'spec/fasti/calendar_spec.rb'
-    - 'spec/fasti/calendar_transitions_spec.rb'
+    - 'spec/fasti/calendar_transition_spec.rb'
     - 'spec/fasti/cli_spec.rb'
     - 'spec/fasti/config_spec.rb'
     - 'spec/fasti/formatter_custom_styles_spec.rb'

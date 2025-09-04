@@ -96,6 +96,25 @@ module Fasti
     DEFAULT_TRANSITION = Date::ITALY
     private_constant :DEFAULT_TRANSITION
 
+    # Returns list of supported countries with transition dates.
+    #
+    # @return [Array<Symbol>] List of supported country codes
+    def self.supported_countries
+      TRANSITIONS.keys.sort
+    end
+
+    # Factory method for creating CalendarTransition instances.
+    #
+    # @param country [Symbol] Country code
+    # @return [CalendarTransition] New instance for the specified country
+    #
+    # @example
+    #   gb = CalendarTransition.for(:gb)
+    #   gb.create_date(1752, 9, 2)
+    def self.for(country)
+      new(country)
+    end
+
     # Creates a new CalendarTransition instance for the specified country.
     #
     # @param country [Symbol] Country code (e.g., :gb, :us, :it)
@@ -254,25 +273,6 @@ module Fasti
         julian_end_date: julian_end,
         gap_days:
       }
-    end
-
-    # Returns list of supported countries with transition dates.
-    #
-    # @return [Array<Symbol>] List of supported country codes
-    def self.supported_countries
-      TRANSITIONS.keys.sort
-    end
-
-    # Factory method for creating CalendarTransition instances.
-    #
-    # @param country [Symbol] Country code
-    # @return [CalendarTransition] New instance for the specified country
-    #
-    # @example
-    #   gb = CalendarTransition.for(:gb)
-    #   gb.create_date(1752, 9, 2)
-    def self.for(country)
-      new(country)
     end
   end
 end
