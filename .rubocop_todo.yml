@@ -9,6 +9,8 @@
 # Configuration parameters: AllowedMethods, AllowedPatterns, CountRepeatedAttributes, Max.
 Metrics/AbcSize:
   Exclude:
+    - 'lib/fasti/calendar.rb'
+    - 'lib/fasti/calendar_transition.rb'
     - 'lib/fasti/cli.rb'
     - 'lib/fasti/config.rb'
     - 'lib/fasti/formatter.rb'
@@ -24,12 +26,14 @@ Metrics/BlockLength:
 # Configuration parameters: CountComments, Max, CountAsOne.
 Metrics/ClassLength:
   Exclude:
+    - 'lib/fasti/calendar.rb'
     - 'lib/fasti/cli.rb'
     - 'lib/fasti/style_parser.rb'
 
 # Configuration parameters: AllowedMethods, AllowedPatterns, Max.
 Metrics/CyclomaticComplexity:
   Exclude:
+    - 'lib/fasti/calendar.rb'
     - 'lib/fasti/formatter.rb'
     - 'lib/fasti/style.rb'
 
@@ -37,6 +41,7 @@ Metrics/CyclomaticComplexity:
 Metrics/MethodLength:
   Exclude:
     - 'lib/fasti/calendar.rb'
+    - 'lib/fasti/calendar_transition.rb'
     - 'lib/fasti/cli.rb'
     - 'lib/fasti/config.rb'
     - 'lib/fasti/formatter.rb'
@@ -44,16 +49,29 @@ Metrics/MethodLength:
     - 'lib/fasti/style_parser.rb'
     - 'spec/support/ansi_matchers.rb'
 
+# Configuration parameters: Max, CountKeywordArgs, MaxOptionalParameters.
+Metrics/ParameterLists:
+  Exclude:
+    - 'lib/fasti/cli.rb'
+
 # Configuration parameters: AllowedMethods, AllowedPatterns, Max.
 Metrics/PerceivedComplexity:
   Exclude:
+    - 'lib/fasti/calendar.rb'
     - 'lib/fasti/formatter.rb'
     - 'lib/fasti/style.rb'
+
+# Configuration parameters: Prefixes, AllowedPatterns.
+# Prefixes: when, with, without
+RSpec/ContextWording:
+  Exclude:
+    - 'spec/fasti/calendar_spec.rb'
 
 # Configuration parameters: Max, CountAsOne.
 RSpec/ExampleLength:
   Exclude:
     - 'spec/fasti/calendar_spec.rb'
+    - 'spec/fasti/calendar_transition_spec.rb'
     - 'spec/fasti/cli_spec.rb'
     - 'spec/fasti/config_spec.rb'
     - 'spec/fasti/formatter_custom_styles_spec.rb'
@@ -64,6 +82,7 @@ RSpec/ExampleLength:
 RSpec/MultipleExpectations:
   Exclude:
     - 'spec/fasti/calendar_spec.rb'
+    - 'spec/fasti/calendar_transition_spec.rb'
     - 'spec/fasti/cli_spec.rb'
     - 'spec/fasti/config_spec.rb'
     - 'spec/fasti/formatter_custom_styles_spec.rb'

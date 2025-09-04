@@ -129,12 +129,13 @@ module Fasti
     # @param year [Integer] The year to display
     # @param start_of_week [Symbol] Week start preference (:sunday or :monday)
     # @param country [String] Country code for holiday context
+    # @param show_gaps [Boolean] Whether to show calendar transition gaps
     # @return [String] Formatted year view string
     #
     # @example Full year display
-    #   formatter.format_year(2024, start_of_week: :sunday, country: :jp)
+    #   formatter.format_year(2024, start_of_week: :sunday, country: :jp, show_gaps: false)
     #   # Displays all 12 months in 4 rows of 3 months each
-    def format_year(year, country:, start_of_week: :sunday)
+    def format_year(year, country:, start_of_week: :sunday, show_gaps: false)
       output = []
 
       # Year header
@@ -144,7 +145,7 @@ module Fasti
       # Process 4 quarters (3 months each)
       quarters = []
       (1..12).each_slice(3) do |months|
-        calendars = months.map {|month| Calendar.new(year, month, start_of_week:, country:) }
+        calendars = months.map {|month| Calendar.new(year, month, start_of_week:, country:, show_gaps:) }
         quarters << format_quarter(calendars)
       end
 
@@ -171,8 +172,15 @@ module Fasti
     private def format_day(day, calendar)
       return "  " unless day
 
-      day_str = day.to_s.rjust(2)
       date = calendar.to_date(day)
+
+      # Handle calendar transition gaps - date might be nil
+      unless date
+        # For gap days, return empty space to show the gap visually
+        return "  "
+      end
+
+      day_str = day.to_s.rjust(2)
 
       # Collect applicable styles based on day characteristics
       applicable_styles = []
