@@ -51,6 +51,10 @@ RSpec.describe Fasti::CLI do
               -c, --country COUNTRY            Country code for holidays (e.g., JP, US, GB, DE)
               -s, --style STYLE                Custom styling (e.g., "sunday:bold holiday:foreground=red today:inverse")
 
+          Configuration options:
+                  --config CONFIG_PATH         Specify custom configuration file path
+                  --no-config                  Skip configuration file loading (use defaults only)
+
           Other options:
               -v, --version                    Show version
               -h, --help                       Show this help
@@ -324,6 +328,63 @@ RSpec.describe Fasti::CLI do
         File.write(config_file, invalid_content)
         expect { cli.run(%w[6 2024 --country US]) }
           .to output(include("Warning:", "June 2024")).to_stdout
+      end
+    end
+
+    context "with config file options" do
+      let(:temp_config_file) { Tempfile.new(["test_config", ".rb"]) }
+
+      after do
+        temp_config_file.unlink
+      end
+
+      it "uses custom config file with --config option" do
+        config_content = <<~RUBY
+          Fasti.configure do |config|
+            config.format = :year
+            config.country = :jp
+          end
+        RUBY
+        temp_config_file.write(config_content)
+        temp_config_file.rewind
+
+        expect { cli.run(["--config", temp_config_file.path]) }
+          .to output(include("January", "December")).to_stdout
+      end
+
+      it "errors when custom config file does not exist" do
+        non_existent_path = "/path/that/does/not/exist.rb"
+        expect { cli.run(["--config", non_existent_path, "--country", "US"]) }
+          .to output(include("Error: Configuration file not found: #{non_existent_path}")).to_stdout
+          .and raise_error(SystemExit) {|error| expect(error.status).to eq(1) }
+      end
+
+      it "skips config file loading with --no-config option" do
+        # Create a default config file that would normally be loaded
+        config_dir = ENV["XDG_CONFIG_HOME"] || File.join(Dir.home, ".config")
+        fasti_config_dir = File.join(config_dir, "fasti")
+        config_file_path = File.join(fasti_config_dir, "config.rb")
+
+        # Create temporary config file to test --no-config
+        FileUtils.mkdir_p(fasti_config_dir)
+        config_content = <<~RUBY
+          Fasti.configure do |config|
+            config.format = :year  # This should be ignored with --no-config
+            config.country = :jp
+          end
+        RUBY
+        File.write(config_file_path, config_content)
+
+        begin
+          # With --no-config, should use month format (default), not year format from config
+          expect { cli.run(%w[--no-config --country US 6 2024]) }
+            .to output(include("June 2024")).to_stdout
+          expect { cli.run(%w[--no-config --country US 6 2024]) }
+            .to output {|output| expect(output).not_to include("January", "December") }.to_stdout
+        ensure
+          FileUtils.rm_f(config_file_path)
+          FileUtils.rmdir(fasti_config_dir)
+        end
       end
     end
 
