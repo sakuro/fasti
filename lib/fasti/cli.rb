@@ -6,7 +6,7 @@ require "pathname"
 
 module Fasti
   # Immutable data structure for CLI options
-  Options = Data.define(:format, :start_of_week, :country, :style)
+  Options = Data.define(:format, :start_of_week, :country, :style, :config)
 
   # Command-line interface for the fasti calendar application.
   #
@@ -58,7 +58,7 @@ module Fasti
     private_constant :NON_COUNTRY_LOCALES
 
     # General configuration attributes (non-style attributes)
-    GENERAL_ATTRIBUTES = %i[format start_of_week country].freeze
+    GENERAL_ATTRIBUTES = %i[format start_of_week country config].freeze
     private_constant :GENERAL_ATTRIBUTES
 
     # Runs the CLI with the specified arguments.
@@ -102,7 +102,7 @@ module Fasti
       parser.parse!(argv) # Destructively modifies argv
 
       # 2. Apply CLI option overrides to base options (Options + Hash → Options)
-      final_options = apply_cli_overrides(base_options, cli_options_hash)
+      final_options = apply_cli_overrides(base_options(cli_options_hash), cli_options_hash)
 
       # 3. Validate required options
       unless final_options.country
@@ -116,9 +116,9 @@ module Fasti
     # Returns base configuration (defaults + config file settings).
     #
     # @return [Options] Base options before CLI overrides
-    private def base_options
+    private def base_options(cli_options_hash)
       defaults = base_default_values
-      config_options = load_config_options
+      config_options = load_config_options(cli_options_hash)
       merge_defaults_with_config(defaults, config_options)
     end
 
@@ -130,16 +130,34 @@ module Fasti
         format: :month,
         start_of_week: :sunday,
         country: detect_country_from_environment,
-        style: nil
+        style: nil,
+        config: nil # nil = use default config file
       }
     end
 
     # Loads options from the config file if it exists.
     #
     # @return [Hash] Config options or empty hash if no config file
-    private def load_config_options
-      config_file = config_file_path
-      return {} unless config_file.exist?
+    private def load_config_options(cli_options_hash)
+      config_option = cli_options_hash[:config]
+
+      case config_option
+      when false
+        # --no-config: Skip config file loading entirely
+        return {}
+      when String
+        # --config PATH: Use custom config file
+        config_file = Pathname.new(config_option)
+        # For custom config paths, error if file doesn't exist
+        unless config_file.exist?
+          raise ArgumentError, "Configuration file not found: #{config_file}"
+        end
+      else
+        # nil: Use default config file path
+        config_file = config_file_path
+        # For default path, silently skip if file doesn't exist
+        return {} unless config_file.exist?
+      end
 
       begin
         Config.load_from_file(config_file.to_s)
@@ -259,6 +277,26 @@ module Fasti
         ) do |style|
           # Parse style string immediately to Hash format
           options[:style] = StyleParser.new.parse(style)
+        end
+
+        if include_help
+          opts.separator ""
+          opts.separator "Configuration options:"
+        end
+
+        opts.on(
+          "--config CONFIG_PATH",
+          String,
+          "Specify custom configuration file path"
+        ) do |config_path|
+          options[:config] = config_path
+        end
+
+        opts.on(
+          "--no-config",
+          "Skip configuration file loading (use defaults only)"
+        ) do
+          options[:config] = false
         end
 
         if include_help
