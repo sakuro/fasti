@@ -1,4 +1,5 @@
 --markup markdown
+--markup-provider redcarpet
 --output-dir docs/api
 --readme README.md
 --files CHANGELOG.md,LICENSE.txt

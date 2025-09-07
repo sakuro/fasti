@@ -3,7 +3,4 @@
 require "yard"
 
 # Documentation task
-YARD::Rake::YardocTask.new(:doc) do |t|
-  t.files = ["lib/**/*.rb", "exe/fasti"]
-  t.options = ["--output-dir", "docs/api", "--markup", "markdown"]
-end
+YARD::Rake::YardocTask.new(:doc)

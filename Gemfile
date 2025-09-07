@@ -11,6 +11,8 @@ group :development do
   gem "rubocop-performance" # RuboCop plugin for performance
   gem "rubocop-rake" # RuboCop plugin for Rake tasks
   gem "rubocop-rspec" # RuboCop plugin for RSpec
+
+  gem "redcarpet" # Markdown processor for YARD
   gem "yard", github: "lsegal/yard", ref: "5b93b3a" # Documentation generation tool (Data class support)
 end
 
