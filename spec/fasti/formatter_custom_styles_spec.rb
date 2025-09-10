@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "spec_helper"
-
 RSpec.describe Fasti::Formatter do
   let(:july_2024) { Fasti::Calendar.new(2024, 7, country: :us) }
 

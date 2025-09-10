@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "spec_helper"
-
 RSpec.describe Fasti::CalendarTransition do
   describe ".new" do
     it "creates instance with country symbol" do

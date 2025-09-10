@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "pathname"
-require "spec_helper"
 require "tempfile"
 require "timecop"
 

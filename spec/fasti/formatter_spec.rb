@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "date"
-require "spec_helper"
 
 RSpec.describe Fasti::Formatter do
   let(:formatter) { Fasti::Formatter.new }
