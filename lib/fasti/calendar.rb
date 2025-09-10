@@ -2,7 +2,6 @@
 
 require "date"
 require "holidays"
-require_relative "calendar_transition"
 
 module Fasti
   # Represents a calendar for a specific month and year with configurable start of week.

@@ -39,6 +39,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "holidays", "~> 8.0"
   spec.add_dependency "locale", "~> 2.1"
   spec.add_dependency "tint_me", "~> 1.0"
+  spec.add_dependency "zeitwerk", "~> 2.6"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html

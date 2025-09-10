@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
 require "tint_me"
-require_relative "fasti/calendar"
-require_relative "fasti/cli"
-require_relative "fasti/config"
-require_relative "fasti/formatter"
-require_relative "fasti/style_parser"
+require "zeitwerk"
+
+# Manually require version for gemspec compatibility (ignored by Zeitwerk)
 require_relative "fasti/version"
 
 # Fasti - Flexible calendar application with multi-country holiday support
@@ -13,5 +11,11 @@ require_relative "fasti/version"
 # Main namespace containing all Fasti components including configuration,
 # calendar logic, formatting, and CLI interface.
 module Fasti
-  class Error < StandardError; end
+  # Setup Zeitwerk autoloader
+  loader = Zeitwerk::Loader.for_gem
+  # VERSION constant doesn't follow Zeitwerk naming conventions, so ignore it
+  loader.ignore("#{__dir__}/fasti/version.rb")
+  # CLI acronym inflection - cli.rb defines CLI constant, not Cli
+  loader.inflector.inflect("cli" => "CLI")
+  loader.setup
 end
