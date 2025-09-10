@@ -312,6 +312,52 @@ RSpec.describe Fasti::Formatter do
     end
   end
 
+  describe "style caching optimization" do
+    let(:styles) do
+      {
+        sunday: TIntMe::Style.new(foreground: :red),
+        holiday: TIntMe::Style.new(bold: true),
+        today: TIntMe::Style.new(inverse: true)
+      }
+    end
+    let(:formatter) { Fasti::Formatter.new(styles:) }
+    let(:calendar) { Fasti::Calendar.new(2024, 7, country: :us) }
+
+    before do
+      allow(Date).to receive(:today).and_return(Date.new(2024, 7, 7)) # Sunday, July 7
+    end
+
+    it "caches composed styles to avoid repeated composition" do
+      # July 7, 2024 is a Sunday and today (but not a holiday)
+      # This should create a cache entry for [:sunday, :today]
+      
+      # First call - should populate cache
+      output1 = formatter.format_month(calendar)
+      
+      # Second call - should use cached style
+      output2 = formatter.format_month(calendar)
+      
+      expect(output1).to eq(output2)
+      expect(output1).to include("7") # July 7 should be present
+    end
+
+    it "uses different cache entries for different style combinations" do
+      # July 4, 2024 is Independence Day (holiday) and Thursday
+      # July 7, 2024 is Sunday and today
+      # These should create different cache entries
+      
+      output = formatter.format_month(calendar)
+      
+      # Both July 4 (holiday) and July 7 (sunday + today) should be styled
+      expect(output).to include("4") # Independence Day
+      expect(output).to include("7") # Sunday + today
+      
+      # Verify that different days get different styling
+      expect(output).to match(/\e\[.*4.*\e\[0m/) # July 4 should be styled
+      expect(output).to match(/\e\[.*7.*\e\[0m/) # July 7 should be styled
+    end
+  end
+
   describe "edge cases" do
     it "handles February in leap year" do
       leap_feb = Fasti::Calendar.new(2024, 2, country: :us)

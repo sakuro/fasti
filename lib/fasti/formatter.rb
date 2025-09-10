@@ -21,6 +21,10 @@ module Fasti
   #   formatter = Formatter.new
   #   puts formatter.format_year(2024, start_of_week: :sunday, country: :jp)
   class Formatter
+    # Default unstyled TIntMe::Style instance for reuse
+    DEFAULT_STYLE = TIntMe::Style.new
+    private_constant :DEFAULT_STYLE
+
     # Creates a new formatter instance.
     #
     # @param styles [Hash<Symbol, Style>] Styles for different day types
@@ -29,6 +33,7 @@ module Fasti
     #   Formatter.new(styles: config.style)
     def initialize(styles: {})
       @styles = styles
+      @style_cache = {}
     end
 
     # Formats a single month calendar with headers and color coding.
@@ -166,6 +171,49 @@ module Fasti
     #   format_day(15, calendar)    #=> "15" (regular day)
     #   format_day(1, calendar)     #=> styled " 1" with bold text (if Sunday/holiday)
     #   format_day(nil, calendar)   #=> "  " (empty cell)
+    # Determines applicable style targets for a given day
+    #
+    # @param day [Integer] Day of month
+    # @param calendar [Calendar] Calendar instance
+    # @return [Array<Symbol>] Sorted array of style target symbols
+    private def determine_style_targets(day, calendar)
+      return [] unless day
+
+      date = calendar.to_date(day)
+      return [] unless date
+
+      targets = []
+
+      # Add weekday target
+      weekday_key = %i[sunday monday tuesday wednesday thursday friday saturday][date.wday]
+      targets << weekday_key if @styles.key?(weekday_key)
+
+      # Add holiday target
+      targets << :holiday if calendar.holiday?(day) && @styles.key?(:holiday)
+
+      # Add today target
+      targets << :today if date == Date.today && @styles.key?(:today)
+
+      targets.sort
+    end
+
+    # Gets or creates a composed style for the given targets
+    #
+    # @param targets [Array<Symbol>] Sorted array of style target symbols
+    # @return [TIntMe::Style] Composed style object
+    private def get_composed_style(targets)
+      return DEFAULT_STYLE if targets.empty?
+
+      cache_key = targets.dup.freeze
+      return @style_cache[cache_key] if @style_cache.key?(cache_key)
+
+      # Compose styles in order
+      composed_style = targets.reduce(DEFAULT_STYLE) {|acc, elem| acc >> @styles[elem] }
+
+      @style_cache[cache_key] = composed_style
+      composed_style
+    end
+
     private def format_day(day, calendar)
       return "  " unless day
 
@@ -179,22 +227,11 @@ module Fasti
 
       day_str = day.to_s.rjust(2)
 
-      # Collect applicable styles based on day characteristics
-      applicable_styles = []
+      # Determine applicable style targets and get composed style from cache
+      targets = determine_style_targets(day, calendar)
+      style = get_composed_style(targets)
 
-      # 1. Apply day-of-week style
-      weekday_key = %i[sunday monday tuesday wednesday thursday friday saturday][date.wday]
-      applicable_styles << @styles[weekday_key] if @styles.key?(weekday_key)
-
-      # 2. Apply holiday style
-      applicable_styles << @styles[:holiday] if calendar.holiday?(day) && @styles.key?(:holiday)
-
-      # 3. Apply today style
-      applicable_styles << @styles[:today] if date == Date.today && @styles.key?(:today)
-
-      # 4. Compose all styles and apply
-      final_style = applicable_styles.reduce(TIntMe::Style.new) {|acc, elem| acc >> elem }
-      final_style.call(day_str)
+      style.call(day_str)
     end
   end
 end
