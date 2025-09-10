@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "style"
-
 module Fasti
   # Handles calendar formatting and display with color-coded output.
   #
@@ -195,7 +193,7 @@ module Fasti
       applicable_styles << @styles[:today] if date == Date.today && @styles.key?(:today)
 
       # 4. Compose all styles and apply
-      final_style = applicable_styles.reduce(Style.new) {|acc, elem| acc >> elem }
+      final_style = applicable_styles.reduce(TIntMe::Style.new) {|acc, elem| acc >> elem }
       final_style.call(day_str)
     end
   end

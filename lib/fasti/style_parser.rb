@@ -33,7 +33,7 @@ module Fasti
     private_constant :VALID_COLORS
 
     # Valid boolean attributes that can be enabled/disabled
-    BOOLEAN_ATTRIBUTES = %w[bold faint italic overline blink inverse hide].freeze
+    BOOLEAN_ATTRIBUTES = %w[bold faint italic overline blink inverse conceal].freeze
     private_constant :BOOLEAN_ATTRIBUTES
 
     # Special attributes that can have specific values
@@ -205,7 +205,7 @@ module Fasti
     private def create_style(attributes)
       style_params = attributes.transform_keys(&:to_sym)
 
-      Style.new(**style_params)
+      TIntMe::Style.new(**style_params)
     end
   end
 end

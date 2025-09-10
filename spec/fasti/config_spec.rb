@@ -44,10 +44,10 @@ RSpec.describe Fasti::Config do
         config.style = style_hash
       end
 
-      expect(Fasti.config.style[:sunday]).to be_a(Fasti::Style)
+      expect(Fasti.config.style[:sunday]).to be_a(TIntMe::Style)
       expect(Fasti.config.style[:sunday].bold).to be(true)
       expect(Fasti.config.style[:sunday].foreground).to eq(:red)
-      expect(Fasti.config.style[:holiday]).to be_a(Fasti::Style)
+      expect(Fasti.config.style[:holiday]).to be_a(TIntMe::Style)
       expect(Fasti.config.style[:holiday].background).to eq(:yellow)
       expect(Fasti.config.style[:holiday].inverse).to be(true)
     end
@@ -59,7 +59,7 @@ RSpec.describe Fasti::Config do
         }
       end
 
-      expect(Fasti.config.style[:monday]).to be_a(Fasti::Style)
+      expect(Fasti.config.style[:monday]).to be_a(TIntMe::Style)
       expect(Fasti.config.style[:monday].bold).to be(true)
       expect(Fasti.config.style[:monday].foreground).to eq(:blue)
     end
@@ -158,7 +158,7 @@ RSpec.describe Fasti::Config do
         format: :quarter,
         start_of_week: :sunday, # default
         country: :jp,
-        style: {sunday: Fasti::Style.new(bold: true)}
+        style: {sunday: TIntMe::Style.new(bold: true)}
       })
     end
   end
@@ -203,7 +203,7 @@ RSpec.describe Fasti::Config do
 
         expect(config_hash[:format]).to eq(:quarter)
         expect(config_hash[:country]).to eq(:jp)
-        expect(config_hash[:style]).to eq({sunday: Fasti::Style.new(bold: true, foreground: :red)})
+        expect(config_hash[:style]).to eq({sunday: TIntMe::Style.new(bold: true, foreground: :red)})
       end
     end
 

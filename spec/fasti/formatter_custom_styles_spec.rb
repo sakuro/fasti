@@ -20,7 +20,7 @@ RSpec.describe Fasti::Formatter do
     context "with custom styles completely replacing defaults" do
       let(:styles) do
         {
-          sunday: Fasti::Style.new(foreground: :red)
+          sunday: TIntMe::Style.new(foreground: :red)
         }
       end
       let(:formatter) { Fasti::Formatter.new(styles:) }
@@ -49,8 +49,8 @@ RSpec.describe Fasti::Formatter do
     context "with custom weekday styles" do
       let(:styles) do
         {
-          sunday: Fasti::Style.new(foreground: :red),
-          saturday: Fasti::Style.new(foreground: :blue)
+          sunday: TIntMe::Style.new(foreground: :red),
+          saturday: TIntMe::Style.new(foreground: :blue)
         }
       end
       let(:formatter) { Fasti::Formatter.new(styles:) }
@@ -75,7 +75,7 @@ RSpec.describe Fasti::Formatter do
     context "with custom holiday styles" do
       let(:styles) do
         {
-          holiday: Fasti::Style.new(background: :yellow, foreground: :black)
+          holiday: TIntMe::Style.new(background: :yellow, foreground: :black)
         }
       end
       let(:formatter) { Fasti::Formatter.new(styles:) }
@@ -94,7 +94,7 @@ RSpec.describe Fasti::Formatter do
     context "with custom today styles" do
       let(:styles) do
         {
-          today: Fasti::Style.new(bold: true, inverse: true)
+          today: TIntMe::Style.new(bold: true, inverse: true)
         }
       end
       let(:formatter) { Fasti::Formatter.new(styles:) }
@@ -113,8 +113,8 @@ RSpec.describe Fasti::Formatter do
     context "with style composition" do
       let(:styles) do
         {
-          sunday: Fasti::Style.new(foreground: :red, bold: true),
-          today: Fasti::Style.new(inverse: true)
+          sunday: TIntMe::Style.new(foreground: :red, bold: true),
+          today: TIntMe::Style.new(inverse: true)
         }
       end
       let(:formatter) { Fasti::Formatter.new(styles:) }
@@ -135,8 +135,8 @@ RSpec.describe Fasti::Formatter do
     context "with negated styles" do
       let(:styles) do
         {
-          sunday: Fasti::Style.new(foreground: :red, bold: false),
-          holiday: Fasti::Style.new(foreground: :green, bold: false)
+          sunday: TIntMe::Style.new(foreground: :red, bold: false),
+          holiday: TIntMe::Style.new(foreground: :green, bold: false)
         }
       end
       let(:formatter) { Fasti::Formatter.new(styles:) }

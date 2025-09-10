@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "date"
-require "paint"
 require "spec_helper"
 
 RSpec.describe Fasti::Formatter do
@@ -137,9 +136,9 @@ RSpec.describe Fasti::Formatter do
   describe "#format_day (private method)" do
     let(:basic_styles) do
       {
-        sunday: Fasti::Style.new(bold: true),
-        holiday: Fasti::Style.new(bold: true),
-        today: Fasti::Style.new(inverse: true)
+        sunday: TIntMe::Style.new(bold: true),
+        holiday: TIntMe::Style.new(bold: true),
+        today: TIntMe::Style.new(inverse: true)
       }
     end
     let(:formatter) { Fasti::Formatter.new(styles: basic_styles) }
@@ -169,9 +168,9 @@ RSpec.describe Fasti::Formatter do
   describe "day styling behavior" do
     let(:basic_styles) do
       {
-        sunday: Fasti::Style.new(bold: true),
-        holiday: Fasti::Style.new(bold: true),
-        today: Fasti::Style.new(inverse: true)
+        sunday: TIntMe::Style.new(bold: true),
+        holiday: TIntMe::Style.new(bold: true),
+        today: TIntMe::Style.new(inverse: true)
       }
     end
     let(:formatter) { Fasti::Formatter.new(styles: basic_styles) }
@@ -291,9 +290,9 @@ RSpec.describe Fasti::Formatter do
   describe "color coding behavior" do
     let(:basic_styles) do
       {
-        sunday: Fasti::Style.new(bold: true),
-        holiday: Fasti::Style.new(bold: true),
-        today: Fasti::Style.new(inverse: true)
+        sunday: TIntMe::Style.new(bold: true),
+        holiday: TIntMe::Style.new(bold: true),
+        today: TIntMe::Style.new(inverse: true)
       }
     end
     let(:formatter) { Fasti::Formatter.new(styles: basic_styles) }
