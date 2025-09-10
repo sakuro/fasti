@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "date"
-require "spec_helper"
 
 RSpec.describe Fasti::Calendar do
   let(:calendar) { Fasti::Calendar.new(2024, 6, country: :us) }

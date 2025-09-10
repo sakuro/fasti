@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "spec_helper"
-
 RSpec.describe Fasti::StyleParser do
   let(:parser) { Fasti::StyleParser.new }
 
