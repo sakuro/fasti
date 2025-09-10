@@ -21,10 +21,6 @@ module Fasti
   #   formatter = Formatter.new
   #   puts formatter.format_year(2024, start_of_week: :sunday, country: :jp)
   class Formatter
-    # Default unstyled TIntMe::Style instance for reuse
-    DEFAULT_STYLE = TIntMe[]
-    private_constant :DEFAULT_STYLE
-
     # Creates a new formatter instance.
     #
     # @param styles [Hash<Symbol, Style>] Styles for different day types
@@ -200,9 +196,9 @@ module Fasti
     # Gets or creates a composed style for the given targets
     #
     # @param targets [Array<Symbol>] Sorted array of style target symbols
-    # @return [TIntMe::Style] Composed style object
+    # @return [TIntMe::Style, nil] Composed style object or nil if no styling needed
     private def get_composed_style(targets)
-      return DEFAULT_STYLE if targets.empty?
+      return nil if targets.empty?
 
       cache_key = targets.dup.freeze
       return @style_cache[cache_key] if @style_cache.key?(cache_key)
@@ -232,7 +228,7 @@ module Fasti
       targets = determine_style_targets(day, calendar)
       style = get_composed_style(targets)
 
-      style.call(day_str)
+      style ? style.call(day_str) : day_str
     end
   end
 end
