@@ -207,8 +207,9 @@ module Fasti
       cache_key = targets.dup.freeze
       return @style_cache[cache_key] if @style_cache.key?(cache_key)
 
-      # Compose styles in order
-      composed_style = targets.reduce(DEFAULT_STYLE) {|acc, elem| acc >> @styles[elem] }
+      # Compose styles in order using reduce without initial value
+      # This avoids unnecessary composition with DEFAULT_STYLE
+      composed_style = targets.map {|target| @styles[target] }.reduce(&:>>)
 
       @style_cache[cache_key] = composed_style
       composed_style
