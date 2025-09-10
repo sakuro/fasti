@@ -2,28 +2,31 @@
 
 source "https://rubygems.org"
 
-# Specify your gem's dependencies in fasti.gemspec
 gemspec
 
-group :development do
-  gem "docquet", github: "sakuro/docquet" # RuboCop configuration
-  gem "rubocop", "~> 1.21" # Ruby static code analyzer and formatter
-  gem "rubocop-performance" # RuboCop plugin for performance
-  gem "rubocop-rake" # RuboCop plugin for Rake tasks
-  gem "rubocop-rspec" # RuboCop plugin for RSpec
+group :development, :test do
+  gem "irb"
+  gem "repl_type_completor"
 
-  gem "redcarpet" # Markdown processor for YARD
-  gem "yard", github: "lsegal/yard", ref: "5b93b3a" # Documentation generation tool (Data class support)
+  gem "rake"
+end
+
+group :development do
+  # RuboCop
+  gem "docquet", github: "sakuro/docquet" # An opionated RuboCop config tool
+  gem "rubocop"
+  gem "rubocop-performance"
+  gem "rubocop-rake"
+  gem "rubocop-rspec"
+
+  # YARD
+  gem "redcarpet"
+  gem "yard", github: "lsegal/yard" # Data class support
 end
 
 group :test do
-  gem "rspec", "~> 3.0" # Testing framework
-  gem "simplecov", "~> 0.22", require: false # Code coverage measurement
-  gem "timecop", "~> 0.9" # Time mocking for time-dependent tests
-end
-
-group :development, :test do
-  gem "irb" # Interactive Ruby shell for development and test debugging (binding.irb)
-  gem "rake", "~> 13.0" # Build automation tool
-  gem "repl_type_completor", "~> 0.1.11" # Enhanced REPL type completion
+  # RSpec & SimpleCov
+  gem "rspec"
+  gem "simplecov", require: false
+  gem "timecop"
 end
