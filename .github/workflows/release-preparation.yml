@@ -100,7 +100,7 @@ jobs:
         Before merging this PR, ensure the following requirements are met:
 
         ### GitHub Repository Settings
-        - [ ] **Workflow permissions**: Set to "Read repository contents and packages permissions" 
+        - [ ] **Workflow permissions**: Set to "Read repository contents and packages permissions"
         - [ ] **Pull request permissions**: "Allow GitHub Actions to create and approve pull requests" enabled
         - [ ] Configure at: https://github.com/${{ github.repository }}/settings/actions
 
