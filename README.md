@@ -361,7 +361,7 @@ This project uses automated GitHub Actions workflows for releases. Maintainers c
 3. Review and merge the generated PR
 4. Release is automatically published to RubyGems and GitHub
 
-**For detailed instructions, troubleshooting, and setup requirements, see [`.github/RELEASING.md`](.github/RELEASING.md).**
+**For detailed instructions, troubleshooting, and setup requirements, see [`RELEASING.md`](RELEASING.md).**
 
 ## Known Limitations
 
