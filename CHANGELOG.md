@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [1.0.0] - 2025-09-10
+
 ### Added
 - **Core Calendar Application**: Flexible calendar application with multi-country holiday support
 - **Multiple Display Formats**: Month, quarter (3 months), and full year views
