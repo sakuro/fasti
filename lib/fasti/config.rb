@@ -3,7 +3,6 @@
 require "dry-configurable"
 require_relative "config/schema"
 require_relative "config/types"
-require_relative "style"
 
 module Fasti
   # Configuration management using dry-configurable
@@ -71,7 +70,7 @@ module Fasti
         # Validate individual attributes using schema
         result = Schema::StyleAttribute.call(attributes)
         if result.success?
-          validated_style[target_sym] = Style.new(**result.to_h)
+          validated_style[target_sym] = TIntMe[**result.to_h]
         else
           errors = result.errors.to_h.map {|key, messages|
             "#{key}: #{Array(messages).join(", ")}"

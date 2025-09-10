@@ -18,17 +18,17 @@ module Fasti
         optional(:foreground).maybe(Types::Color)
         optional(:background).maybe(Types::Color)
 
-        # Boolean styling attributes
+        # Boolean styling attributes - allow string coercion for config files
         optional(:bold).maybe(Types::Params::Bool)
         optional(:italic).maybe(Types::Params::Bool)
         optional(:faint).maybe(Types::Params::Bool)
         optional(:inverse).maybe(Types::Params::Bool)
         optional(:blink).maybe(Types::Params::Bool)
-        optional(:hide).maybe(Types::Params::Bool)
+        optional(:conceal).maybe(Types::Params::Bool)
         optional(:overline).maybe(Types::Params::Bool)
 
         # Special underline attribute
-        optional(:underline).maybe(Types::Underline)
+        optional(:underline).maybe(Types::UnderlineOption)
       }
 
       public_constant :StyleAttribute

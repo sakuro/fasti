@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "date"
-require "paint"
 require "spec_helper"
 
 RSpec.describe Fasti::Formatter do
@@ -137,9 +136,9 @@ RSpec.describe Fasti::Formatter do
   describe "#format_day (private method)" do
     let(:basic_styles) do
       {
-        sunday: Fasti::Style.new(bold: true),
-        holiday: Fasti::Style.new(bold: true),
-        today: Fasti::Style.new(inverse: true)
+        sunday: TIntMe[bold: true],
+        holiday: TIntMe[bold: true],
+        today: TIntMe[inverse: true]
       }
     end
     let(:formatter) { Fasti::Formatter.new(styles: basic_styles) }
@@ -169,9 +168,9 @@ RSpec.describe Fasti::Formatter do
   describe "day styling behavior" do
     let(:basic_styles) do
       {
-        sunday: Fasti::Style.new(bold: true),
-        holiday: Fasti::Style.new(bold: true),
-        today: Fasti::Style.new(inverse: true)
+        sunday: TIntMe[bold: true],
+        holiday: TIntMe[bold: true],
+        today: TIntMe[inverse: true]
       }
     end
     let(:formatter) { Fasti::Formatter.new(styles: basic_styles) }
@@ -291,9 +290,9 @@ RSpec.describe Fasti::Formatter do
   describe "color coding behavior" do
     let(:basic_styles) do
       {
-        sunday: Fasti::Style.new(bold: true),
-        holiday: Fasti::Style.new(bold: true),
-        today: Fasti::Style.new(inverse: true)
+        sunday: TIntMe[bold: true],
+        holiday: TIntMe[bold: true],
+        today: TIntMe[inverse: true]
       }
     end
     let(:formatter) { Fasti::Formatter.new(styles: basic_styles) }
@@ -310,6 +309,52 @@ RSpec.describe Fasti::Formatter do
       # Even with color codes, basic structure should be maintained
       expect(output).to include("January 2024")
       expect(output).to include("Su Mo Tu We Th Fr Sa")
+    end
+  end
+
+  describe "style caching optimization" do
+    let(:styles) do
+      {
+        sunday: TIntMe[foreground: :red],
+        holiday: TIntMe[bold: true],
+        today: TIntMe[inverse: true]
+      }
+    end
+    let(:formatter) { Fasti::Formatter.new(styles:) }
+    let(:calendar) { Fasti::Calendar.new(2024, 7, country: :us) }
+
+    before do
+      allow(Date).to receive(:today).and_return(Date.new(2024, 7, 7)) # Sunday, July 7
+    end
+
+    it "caches composed styles to avoid repeated composition" do
+      # July 7, 2024 is a Sunday and today (but not a holiday)
+      # This should create a cache entry for [:sunday, :today]
+
+      # First call - should populate cache
+      output1 = formatter.format_month(calendar)
+
+      # Second call - should use cached style
+      output2 = formatter.format_month(calendar)
+
+      expect(output1).to eq(output2)
+      expect(output1).to include("7") # July 7 should be present
+    end
+
+    it "uses different cache entries for different style combinations" do
+      # July 4, 2024 is Independence Day (holiday) and Thursday
+      # July 7, 2024 is Sunday and today
+      # These should create different cache entries
+
+      output = formatter.format_month(calendar)
+
+      # Both July 4 (holiday) and July 7 (sunday + today) should be styled
+      expect(output).to include("4") # Independence Day
+      expect(output).to include("7") # Sunday + today
+
+      # Verify that different days get different styling
+      expect(output).to match(/\e\[.*4.*\e\[0m/) # July 4 should be styled
+      expect(output).to match(/\e\[.*7.*\e\[0m/) # July 7 should be styled
     end
   end
 

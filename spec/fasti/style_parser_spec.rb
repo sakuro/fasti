@@ -99,7 +99,7 @@ RSpec.describe Fasti::StyleParser do
       end
 
       it "handles all weekday targets" do
-        style_string = "sunday:bold monday:italic tuesday:underline wednesday:overline thursday:blink friday:hide saturday:faint"
+        style_string = "sunday:bold monday:italic tuesday:underline wednesday:overline thursday:blink friday:conceal saturday:faint"
         result = parser.parse(style_string)
 
         expect(result).to include(
@@ -108,7 +108,7 @@ RSpec.describe Fasti::StyleParser do
           tuesday: have_attributes(underline: true),
           wednesday: have_attributes(overline: true),
           thursday: have_attributes(blink: true),
-          friday: have_attributes(hide: true),
+          friday: have_attributes(conceal: true),
           saturday: have_attributes(faint: true)
         )
       end
