@@ -19,8 +19,6 @@ Gem::Specification.new do |spec|
   spec.metadata["changelog_uri"] = "#{spec.homepage}/blob/main/CHANGELOG.md"
   spec.metadata["rubygems_mfa_required"] = "true"
 
-  # Specify which files should be added to the gem when it is released.
-  # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
   gemspec = File.basename(__FILE__)
   spec.files = IO.popen(%w[git ls-files -z], chdir: __dir__, err: IO::NULL) {|ls|
     ls.each_line("\x0", chomp: true).reject do |f|
@@ -40,7 +38,4 @@ Gem::Specification.new do |spec|
   spec.add_dependency "locale", "~> 2.1"
   spec.add_dependency "tint_me", "~> 1.0"
   spec.add_dependency "zeitwerk", "~> 2.6"
-
-  # For more information and examples about making a new gem, check out our
-  # guide at: https://bundler.io/guides/creating_gem.html
 end
