@@ -22,7 +22,7 @@ module Fasti
   #   puts formatter.format_year(2024, start_of_week: :sunday, country: :jp)
   class Formatter
     # Default unstyled TIntMe::Style instance for reuse
-    DEFAULT_STYLE = TIntMe::Style.new
+    DEFAULT_STYLE = TIntMe[]
     private_constant :DEFAULT_STYLE
 
     # Creates a new formatter instance.

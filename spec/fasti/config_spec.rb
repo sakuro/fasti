@@ -158,7 +158,7 @@ RSpec.describe Fasti::Config do
         format: :quarter,
         start_of_week: :sunday, # default
         country: :jp,
-        style: {sunday: TIntMe::Style.new(bold: true)}
+        style: {sunday: TIntMe[bold: true]}
       })
     end
   end
@@ -203,7 +203,7 @@ RSpec.describe Fasti::Config do
 
         expect(config_hash[:format]).to eq(:quarter)
         expect(config_hash[:country]).to eq(:jp)
-        expect(config_hash[:style]).to eq({sunday: TIntMe::Style.new(bold: true, foreground: :red)})
+        expect(config_hash[:style]).to eq({sunday: TIntMe[bold: true, foreground: :red]})
       end
     end
 

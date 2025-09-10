@@ -205,7 +205,7 @@ module Fasti
     private def create_style(attributes)
       style_params = attributes.transform_keys(&:to_sym)
 
-      TIntMe::Style.new(**style_params)
+      TIntMe[**style_params]
     end
   end
 end
