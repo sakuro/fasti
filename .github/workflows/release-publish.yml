@@ -10,28 +10,15 @@ on:
   pull_request:
     types: [closed]
     branches: [main]
-    paths:
-      - 'lib/*/version.rb'  # Assumes single gem per repository
-      - 'CHANGELOG.md'
 
 jobs:
   publish-release:
     if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'release-v')
     runs-on: ubuntu-latest
+    permissions:
+      contents: write      # Required for GitHub Release creation and branch deletion
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v5
-      with:
-        fetch-depth: 0
-        submodules: recursive
-
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: '3.4'
-        bundler-cache: true
-
     - name: Extract version from branch name
       id: version
       run: |
@@ -40,12 +27,24 @@ jobs:
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "tag=v$VERSION" >> $GITHUB_OUTPUT
 
+    - name: Checkout release tag
+      uses: actions/checkout@v5
+      with:
+        ref: ${{ steps.version.outputs.tag }}
+        fetch-depth: 0
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.4'
+        bundler-cache: true
+
     - name: Verify version consistency
       run: |
         # Check if version in file matches branch
         FILE_VERSION=$(grep 'VERSION = ' lib/${{ env.GEM_NAME }}/version.rb | sed 's/.*VERSION = "\(.*\)".*/\1/')
         if [ "$FILE_VERSION" != "${{ steps.version.outputs.version }}" ]; then
-          echo "Error: Version mismatch. File: $FILE_VERSION, Expected: ${{ steps.version.outputs.version }}"
+          echo "❌ Error: Version mismatch. File: $FILE_VERSION, Expected: ${{ steps.version.outputs.version }}"
           exit 1
         fi
 
@@ -64,9 +63,13 @@ jobs:
     - name: Set git user
       uses: git-actions/set-user@v1
 
-    - name: Build and release gem
+    - name: Build gem
       run: |
-        bundle exec rake release
+        bundle exec rake build
+
+    - name: Push gem to RubyGems
+      run: |
+        gem push pkg/${{ env.GEM_NAME }}-${{ steps.version.outputs.version }}.gem
 
     - name: Extract changelog for this version
       id: changelog
@@ -92,15 +95,20 @@ jobs:
           --notes-file release_notes.md \
           pkg/${{ env.GEM_NAME }}-${{ steps.version.outputs.version }}.gem
 
-    - name: Cleanup release branch
+    - name: Cleanup release branch (if exists)
       run: |
-        git push origin --delete release-v${{ steps.version.outputs.version }}
+        if git ls-remote --heads origin release-v${{ steps.version.outputs.version }} | grep -q release-v${{ steps.version.outputs.version }}; then
+          echo "Deleting release branch: release-v${{ steps.version.outputs.version }}"
+          git push origin --delete release-v${{ steps.version.outputs.version }}
+        else
+          echo "Release branch already deleted (likely by auto-delete setting)"
+        fi
       continue-on-error: true
 
     - name: Post-release summary
       run: |
-        echo ":tada: Release ${{ steps.version.outputs.tag }} published successfully!"
-        echo "- Git tag created and pushed via rake release"
-        echo "- Gem built and published to RubyGems"
+        echo "🎉 Release ${{ steps.version.outputs.tag }} published successfully!"
+        echo "- Using git tag created on release branch"
+        echo "- Gem built from tagged commit and published to RubyGems"
         echo "- GitHub release created with assets"
         echo "- Release branch cleaned up"

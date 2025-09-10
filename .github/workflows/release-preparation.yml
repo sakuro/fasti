@@ -3,6 +3,9 @@ name: Release Preparation
 # This workflow only handles file updates for release preparation.
 # All validations are performed by the Release Validation workflow on PR creation.
 
+env:
+  GEM_NAME: ${{ github.event.repository.name }}
+
 on:
   workflow_dispatch:
     inputs:
@@ -11,25 +14,18 @@ on:
         required: true
         type: string
 
-env:
-  GEM_NAME: ${{ github.event.repository.name }}
-
 jobs:
   create-release-branch:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write       # Required for git push (branch and tag creation)
+      pull-requests: write  # Required for PR creation
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v5
       with:
         fetch-depth: 0
-        submodules: recursive
-
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: '3.4'
-        bundler-cache: true
 
     - name: Set git user
       uses: git-actions/set-user@v1
@@ -65,9 +61,15 @@ jobs:
         EOF
         )"
 
-    - name: Push release branch
+    - name: Create release tag
+      run: |
+        git tag -a "v${{ github.event.inputs.version }}" \
+          -m "Release v${{ github.event.inputs.version }}"
+
+    - name: Push release branch and tag
       run: |
         git push -u origin release-v${{ github.event.inputs.version }}
+        git push origin v${{ github.event.inputs.version }}
 
     - name: Create Pull Request
       env:
@@ -96,8 +98,8 @@ jobs:
         ## Post-Merge Actions
 
         After merging this PR, the release workflow will automatically:
-        - Create and push git tag v${{ github.event.inputs.version }}
-        - Build and publish gem to RubyGems
+        - Use the git tag v${{ github.event.inputs.version }} (already created on this branch)
+        - Build and publish gem to RubyGems from the tagged commit
         - Create GitHub release with assets
 
         EOF
