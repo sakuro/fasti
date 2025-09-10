@@ -1,4 +1,4 @@
-# Fasti
+# :spiral_calendar: Fasti
 
 A flexible calendar application with multi-country holiday support, written in Ruby. Fasti provides beautiful, colorful calendar displays with support for multiple output formats, configurable week start days, and country-specific holiday highlighting.
 
@@ -310,9 +310,13 @@ bin/console
 
 ## Dependencies
 
+- **dry-configurable** (~> 1.0): Configuration management
+- **dry-schema** (~> 1.13): Configuration validation
+- **dry-types** (~> 1.7): Type system for configuration
 - **holidays** (~> 8.0): Country-specific holiday data
-- **paint** (~> 2.0): ANSI color support
 - **locale** (~> 2.1): Locale parsing for country detection
+- **tint_me** (~> 1.0): ANSI color support
+- **zeitwerk** (~> 2.6): Code autoloading
 
 ## Development Dependencies
 
@@ -383,5 +387,5 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 - Built with Ruby 3.2+ for broad compatibility and modern features
 - Uses the excellent [holidays](https://github.com/holidays/holidays) gem for accurate holiday data
-- Color support provided by the [paint](https://github.com/janlelis/paint) gem
+- Color support provided by the [tint_me](https://github.com/ddfreyne/tint-me) gem
 - Follows XDG Base Directory Specification for configuration files
