@@ -230,6 +230,22 @@ By default, Fasti displays all days with normal text styling. You can customize 
 - **today**: Configurable styling for today's date
 - **monday, tuesday, etc.**: Configurable styling for individual weekdays
 
+You can apply styling using the `--style` option with space-separated target:attribute pairs:
+
+```bash
+# Bold Sundays and red holidays
+fasti --style "sunday:bold holiday:foreground=red"
+
+# Multiple attributes for the same target
+fasti --style "today:bold,inverse sunday:foreground=blue"
+
+# Mix different styling attributes
+fasti --style "sunday:bold holiday:foreground=red,background=yellow today:inverse"
+
+# Override config file settings with no- prefix (boolean attributes only)
+fasti --style "sunday:no-bold,no-italic holiday:foreground=red"  # Remove boolean styling
+```
+
 ### Examples
 
 Display current month with Monday start:
