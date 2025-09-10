@@ -330,13 +330,13 @@ RSpec.describe Fasti::Formatter do
     it "caches composed styles to avoid repeated composition" do
       # July 7, 2024 is a Sunday and today (but not a holiday)
       # This should create a cache entry for [:sunday, :today]
-      
+
       # First call - should populate cache
       output1 = formatter.format_month(calendar)
-      
+
       # Second call - should use cached style
       output2 = formatter.format_month(calendar)
-      
+
       expect(output1).to eq(output2)
       expect(output1).to include("7") # July 7 should be present
     end
@@ -345,13 +345,13 @@ RSpec.describe Fasti::Formatter do
       # July 4, 2024 is Independence Day (holiday) and Thursday
       # July 7, 2024 is Sunday and today
       # These should create different cache entries
-      
+
       output = formatter.format_month(calendar)
-      
+
       # Both July 4 (holiday) and July 7 (sunday + today) should be styled
       expect(output).to include("4") # Independence Day
       expect(output).to include("7") # Sunday + today
-      
+
       # Verify that different days get different styling
       expect(output).to match(/\e\[.*4.*\e\[0m/) # July 4 should be styled
       expect(output).to match(/\e\[.*7.*\e\[0m/) # July 7 should be styled
