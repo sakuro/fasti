@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "dry-schema"
-require_relative "types"
 
 module Fasti
   class Config

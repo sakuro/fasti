@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require "dry-configurable"
-require_relative "config/schema"
-require_relative "config/types"
 
 module Fasti
   # Configuration management using dry-configurable

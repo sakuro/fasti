@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "fasti/calendar_transition"
 require "spec_helper"
 
 RSpec.describe Fasti::CalendarTransition do
