@@ -11,7 +11,7 @@ class ContainStyled
     underline: 4,
     blink: 5,
     inverse: 7,
-    hide: 8,
+    conceal: 8,
     overline: 53,
     double_underline: 21,
 
