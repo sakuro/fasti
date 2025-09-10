@@ -1,5 +1,11 @@
 # :spiral_calendar: Fasti
 
+[![Gem Version](https://badge.fury.io/rb/fasti.svg)](https://badge.fury.io/rb/fasti)
+[![CI](https://github.com/sakuro/fasti/workflows/CI/badge.svg)](https://github.com/sakuro/fasti/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Gem Downloads](https://img.shields.io/gem/dt/fasti.svg)](https://rubygems.org/gems/fasti)
+[![Depfu](https://badges.depfu.com/badges/57045bfa6f47bc651aa055b9bd4e5387/overview.svg)](https://depfu.com/github/sakuro/fasti)
+
 A flexible calendar application with multi-country holiday support, written in Ruby. Fasti provides beautiful, colorful calendar displays with support for multiple output formats, configurable week start days, and country-specific holiday highlighting.
 
 ## Features
