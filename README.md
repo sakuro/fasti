@@ -391,6 +391,12 @@ fasti 12 1872 --country JP
 
 Asian countries used lunisolar calendars before adoption; pre-transition dates use proleptic Gregorian calendar for computational consistency.
 
+## FAQ
+
+### Why is it called "fasti"?
+
+The name comes from the Latin *[fasti](https://en.wiktionary.org/wiki/fasti)*, meaning "calendar" or "list of days". Roman *fasti* were official calendars that recorded important dates, festivals, and holidays - much like what this application does for modern users.
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/sakuro/fasti.
