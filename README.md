@@ -223,11 +223,28 @@ Command line options override configuration file settings.
 
 ### Styling
 
-Fasti uses ANSI text styling to highlight different types of days:
+By default, Fasti displays all days with normal text styling. You can customize the appearance of different day types using the `style` configuration option:
 
-- **Bold**: Sundays and holidays
-- **Inverted**: Today's date (combined with bold when applicable)
-- **Normal**: Regular weekdays (including Saturdays)
+- **sunday**: Configurable styling for Sundays
+- **holiday**: Configurable styling for holidays  
+- **today**: Configurable styling for today's date
+- **monday, tuesday, etc.**: Configurable styling for individual weekdays
+
+You can apply styling using the `--style` option with space-separated target:attribute pairs:
+
+```bash
+# Bold Sundays and red holidays
+fasti --style "sunday:bold holiday:foreground=red"
+
+# Multiple attributes for the same target
+fasti --style "today:bold,inverse sunday:foreground=blue"
+
+# Mix different styling attributes
+fasti --style "sunday:bold holiday:foreground=red,background=yellow today:inverse"
+
+# Override config file settings with no- prefix (boolean attributes only)
+fasti --style "sunday:no-bold,no-italic holiday:foreground=red"  # Remove boolean styling
+```
 
 ### Examples
 
@@ -257,6 +274,8 @@ Fasti respects the following environment variables for automatic country detecti
 
 - `LC_ALL` (highest priority)
 - `LANG` (fallback)
+
+Note: Only `LC_ALL` and `LANG` are used for country detection. Other `LC_*` variables (such as `LC_MESSAGES`, `LC_TIME`) are not used as they represent specific locale categories rather than the user's preferred country for holiday context.
 
 Example:
 ```bash
