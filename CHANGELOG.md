@@ -12,8 +12,7 @@
 - **Zeitwerk Integration**: Modern code autoloading with Zeitwerk for improved performance and maintainability
 
 ### Performance
-- **Holiday Caching**: Implement month-based holiday caching for 12-74x performance improvement
-- **Bulk API Calls**: Replace per-day holiday lookups with efficient batch retrieval
+- **Holiday Caching**: Month-based holiday caching with bulk API calls for 12-74x performance improvement
 - **Style Caching**: Target-based style caching system achieving 966+ months/second rendering performance
 - **TIntMe Integration**: High-performance ANSI terminal styling with optimized color composition
 
@@ -22,7 +21,3 @@
 - **Code Quality**: RuboCop configuration with strict style enforcement
 - **Benchmark Suite**: Performance testing tools for holiday caching validation
 - **CI/CD**: GitHub Actions workflow for automated testing and quality checks
-
-## [0.1.0] - 2025-08-25
-
-- Initial release
