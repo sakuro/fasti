@@ -3,8 +3,8 @@
 require "bundler/gem_tasks"
 
 require "rake/clean"
-CLEAN.include("coverage/", ".rspec_status", ".yardoc")
-CLOBBER.include("docs/api/", "pkg/")
+CLEAN.include("coverage", ".rspec_status", ".yardoc")
+CLOBBER.include("docs/api", "pkg")
 
 require "rspec/core/rake_task"
 RSpec::Core::RakeTask.new(:spec)
@@ -29,8 +29,6 @@ Rake::Task[:doc].enhance do
 
     File.write(file, content)
   end
-
-  puts "✅ Documentation generated with emoji support"
 end
 
 task default: %i[spec rubocop]
