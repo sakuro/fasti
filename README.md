@@ -418,5 +418,5 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 - Built with Ruby 3.2+ for broad compatibility and modern features
 - Uses the excellent [holidays](https://github.com/holidays/holidays) gem for accurate holiday data
-- Color support provided by the [tint_me](https://github.com/ddfreyne/tint-me) gem
+- Color support provided by the [tint_me](https://github.com/sakuro/tint_me) gem
 - Follows XDG Base Directory Specification for configuration files
