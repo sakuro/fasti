@@ -36,7 +36,7 @@ jobs:
 
     - name: Update version file
       run: |
-        sed -i "s/VERSION = \".*\"/VERSION = \"${{ github.event.inputs.version }}\"/" lib/${{ env.GEM_NAME }}/version.rb
+        sed -i 's/VERSION = ".*"/VERSION = "${{ github.event.inputs.version }}"/' lib/${{ env.GEM_NAME }}/version.rb
 
     - name: Update CHANGELOG.md
       run: |
@@ -90,34 +90,41 @@ jobs:
 
         ## Quality Checks
 
-        - [x] RuboCop checks passed
-        - [x] All tests passed
-        - [x] Version format validated
-        - [x] CHANGELOG.md updated
+        These checks will be performed automatically by CI and validation workflows:
+
+        - RuboCop checks
+        - All tests pass
+        - Version format validation
+        - CHANGELOG.md format validation
 
         ## Release Requirements Checklist
 
         Before merging this PR, ensure the following requirements are met:
 
         ### GitHub Repository Settings
-        - [ ] **Workflow permissions**: Set to "Read repository contents and packages permissions"
-        - [ ] **Pull request permissions**: "Allow GitHub Actions to create and approve pull requests" enabled
+        - [ ] **Workflow permissions**: Set to "Read and write permissions"
+        - [ ] **Pull request permissions**: Check "Allow GitHub Actions to create and approve pull requests"
         - [ ] Configure at: https://github.com/${{ github.repository }}/settings/actions
 
-        ### Required Secrets
-        - [ ] **RUBYGEMS_API_KEY**: RubyGems.org API key for gem publishing
-        - [ ] Configure at: https://github.com/${{ github.repository }}/settings/secrets/actions
-        - [ ] Generate API key at: https://rubygems.org/profile/api_keys (requires password confirmation)
-        - [ ] API key scopes: Enable "Push rubygem" and "Yank rubygem"
-        - [ ] API key security: Enable "Enable MFA"
-        - [ ] Gem scope: Start with "All Gems", restrict to `${{ env.GEM_NAME }}` after first release
+        ### Trusted Publishing Setup
+        - [ ] **Pending Trusted Publisher**: Create on RubyGems.org for OIDC authentication
+        - [ ] Configure at: https://rubygems.org/oidc/pending_trusted_publishers
+        - [ ] Required settings:
+          - Gem name: `${{ env.GEM_NAME }}`
+          - Repository owner: `${{ github.repository_owner }}`
+          - Repository name: `${{ github.event.repository.name }}`
+          - Workflow filename: `release-publish.yml`
+          - Environment name: `release`
+        - [ ] **Note**: Pending publisher will auto-convert to active publisher after first successful gem push
+        - [ ] **GitHub Environment**: Create `release` environment at https://github.com/${{ github.repository }}/settings/environments
+        - [ ] Guide: https://guides.rubygems.org/trusted-publishing/releasing-gems/
 
         ### RubyGems.org Setup
         - [ ] **Gem name availability**: Verify `${{ env.GEM_NAME }}` is available or owned by you (first release only)
         - [ ] **Account verified**: RubyGems.org account email verified and MFA enabled (recommended)
+        - [ ] **MFA Compatibility**: Trusted Publishing works seamlessly with MFA enabled
         - [ ] Configure MFA at: https://rubygems.org/profile/edit
-        - [ ] Set Authentication Levels to "UI and gem signin" (enables MFA while allowing CI/CD)
-        - [ ] **Note**: Do not use "UI and API" as it breaks automated CI/CD workflows
+        - [ ] **Note**: With Trusted Publishing, you can safely use "UI and API" MFA level without breaking CI/CD
         - [ ] MFA setup guide: https://guides.rubygems.org/setting-up-multifactor-authentication/
 
         ## Post-Merge Actions

@@ -27,7 +27,7 @@ jobs:
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: '3.4'
+        ruby-version: '3.2'
         bundler-cache: true
 
     - name: Extract version from branch name
@@ -73,24 +73,6 @@ jobs:
           exit 1
         fi
 
-    - name: Validate RubyGems API key
-      env:
-        API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
-      run: |
-        if [ -z "$API_KEY" ]; then
-          echo "❌ Error: RUBYGEMS_API_KEY secret is not configured"
-          echo ""
-          echo "To fix this:"
-          echo "1. Generate an API key at https://rubygems.org/profile/edit"
-          echo "2. Go to repository Settings -> Secrets and variables -> Actions"
-          echo "3. Add new secret: RUBYGEMS_API_KEY with your API key"
-          echo ""
-          echo "This PR cannot be merged until the secret is configured."
-          exit 1
-        else
-          echo "✅ RUBYGEMS_API_KEY is configured"
-        fi
-
     - name: Validate CHANGELOG.md format
       run: |
         # Check if CHANGELOG has the expected section for this version
@@ -122,11 +104,11 @@ jobs:
         echo "✅ Release validation passed for v${{ steps.version.outputs.version }}"
         echo "- Version format is valid"
         echo "- Version consistency verified"
-        echo "- Git tag exists at correct commit"
+        if [ "${{ github.event.action }}" == "synchronize" ]; then
+          echo "- Git tag updated to latest commit"
+        else
+          echo "- Git tag validated"
+        fi
         echo "- Version not yet on RubyGems"
-        echo "- RubyGems API key is configured"
         echo "- CHANGELOG.md is properly formatted"
         echo "- Quality checks handled by CI workflow"
-        if [ "${{ github.event.action }}" == "synchronize" ]; then
-          echo "- Tag updated to latest commit"
-        fi
