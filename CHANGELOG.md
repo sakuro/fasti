@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [1.0.1] - 2025-11-02
+
 ### Development
 - **Trusted Publishing**: Migrated release workflows to OIDC-based Trusted Publishing for improved security
 
