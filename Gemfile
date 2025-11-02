@@ -13,7 +13,7 @@ end
 
 group :development do
   # RuboCop
-  gem "docquet", github: "sakuro/docquet" # An opionated RuboCop config tool
+  gem "docquet" # An opionated RuboCop config tool
   gem "rubocop"
   gem "rubocop-performance"
   gem "rubocop-rake"
