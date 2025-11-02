@@ -19,12 +19,8 @@ Gem::Specification.new do |spec|
   spec.metadata["changelog_uri"] = "#{spec.homepage}/blob/main/CHANGELOG.md"
   spec.metadata["rubygems_mfa_required"] = "true"
 
-  gemspec = File.basename(__FILE__)
-  spec.files = IO.popen(%w[git ls-files -z], chdir: __dir__, err: IO::NULL) {|ls|
-    ls.each_line("\x0", chomp: true).reject do |f|
-      (f == gemspec) ||
-        f.start_with?(*%w[bin/ test/ spec/ features/ .git .github appveyor Gemfile])
-    end
+  spec.files = Dir.chdir(__dir__) {
+    Dir["lib/**/*.rb", "exe/*", "sig/**/*.rbs", "README.md", "LICENSE.txt", "CHANGELOG.md"]
   }
   spec.bindir = "exe"
   spec.executables = spec.files.grep(%r{\Aexe/}) {|f| File.basename(f) }
